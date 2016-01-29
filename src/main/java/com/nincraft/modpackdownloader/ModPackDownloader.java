@@ -24,11 +24,16 @@ public class ModPackDownloader {
 	static Logger logger = LogManager.getRootLogger();
 
 	public static void main(String[] args) {
+		if(args.length < 1){
+			logger.error("Incorrect arguments");
+			return;
+		}
+		String manifestFile = args[0];
 		JSONParser parser = new JSONParser();
 		try {
 			Long projectID;
 			Long fileID;
-			JSONObject jsonObject = (JSONObject) parser.parse(new FileReader("src/main/resources/manifest.json"));
+			JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(manifestFile));
 			JSONArray fileList = (JSONArray) jsonObject.get("files");
 			logger.info("Starting download of " + fileList.size() + " mods");
 			Iterator iterator = fileList.iterator();
@@ -72,8 +77,8 @@ public class ModPackDownloader {
 		String fileName2 = projectID + "-" + projectName + ".json";
 		downloadFile(createWidgetUrl(projectName), fileName1, "cache");
 		downloadFile(createWidgetUrl(projectID + "-" + projectName), fileName2, "cache");
-		File f1 = new File(fileName1);
-		File f2 = new File(fileName2);
+		File f1 = new File("cache"+File.separator+fileName1);
+		File f2 = new File("cache"+File.separator+fileName2);
 		String actualFile;
 		if (f1.exists() && !f1.isDirectory())
 			actualFile = fileName1;
@@ -119,7 +124,7 @@ public class ModPackDownloader {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			System.err.println("Could not find: " + fileName);
+			logger.error("Could not find: " + fileName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
