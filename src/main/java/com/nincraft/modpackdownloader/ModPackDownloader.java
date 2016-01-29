@@ -12,12 +12,16 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Iterator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class ModPackDownloader {
+	
+	static Logger logger = LogManager.getRootLogger();
 
 	public static void main(String[] args) {
 		JSONParser parser = new JSONParser();
@@ -26,14 +30,14 @@ public class ModPackDownloader {
 			Long fileID;
 			JSONObject jsonObject = (JSONObject) parser.parse(new FileReader("src/main/resources/manifest.json"));
 			JSONArray fileList = (JSONArray) jsonObject.get("files");
-			System.out.println("Starting download of " + fileList.size() + " mods");
+			logger.info("Starting download of " + fileList.size() + " mods");
 			Iterator iterator = fileList.iterator();
 			while (iterator.hasNext()) {
 				JSONObject j = ((JSONObject) iterator.next());
 				projectID = (Long) j.get("projectID");
 				fileID = (Long) j.get("fileID");
 				String url = "http://minecraft.curseforge.com/projects/" + projectID + "?cookieTest=1";
-				System.out.println(url);
+				logger.info(url);
 				HttpURLConnection con = (HttpURLConnection) (new URL(url).openConnection());
 				con.setInstanceFollowRedirects(false);
 				con.connect();
@@ -43,12 +47,12 @@ public class ModPackDownloader {
 				JSONObject curseWidget = (JSONObject) parser.parse(new FileReader("cache"+File.separator+actualFile));
 				JSONObject fileList1 = (JSONObject) curseWidget.get("files");
 				JSONObject fileData = (JSONObject) fileList1.get(fileID.toString());
-				System.out.println("Getting file ID: " + fileID);
+				logger.info("Getting file ID: " + fileID);
 				if (fileData != null) {
 					String fileName = (String) fileData.get("name");
 					downloadFile(createCurseDownloadUrl(projectName, fileID), fileName, "mods", projectName);
 				} else {
-					System.err.println("Could not find file in json, attempting to download manually");
+					logger.warn("Could not find file in json, attempting to download manually");
 					downloadFile(createCurseDownloadUrl(projectName, fileID), null, "mods", projectName);
 				}
 			}
@@ -60,7 +64,7 @@ public class ModPackDownloader {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		System.out.println("done");
+		logger.info("Finished downloading mods");
 	}
 
 	private static String downloadJsonFiles(Long projectID, String projectName) {
@@ -97,7 +101,7 @@ public class ModPackDownloader {
 		if (fileName == null) {
 			fileName = projectName + jarext;
 		}
-		System.out.println("Downloading " + url + " to file " + fileName);
+		logger.info("Downloading " + url + " to file " + fileName);
 		String downloadLocation = fileName;
 		try {
 			URL fileThing = new URL(url);
