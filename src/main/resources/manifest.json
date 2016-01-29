@@ -1,0 +1,461 @@
+{
+    "author": "Nincodedo, Undead Zeratul",
+    "description": "",
+    "files": [
+        {
+            "fileID": 2262994,
+            "projectID": 59710
+        },
+        {
+            "fileID": 2250723,
+            "projectID": 221863
+        },
+        {
+            "fileID": 2231153,
+            "projectID": 228356
+        },
+        {
+            "fileID": 2266615,
+            "projectID": 225635
+        },
+        {
+            "fileID": 2225648,
+            "projectID": 224472
+        },
+        {
+            "fileID": 2218859,
+            "projectID": 225564
+        },
+        {
+            "fileID": 2245099,
+            "projectID": 223735
+        },
+        {
+            "fileID": 2219249,
+            "projectID": 225658
+        },
+        {
+            "fileID": 2251566,
+            "projectID": 233785
+        },
+        {
+            "fileID": 2239969,
+            "projectID": 228529
+        },
+        {
+            "fileID": 2261487,
+            "projectID": 222722
+        },
+        {
+            "fileID": 2214088,
+            "projectID": 224223
+        },
+        {
+            "fileID": 2251726,
+            "projectID": 228027
+        },
+        {
+            "fileID": 2259149,
+            "projectID": 225643
+        },
+        {
+            "fileID": 2233617,
+            "projectID": 228932
+        },
+        {
+            "fileID": 2263288,
+            "projectID": 235279
+        },
+        {
+            "fileID": 2246916,
+            "projectID": 220333
+        },
+        {
+            "fileID": 2237939,
+            "projectID": 222213
+        },
+        {
+            "fileID": 2248699,
+            "projectID": 222908
+        },
+        {
+            "fileID": 2224037,
+            "projectID": 67648
+        },
+        {
+            "fileID": 2253267,
+            "projectID": 79616
+        },
+        {
+            "fileID": 2218893,
+            "projectID": 225565
+        },
+        {
+            "fileID": 2248782,
+            "projectID": 74246
+        },
+        {
+            "fileID": 2231444,
+            "projectID": 227874
+        },
+        {
+            "fileID": 2242855,
+            "projectID": 76612
+        },
+        {
+            "fileID": 2238375,
+            "projectID": 64578
+        },
+        {
+            "fileID": 2239230,
+            "projectID": 65509
+        },
+        {
+            "fileID": 2261289,
+            "projectID": 230114
+        },
+        {
+            "fileID": 2242838,
+            "projectID": 229218
+        },
+        {
+            "fileID": 2239878,
+            "projectID": 72728
+        },
+        {
+            "fileID": 2252152,
+            "projectID": 224867
+        },
+        {
+            "fileID": 2244620,
+            "projectID": 224237
+        },
+        {
+            "fileID": 2253454,
+            "projectID": 225903
+        },
+        {
+            "fileID": 2260713,
+            "projectID": 228015
+        },
+        {
+            "fileID": 2232181,
+            "projectID": 229076
+        },
+        {
+            "fileID": 2232170,
+            "projectID": 229073
+        },
+        {
+            "fileID": 2238507,
+            "projectID": 223792
+        },
+        {
+            "fileID": 2237600,
+            "projectID": 223248
+        },
+        {
+            "fileID": 2229724,
+            "projectID": 73510
+        },
+        {
+            "fileID": 2225146,
+            "projectID": 225605
+        },
+        {
+            "fileID": 2251211,
+            "projectID": 74924
+        },
+        {
+            "fileID": 2228830,
+            "projectID": 59641
+        },
+        {
+            "fileID": 2215714,
+            "projectID": 78640
+        },
+        {
+            "fileID": 2252462,
+            "projectID": 66672
+        },
+        {
+            "fileID": 2233934,
+            "projectID": 224029
+        },
+        {
+            "fileID": 2232516,
+            "projectID": 76734
+        },
+        {
+            "fileID": 2252080,
+            "projectID": 220954
+        },
+        {
+            "fileID": 2251029,
+            "projectID": 69118
+        },
+        {
+            "fileID": 2250689,
+            "projectID": 225251
+        },
+        {
+            "fileID": 2248213,
+            "projectID": 66675
+        },
+        {
+            "fileID": 2267277,
+            "projectID": 237892
+        },
+        {
+            "fileID": 2237940,
+            "projectID": 222211
+        },
+        {
+            "fileID": 2250321,
+            "projectID": 228816
+        },
+        {
+            "fileID": 2250918,
+            "projectID": 223008
+        },
+        {
+            "fileID": 2250318,
+            "projectID": 228815
+        },
+        {
+            "fileID": 2232520,
+            "projectID": 73832
+        },
+        {
+            "fileID": 2245852,
+            "projectID": 221913
+        },
+        {
+            "fileID": 2249279,
+            "projectID": 221857
+        },
+        {
+            "fileID": 2232221,
+            "projectID": 229083
+        },
+        {
+            "fileID": 2211135,
+            "projectID": 222967
+        },
+        {
+            "fileID": 2253136,
+            "projectID": 224125
+        },
+        {
+            "fileID": 2245019,
+            "projectID": 229084
+        },
+        {
+            "fileID": 2209081,
+            "projectID": 220611
+        },
+        {
+            "fileID": 2251559,
+            "projectID": 51195
+        },
+        {
+            "fileID": 2225310,
+            "projectID": 59816
+        },
+        {
+            "fileID": 2246927,
+            "projectID": 70631
+        },
+        {
+            "fileID": 2246143,
+            "projectID": 59713
+        },
+        {
+            "fileID": 2232324,
+            "projectID": 229087
+        },
+        {
+            "fileID": 2239405,
+            "projectID": 79325
+        },
+        {
+            "fileID": 2224003,
+            "projectID": 222789
+        },
+        {
+            "fileID": 2233901,
+            "projectID": 59968
+        },
+        {
+            "fileID": 2248339,
+            "projectID": 225606
+        },
+        {
+            "fileID": 2218935,
+            "projectID": 225566
+        },
+        {
+            "fileID": 2230425,
+            "projectID": 228625
+        },
+        {
+            "fileID": 2232310,
+            "projectID": 229090
+        },
+        {
+            "fileID": 2253057,
+            "projectID": 74072
+        },
+        {
+            "fileID": 2229984,
+            "projectID": 78057
+        },
+        {
+            "fileID": 2248697,
+            "projectID": 233076
+        },
+        {
+            "fileID": 2213480,
+            "projectID": 75783
+        },
+        {
+            "fileID": 2227552,
+            "projectID": 223628
+        },
+        {
+            "fileID": 2232793,
+            "projectID": 75598
+        },
+        {
+            "fileID": 2246949,
+            "projectID": 227443
+        },
+        {
+            "fileID": 2246924,
+            "projectID": 69163
+        },
+        {
+            "fileID": 2246921,
+            "projectID": 222880
+        },
+        {
+            "fileID": 2246472,
+            "projectID": 76845
+        },
+        {
+            "fileID": 2256598,
+            "projectID": 224971
+        },
+        {
+            "fileID": 2230244,
+            "projectID": 226910
+        },
+        {
+            "fileID": 2221247,
+            "projectID": 220845
+        },
+        {
+            "fileID": 2261384,
+            "projectID": 236794
+        },
+        {
+            "fileID": 2230518,
+            "projectID": 73488
+        },
+        {
+            "fileID": 2244297,
+            "projectID": 224712
+        },
+        {
+            "fileID": 2245762,
+            "projectID": 223794
+        },
+        {
+            "fileID": 2252551,
+            "projectID": 235036
+        },
+        {
+            "fileID": 2265741,
+            "projectID": 237749
+        },
+        {
+            "fileID": 2240043,
+            "projectID": 224039
+        },
+        {
+            "fileID": 2234692,
+            "projectID": 224942
+        },
+        {
+            "fileID": 2251367,
+            "projectID": 225561
+        },
+        {
+            "fileID": 2241357,
+            "projectID": 226074
+        },
+        {
+            "fileID": 2252223,
+            "projectID": 224190
+        },
+        {
+            "fileID": 2226922,
+            "projectID": 227706
+        },
+        {
+            "fileID": 2233005,
+            "projectID": 229060
+        },
+        {
+            "fileID": 2230908,
+            "projectID": 228756
+        },
+        {
+            "fileID": 2246804,
+            "projectID": 230541
+        },
+        {
+            "fileID": 2262515,
+            "projectID": 233105
+        },
+        {
+            "fileID": 2216125,
+            "projectID": 74120
+        },
+        {
+            "fileID": 2262516,
+            "projectID": 224641
+        },
+        {
+            "fileID": 2242066,
+            "projectID": 227449
+        },
+        {
+            "fileID": 2244334,
+            "projectID": 226082
+        },
+        {
+            "fileID": 2238492,
+            "projectID": 227639
+        },
+        {
+            "fileID": 2234410,
+            "projectID": 69673
+        }
+    ],
+    "manifestType": "minecraftModpack",
+    "manifestVersion": 1,
+    "minecraft": {
+        "libraries": "libraries",
+        "modLoaders": [
+            {
+                "id": "forge-10.13.4.1558",
+                "primary": true
+            }
+        ],
+        "version": "1.7.10"
+    },
+    "name": "Nincraft Electric Boogaloo 2",
+    "overrides": "overrides",
+    "version": "0.7.3"
+}
