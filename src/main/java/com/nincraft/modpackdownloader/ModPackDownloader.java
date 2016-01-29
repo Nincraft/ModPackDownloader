@@ -26,6 +26,7 @@ public class ModPackDownloader {
 			Long fileID;
 			JSONObject jsonObject = (JSONObject) parser.parse(new FileReader("src/main/resources/manifest.json"));
 			JSONArray fileList = (JSONArray) jsonObject.get("files");
+			System.out.println("Starting download of " + fileList.size() + " mods");
 			Iterator iterator = fileList.iterator();
 			while (iterator.hasNext()) {
 				JSONObject j = ((JSONObject) iterator.next());
@@ -36,32 +37,19 @@ public class ModPackDownloader {
 				HttpURLConnection con = (HttpURLConnection) (new URL(url).openConnection());
 				con.setInstanceFollowRedirects(false);
 				con.connect();
-				int responseCode = con.getResponseCode();
-				System.out.println(responseCode);
 				String location = con.getHeaderField("Location");
 				String projectName = location.split("/")[2];
-				String fileName1 = projectName + ".json";
-				String fileName2 = projectID + "-" + projectName + ".json";
-				downloadFile(createWidgetUrl(projectName), fileName1);
-				downloadFile(createWidgetUrl(projectID + "-" + projectName), fileName2);
-				File f1 = new File(fileName1);
-				File f2 = new File(fileName2);
-				String actualFile;
-				if (f1.exists() && !f1.isDirectory())
-					actualFile = fileName1;
-				else
-					actualFile = fileName2;
-				JSONObject curseWidget = (JSONObject) parser.parse(new FileReader(actualFile));
+				String actualFile = downloadJsonFiles(projectID, projectName);
+				JSONObject curseWidget = (JSONObject) parser.parse(new FileReader("cache"+File.separator+actualFile));
 				JSONObject fileList1 = (JSONObject) curseWidget.get("files");
 				JSONObject fileData = (JSONObject) fileList1.get(fileID.toString());
 				System.out.println("Getting file ID: " + fileID);
 				if (fileData != null) {
 					String fileName = (String) fileData.get("name");
-					downloadFile(createCurseDownloadUrl(projectName, fileID), fileName, null, projectName);
-				}
-				else{
+					downloadFile(createCurseDownloadUrl(projectName, fileID), fileName, "mods", projectName);
+				} else {
 					System.err.println("Could not find file in json, attempting to download manually");
-					downloadFile(createCurseDownloadUrl(projectName, fileID), null, null, projectName);
+					downloadFile(createCurseDownloadUrl(projectName, fileID), null, "mods", projectName);
 				}
 			}
 
@@ -75,8 +63,23 @@ public class ModPackDownloader {
 		System.out.println("done");
 	}
 
-	private static void downloadFile(String createWidgetUrl, String fileName2) {
-		downloadFile(createWidgetUrl, fileName2, null, null);
+	private static String downloadJsonFiles(Long projectID, String projectName) {
+		String fileName1 = projectName + ".json";
+		String fileName2 = projectID + "-" + projectName + ".json";
+		downloadFile(createWidgetUrl(projectName), fileName1, "cache");
+		downloadFile(createWidgetUrl(projectID + "-" + projectName), fileName2, "cache");
+		File f1 = new File(fileName1);
+		File f2 = new File(fileName2);
+		String actualFile;
+		if (f1.exists() && !f1.isDirectory())
+			actualFile = fileName1;
+		else
+			actualFile = fileName2;
+		return actualFile;
+	}
+
+	private static void downloadFile(String createWidgetUrl, String fileName2, String folder) {
+		downloadFile(createWidgetUrl, fileName2, folder, null);
 	}
 
 	private static String createWidgetUrl(String projectName) {
@@ -88,32 +91,25 @@ public class ModPackDownloader {
 	}
 
 	private static void downloadFile(String url, String fileName, String folder, String projectName) {
-		if(fileName == null){
-			fileName = projectName+".jar";
+		final String jarext = ".jar";
+		final String jsonext = ".json";
+		createFolder(folder);
+		if (fileName == null) {
+			fileName = projectName + jarext;
 		}
 		System.out.println("Downloading " + url + " to file " + fileName);
-		String downloadLocation;
-		if (folder != null) {
-			downloadLocation = folder + "/" + fileName;
-		} else {
-			downloadLocation = fileName;
-		}
+		String downloadLocation = fileName;
 		try {
 			URL fileThing = new URL(url);
-			
-			if (downloadLocation.indexOf(".jar") == -1 && downloadLocation.indexOf(".json") == -1) {
-				HttpURLConnection con = (HttpURLConnection) (new URL(url + "?cookieTest=1").openConnection());
-				con.setInstanceFollowRedirects(false);
-				con.connect();
 
-				String actualURL = con.getURL().toString();
-				if (actualURL.substring(actualURL.lastIndexOf('/') + 1).indexOf(".jar") != -1)
-					downloadLocation = actualURL.substring(actualURL.lastIndexOf('/') + 1);
-				else
-					downloadLocation = projectName + ".jar";
-			}
+			downloadLocation = getDownloadLocation(url, projectName, jarext, jsonext, downloadLocation);
 			ReadableByteChannel rbc = Channels.newChannel(fileThing.openStream());
-			FileOutputStream fos = new FileOutputStream(downloadLocation);
+			FileOutputStream fos;
+			if (folder != null) {
+				fos = new FileOutputStream(new File(folder + File.separator + downloadLocation));
+			} else {
+				fos = new FileOutputStream(new File(downloadLocation));
+			}
 			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 			fos.close();
 		} catch (MalformedURLException e) {
@@ -122,6 +118,31 @@ public class ModPackDownloader {
 			System.err.println("Could not find: " + fileName);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private static String getDownloadLocation(String url, String projectName, final String jarext, final String jsonext,
+			String downloadLocation) throws IOException, MalformedURLException {
+		if (downloadLocation.indexOf(jarext) == -1 && downloadLocation.indexOf(jsonext) == -1) {
+			HttpURLConnection con = (HttpURLConnection) (new URL(url + "?cookieTest=1").openConnection());
+			con.setInstanceFollowRedirects(false);
+			con.connect();
+
+			String actualURL = con.getURL().toString();
+			if (actualURL.substring(actualURL.lastIndexOf('/') + 1).indexOf(jarext) != -1)
+				downloadLocation = actualURL.substring(actualURL.lastIndexOf('/') + 1);
+			else
+				downloadLocation = projectName + jarext;
+		}
+		return downloadLocation;
+	}
+
+	private static void createFolder(String folder) {
+		if (folder != null) {
+			File dir = new File(folder);
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
 		}
 	}
 
