@@ -3,8 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.nincraft</groupId>
 	<artifactId>ModPackDownloader</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>Mod Pack Downloader</name>
+	<packaging>jar</packaging>
+	<properties>
+		<build.number>SNAPSHOT</build.number>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
@@ -23,6 +27,7 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<finalName>${project.artifactId} ${project.version}+${build.number}</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
