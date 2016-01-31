@@ -20,15 +20,24 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class ModPackDownloader {
-	
+
 	static Logger logger = LogManager.getRootLogger();
 
 	public static void main(String[] args) {
-		if(args.length < 1){
-			logger.error("Incorrect arguments");
+		String manifestFile = null;
+		String modFolder = null;
+		switch (args.length) {
+		case 0:
+			logger.error("Arguments required: manifest file location, mod download location");
 			return;
+		case 2:
+			manifestFile = args[0];
+			modFolder = args[1];
+			break;
+		default:
+			logger.error("Incorrect number of arguments");
+			break;
 		}
-		String manifestFile = args[0];
 		JSONParser parser = new JSONParser();
 		try {
 			Long projectID;
@@ -49,25 +58,26 @@ public class ModPackDownloader {
 				String location = con.getHeaderField("Location");
 				String projectName = location.split("/")[2];
 				String actualFile = downloadJsonFiles(projectID, projectName);
-				JSONObject curseWidget = (JSONObject) parser.parse(new FileReader("cache"+File.separator+actualFile));
+				JSONObject curseWidget = (JSONObject) parser
+						.parse(new FileReader("cache" + File.separator + actualFile));
 				JSONObject fileList1 = (JSONObject) curseWidget.get("files");
 				JSONObject fileData = (JSONObject) fileList1.get(fileID.toString());
 				logger.info("Getting file ID: " + fileID);
+				String fileName = null;
 				if (fileData != null) {
-					String fileName = (String) fileData.get("name");
-					downloadFile(createCurseDownloadUrl(projectName, fileID), fileName, "mods", projectName);
+					fileName = (String) fileData.get("name");
 				} else {
 					logger.warn("Could not find file in json, attempting to download manually");
-					downloadFile(createCurseDownloadUrl(projectName, fileID), null, "mods", projectName);
 				}
+				downloadFile(createCurseDownloadUrl(projectName, fileID), fileName, modFolder, projectName);
 			}
 
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 		logger.info("Finished downloading mods");
 	}
@@ -77,8 +87,7 @@ public class ModPackDownloader {
 		String fileName2 = projectID + "-" + projectName + ".json";
 		downloadFile(createWidgetUrl(projectName), fileName1, "cache");
 		downloadFile(createWidgetUrl(projectID + "-" + projectName), fileName2, "cache");
-		File f1 = new File("cache"+File.separator+fileName1);
-		File f2 = new File("cache"+File.separator+fileName2);
+		File f1 = new File("cache" + File.separator + fileName1);
 		String actualFile;
 		if (f1.exists() && !f1.isDirectory())
 			actualFile = fileName1;
@@ -122,11 +131,11 @@ public class ModPackDownloader {
 			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 			fos.close();
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		} catch (FileNotFoundException e) {
-			logger.error("Could not find: " + fileName);
+			logger.error("Could not find: " + fileName, e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -136,8 +145,17 @@ public class ModPackDownloader {
 			HttpURLConnection con = (HttpURLConnection) (new URL(url + "?cookieTest=1").openConnection());
 			con.setInstanceFollowRedirects(false);
 			con.connect();
-
 			String actualURL = con.getURL().toString();
+			int retryCount = 0;
+			while (con.getResponseCode() != 200 || actualURL.indexOf(jarext) == -1) {
+				con = (HttpURLConnection) (new URL(url + "?cookieTest=1").openConnection());
+				actualURL = con.getURL().toString();
+				if (retryCount > 5) {
+					break;
+				}
+				retryCount++;
+			}
+
 			if (actualURL.substring(actualURL.lastIndexOf('/') + 1).indexOf(jarext) != -1)
 				downloadLocation = actualURL.substring(actualURL.lastIndexOf('/') + 1);
 			else
