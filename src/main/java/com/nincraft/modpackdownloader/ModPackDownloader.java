@@ -60,9 +60,9 @@ public class ModPackDownloader {
 				con.connect();
 				String location = con.getHeaderField("Location");
 				String projectName = location.split("/")[2];
-				downloadFile(createCurseDownloadUrl(projectName, fileID), modFolder, projectName);
+				downloadCurseForgeFile(createCurseDownloadUrl(projectName, fileID), modFolder, projectName);
 			}
-	
+
 		} catch (FileNotFoundException e) {
 			logger.error(e.getMessage());
 		} catch (IOException e) {
@@ -86,16 +86,16 @@ public class ModPackDownloader {
 		}
 	}
 
-	private static void downloadFile(String url, String folder, String projectName) {
+	private static void downloadCurseForgeFile(String url, String folder, String projectName) {
 		final String jarext = ".jar";
 		final String jsonext = ".json";
 		createFolder(folder);
-		String fileName = projectName + jarext;
+		String fileName = projectName;
 		logger.info("Downloading " + url + " to file " + fileName);
 		try {
 			URL fileThing = new URL(url);
 
-			fileName = getDownloadLocation(url, projectName, jarext, jsonext, fileName);
+			fileName = getCurseForgeDownloadLocation(url, projectName, jarext, jsonext, fileName);
 			ReadableByteChannel rbc = Channels.newChannel(fileThing.openStream());
 			FileOutputStream fos;
 			if (folder != null) {
@@ -114,20 +114,26 @@ public class ModPackDownloader {
 		}
 	}
 
-	private static String getDownloadLocation(String url, String projectName, final String jarext, final String jsonext,
+	private static String getCurseForgeDownloadLocation(String url, String projectName, final String jarext, final String jsonext,
 			String downloadLocation) throws IOException, MalformedURLException {
 		if (downloadLocation.indexOf(jarext) == -1 && downloadLocation.indexOf(jsonext) == -1) {
-			HttpURLConnection con = (HttpURLConnection) (new URL(url + COOKIE_TEST_1).openConnection());
+			url = url + COOKIE_TEST_1;
+			HttpURLConnection con = (HttpURLConnection) (new URL(url).openConnection());
 			con.setInstanceFollowRedirects(false);
 			con.connect();
 			String actualURL = con.getURL().toString();
 			int retryCount = 0;
 			while (con.getResponseCode() != 200 || actualURL.indexOf(jarext) == -1) {
-				con = (HttpURLConnection) (new URL(url + COOKIE_TEST_1).openConnection());
-				actualURL = con.getURL().toString();
+				if (con.getHeaderField("Location") != null) {
+					actualURL = con.getHeaderField("Location");
+				}
+				else{
+					actualURL = con.getURL().toString();
+				}
 				if (retryCount > RETRY_COUNTER) {
 					break;
 				}
+				con = (HttpURLConnection) (new URL(url).openConnection());
 				retryCount++;
 			}
 
@@ -136,7 +142,8 @@ public class ModPackDownloader {
 			else
 				downloadLocation = projectName + jarext;
 		}
-		return downloadLocation;
+		
+		return downloadLocation.replace("%20", " ");
 	}
 
 }
