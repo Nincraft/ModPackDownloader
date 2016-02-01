@@ -41,28 +41,26 @@ public class ModPackDownloader {
 			logger.error("Incorrect number of arguments");
 			break;
 		}
+		downloadCurseMods(manifestFile, modFolder);
+		downloadThirdPartyMods(manifestFile, modFolder);
+
+		logger.info("Finished downloading mods");
+	}
+
+	private static void downloadThirdPartyMods(String manifestFile, String modFolder) {
 		JSONParser parser = new JSONParser();
 		try {
-			Long projectID;
-			Long fileID;
-			JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(manifestFile));
-			JSONArray fileList = (JSONArray) jsonObject.get("files");
-			logger.info("Starting download of " + fileList.size() + " mods");
-			Iterator iterator = fileList.iterator();
-			while (iterator.hasNext()) {
-				JSONObject modJson = ((JSONObject) iterator.next());
-				projectID = (Long) modJson.get("projectID");
-				fileID = (Long) modJson.get("fileID");
-				String url = CURSEFORGE_BASE_URL + projectID + COOKIE_TEST_1;
-				logger.info(url);
-				HttpURLConnection con = (HttpURLConnection) (new URL(url).openConnection());
-				con.setInstanceFollowRedirects(false);
-				con.connect();
-				String location = con.getHeaderField("Location");
-				String projectName = location.split("/")[2];
-				downloadCurseForgeFile(createCurseDownloadUrl(projectName, fileID), modFolder, projectName);
+			JSONObject jsons = (JSONObject) parser.parse(new FileReader(manifestFile));
+			JSONArray urlList = (JSONArray) jsons.get("thirdParty");
+			if (urlList != null) {
+				Iterator iterator = urlList.iterator();
+				while (iterator.hasNext()) {
+					JSONObject urlJson = (JSONObject) iterator.next();
+					String url = (String) urlJson.get("url");
+					String fileName = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".jar") + 4);
+					downloadFile(url, modFolder, fileName);
+				}
 			}
-
 		} catch (FileNotFoundException e) {
 			logger.error(e.getMessage());
 		} catch (IOException e) {
@@ -70,7 +68,39 @@ public class ModPackDownloader {
 		} catch (ParseException e) {
 			logger.error(e.getMessage());
 		}
-		logger.info("Finished downloading mods");
+	}
+
+	private static void downloadCurseMods(String manifestFile, String modFolder) {
+		JSONParser parser = new JSONParser();
+		try {
+			Long projectID;
+			Long fileID;
+			JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(manifestFile));
+			JSONArray fileList = (JSONArray) jsonObject.get("curseFiles");
+			if (fileList != null) {
+				logger.info("Starting download of " + fileList.size() + " mods");
+				Iterator iterator = fileList.iterator();
+				while (iterator.hasNext()) {
+					JSONObject modJson = (JSONObject) iterator.next();
+					projectID = (Long) modJson.get("projectID");
+					fileID = (Long) modJson.get("fileID");
+					String url = CURSEFORGE_BASE_URL + projectID + COOKIE_TEST_1;
+					logger.info(url);
+					HttpURLConnection con = (HttpURLConnection) (new URL(url).openConnection());
+					con.setInstanceFollowRedirects(false);
+					con.connect();
+					String location = con.getHeaderField("Location");
+					String projectName = location.split("/")[2];
+					downloadCurseForgeFile(createCurseDownloadUrl(projectName, fileID), modFolder, projectName);
+				}
+			}
+		} catch (FileNotFoundException e) {
+			logger.error(e.getMessage());
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+		} catch (ParseException e) {
+			logger.error(e.getMessage());
+		}
 	}
 
 	private static String createCurseDownloadUrl(String projectName, Long fileID) {
@@ -89,22 +119,11 @@ public class ModPackDownloader {
 	private static void downloadCurseForgeFile(String url, String folder, String projectName) {
 		final String jarext = ".jar";
 		final String jsonext = ".json";
-		createFolder(folder);
 		String fileName = projectName;
 		logger.info("Downloading " + url + " to file " + fileName);
 		try {
-			URL fileThing = new URL(url);
-
 			fileName = getCurseForgeDownloadLocation(url, projectName, jarext, jsonext, fileName);
-			ReadableByteChannel rbc = Channels.newChannel(fileThing.openStream());
-			FileOutputStream fos;
-			if (folder != null) {
-				fos = new FileOutputStream(new File(folder + File.separator + fileName));
-			} else {
-				fos = new FileOutputStream(new File(fileName));
-			}
-			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-			fos.close();
+			downloadFile(url, folder, fileName);
 		} catch (MalformedURLException e) {
 			logger.error(e.getMessage());
 		} catch (FileNotFoundException e) {
@@ -114,8 +133,23 @@ public class ModPackDownloader {
 		}
 	}
 
-	private static String getCurseForgeDownloadLocation(String url, String projectName, final String jarext, final String jsonext,
-			String downloadLocation) throws IOException, MalformedURLException {
+	private static void downloadFile(String url, String folder, String fileName)
+			throws MalformedURLException, IOException, FileNotFoundException {
+		URL fileThing = new URL(url);
+		ReadableByteChannel rbc = Channels.newChannel(fileThing.openStream());
+		FileOutputStream fos;
+		if (folder != null) {
+			createFolder(folder);
+			fos = new FileOutputStream(new File(folder + File.separator + fileName));
+		} else {
+			fos = new FileOutputStream(new File(fileName));
+		}
+		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+		fos.close();
+	}
+
+	private static String getCurseForgeDownloadLocation(String url, String projectName, final String jarext,
+			final String jsonext, String downloadLocation) throws IOException, MalformedURLException {
 		if (downloadLocation.indexOf(jarext) == -1 && downloadLocation.indexOf(jsonext) == -1) {
 			url = url + COOKIE_TEST_1;
 			HttpURLConnection con = (HttpURLConnection) (new URL(url).openConnection());
@@ -126,8 +160,7 @@ public class ModPackDownloader {
 			while (con.getResponseCode() != 200 || actualURL.indexOf(jarext) == -1) {
 				if (con.getHeaderField("Location") != null) {
 					actualURL = con.getHeaderField("Location");
-				}
-				else{
+				} else {
 					actualURL = con.getURL().toString();
 				}
 				if (retryCount > RETRY_COUNTER) {
@@ -142,7 +175,7 @@ public class ModPackDownloader {
 			else
 				downloadLocation = projectName + jarext;
 		}
-		
+
 		return downloadLocation.replace("%20", " ");
 	}
 

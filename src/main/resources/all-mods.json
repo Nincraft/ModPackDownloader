@@ -1,0 +1,111 @@
+{
+    "curseFiles": [
+        {
+            "fileID": 2273274,
+            "projectID": 227083
+        },
+        {
+            "fileID": 2277394,
+            "projectID": 224472
+        },
+        {
+            "fileID": 2274840,
+            "projectID": 230751
+        },
+        {
+            "fileID": 2279388,
+            "projectID": 220318
+        },
+        {
+            "fileID": 2279356,
+            "projectID": 224791
+        },
+        {
+            "fileID": 2269766,
+            "projectID": 226321
+        },
+        {
+            "fileID": 2279333,
+            "projectID": 231095
+        },
+        {
+        	"fileID": 2273148,
+        	"projectID": 226099
+        },
+        {
+        	"fileID": 2269767,
+        	"projectID": 225839
+        },
+        {
+        	"fileID": 2272962,
+        	"projectID": 223797
+        },
+        {
+        	"fileID": 2279274,
+        	"projectID": 241268
+        },
+        {
+        	"fileID": 2275675,
+        	"projectID": 223094
+        },
+        {
+        	"fileID": 2278859,
+        	"projectID": 228756
+        },
+        {
+        	"fileID": 2279280,
+        	"projectID": 238222
+        },
+        {
+        	"fileID": 2276884,
+        	"projectID": 74924
+        },
+        {
+        	"fileID": 2276306,
+        	"projectID": 239431
+        },
+        {
+        	"fileID": 2278855,
+        	"projectID": 235595
+        },
+        {
+        	"fileID": 2279372,
+        	"projectID": 223008
+        },
+        {
+        	"fileID": 2276399,
+        	"projectID": 59816
+        },
+        {
+        	"fileID": 2275910,
+        	"projectID": 240566
+        },
+        {
+        	"fileID": 2279246,
+        	"projectID": 241113
+        },
+        {
+        	"fileID": 2276883,
+        	"projectID": 74072
+        },
+        {
+        	"fileID": 2276528,
+        	"projectID": 223628
+        },
+        {
+        	"fileID": 2276285,
+        	"projectID": 238603
+        }
+    ],
+    "thirdParty": [
+        {
+            "url": "https://github.com/williewillus/Botania/releases/download/v0.5.3-beta/Botania.r1.8-248-MC1.8-779cc76.jar"
+        },
+        {
+            "url": "https://www.dropbox.com/s/q1qppz3sq447173/buildcraft-7.2.0-pre6.jar?dl=1"
+        },
+        {
+        	"url": "http://charset.asie.pl/files/Charset-0.2.1-945baf5589832f727c42cf77.jar"
+        }
+    ]
+}
