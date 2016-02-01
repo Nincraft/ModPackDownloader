@@ -41,9 +41,9 @@ public class ModPackDownloader {
 			logger.error("Incorrect number of arguments");
 			break;
 		}
+		logger.info("Starting download with parameters: " + manifestFile + ", " + modFolder);
 		downloadCurseMods(manifestFile, modFolder);
 		downloadThirdPartyMods(manifestFile, modFolder);
-
 		logger.info("Finished downloading mods");
 	}
 
@@ -78,19 +78,19 @@ public class ModPackDownloader {
 			JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(manifestFile));
 			JSONArray fileList = (JSONArray) jsonObject.get("curseFiles");
 			if (fileList != null) {
-				logger.info("Starting download of " + fileList.size() + " mods");
+				logger.info("Starting download of " + fileList.size() + " mods from Curse");
 				Iterator iterator = fileList.iterator();
 				while (iterator.hasNext()) {
 					JSONObject modJson = (JSONObject) iterator.next();
 					projectID = (Long) modJson.get("projectID");
 					fileID = (Long) modJson.get("fileID");
 					String url = CURSEFORGE_BASE_URL + projectID + COOKIE_TEST_1;
-					logger.info(url);
 					HttpURLConnection con = (HttpURLConnection) (new URL(url).openConnection());
 					con.setInstanceFollowRedirects(false);
 					con.connect();
 					String location = con.getHeaderField("Location");
 					String projectName = location.split("/")[2];
+					logger.info("Downloading " + projectName);
 					downloadCurseForgeFile(createCurseDownloadUrl(projectName, fileID), modFolder, projectName);
 				}
 			}
@@ -117,12 +117,10 @@ public class ModPackDownloader {
 	}
 
 	private static void downloadCurseForgeFile(String url, String folder, String projectName) {
-		final String jarext = ".jar";
-		final String jsonext = ".json";
 		String fileName = projectName;
 		logger.info("Downloading " + url + " to file " + fileName);
 		try {
-			fileName = getCurseForgeDownloadLocation(url, projectName, jarext, jsonext, fileName);
+			fileName = getCurseForgeDownloadLocation(url, projectName, fileName);
 			downloadFile(url, folder, fileName);
 		} catch (MalformedURLException e) {
 			logger.error(e.getMessage());
@@ -148,18 +146,21 @@ public class ModPackDownloader {
 		fos.close();
 	}
 
-	private static String getCurseForgeDownloadLocation(String url, String projectName, final String jarext,
-			final String jsonext, String downloadLocation) throws IOException, MalformedURLException {
-		if (downloadLocation.indexOf(jarext) == -1 && downloadLocation.indexOf(jsonext) == -1) {
+	private static String getCurseForgeDownloadLocation(String url, String projectName, String downloadLocation)
+			throws IOException, MalformedURLException {
+		final String jarext = ".jar";
+		if (downloadLocation.indexOf(jarext) == -1) {
 			url = url + COOKIE_TEST_1;
 			HttpURLConnection con = (HttpURLConnection) (new URL(url).openConnection());
 			con.setInstanceFollowRedirects(false);
 			con.connect();
 			String actualURL = con.getURL().toString();
 			int retryCount = 0;
+			String headerLocation;
 			while (con.getResponseCode() != 200 || actualURL.indexOf(jarext) == -1) {
-				if (con.getHeaderField("Location") != null) {
-					actualURL = con.getHeaderField("Location");
+				headerLocation = con.getHeaderField("Location");
+				if (headerLocation != null) {
+					actualURL = headerLocation;
 				} else {
 					actualURL = con.getURL().toString();
 				}
