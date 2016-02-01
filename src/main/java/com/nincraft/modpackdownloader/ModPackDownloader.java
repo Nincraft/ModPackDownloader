@@ -77,6 +77,9 @@ public class ModPackDownloader {
 			Long fileID;
 			JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(manifestFile));
 			JSONArray fileList = (JSONArray) jsonObject.get("curseFiles");
+			if(fileList == null){
+				fileList = (JSONArray) jsonObject.get("files");
+			}
 			if (fileList != null) {
 				logger.info("Starting download of " + fileList.size() + " mods from Curse");
 				Iterator iterator = fileList.iterator();
