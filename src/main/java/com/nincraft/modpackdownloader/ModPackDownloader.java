@@ -118,7 +118,6 @@ public class ModPackDownloader {
 
 	private static void downloadCurseForgeFile(String url, String folder, String projectName) {
 		String fileName = projectName;
-		logger.info("Downloading " + url + " to file " + fileName);
 		try {
 			fileName = getCurseForgeDownloadLocation(url, projectName, fileName);
 			downloadFile(url, folder, fileName);
