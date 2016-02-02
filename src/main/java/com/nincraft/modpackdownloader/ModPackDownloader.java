@@ -42,9 +42,23 @@ public class ModPackDownloader {
 			break;
 		}
 		logger.info("Starting download with parameters: " + manifestFile + ", " + modFolder);
-		downloadCurseMods(manifestFile, modFolder);
+		// downloadCurseMods(manifestFile, modFolder);
 		downloadThirdPartyMods(manifestFile, modFolder);
+		// downloadFromGithubSource(manifestFile, modFolder);
 		logger.info("Finished downloading mods");
+	}
+
+	private static void downloadFromGithubSource(String manifestFile, String modFolder) {
+		try {
+			String URL = "https://github.com/TPPIDev/Modpack-Tweaks/archive/824ef29f76bab126f4299724ab4f9e658b340639.zip";
+			downloadFile(URL, "github", "Modpack-Tweaks.zip");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void downloadThirdPartyMods(String manifestFile, String modFolder) {
@@ -77,7 +91,7 @@ public class ModPackDownloader {
 			Long fileID;
 			JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(manifestFile));
 			JSONArray fileList = (JSONArray) jsonObject.get("curseFiles");
-			if(fileList == null){
+			if (fileList == null) {
 				fileList = (JSONArray) jsonObject.get("files");
 			}
 			if (fileList != null) {
@@ -134,18 +148,43 @@ public class ModPackDownloader {
 	}
 
 	private static void downloadFile(String url, String folder, String fileName)
-			throws MalformedURLException, IOException, FileNotFoundException {
-		URL fileThing = new URL(url);
-		ReadableByteChannel rbc = Channels.newChannel(fileThing.openStream());
-		FileOutputStream fos;
-		if (folder != null) {
-			createFolder(folder);
-			fos = new FileOutputStream(new File(folder + File.separator + fileName));
-		} else {
-			fos = new FileOutputStream(new File(fileName));
+			throws MalformedURLException, FileNotFoundException {
+		try {
+			fileName = fileName.replace("%20", " ");
+			URL fileThing = new URL(url);
+			ReadableByteChannel rbc = Channels.newChannel(fileThing.openStream());
+			FileOutputStream fos;
+			if (folder != null) {
+				createFolder(folder);
+				fos = new FileOutputStream(new File(folder + File.separator + fileName));
+			} else {
+				fos = new FileOutputStream(new File(fileName));
+			}
+			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+			fos.close();
+		} catch (IOException e) {
+			logger.warn("Error getting " + fileName + ". Attempting redownload with alternate method.");
+			downloadFileWithUserAgent(url, folder, fileName);
 		}
-		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-		fos.close();
+	}
+
+	private static void downloadFileWithUserAgent(String url, String folder, String fileName) {
+		try {
+			HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+			con.addRequestProperty("User-Agent", "Mozilla/4.0");
+			ReadableByteChannel rbc = Channels.newChannel(con.getInputStream());
+			FileOutputStream fos;
+			if (folder != null) {
+				createFolder(folder);
+				fos = new FileOutputStream(new File(folder + File.separator + fileName));
+			} else {
+				fos = new FileOutputStream(new File(fileName));
+			}
+			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+			fos.close();
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+		}
 	}
 
 	private static String getCurseForgeDownloadLocation(String url, String projectName, String downloadLocation)
