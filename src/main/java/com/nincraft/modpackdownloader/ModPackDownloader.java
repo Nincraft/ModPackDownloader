@@ -42,9 +42,8 @@ public class ModPackDownloader {
 			break;
 		}
 		logger.info("Starting download with parameters: " + manifestFile + ", " + modFolder);
-		// downloadCurseMods(manifestFile, modFolder);
+		downloadCurseMods(manifestFile, modFolder);
 		downloadThirdPartyMods(manifestFile, modFolder);
-		// downloadFromGithubSource(manifestFile, modFolder);
 		logger.info("Finished downloading mods");
 	}
 
