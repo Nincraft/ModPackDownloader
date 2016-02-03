@@ -70,7 +70,12 @@ public class ModPackDownloader {
 				while (iterator.hasNext()) {
 					JSONObject urlJson = (JSONObject) iterator.next();
 					String url = (String) urlJson.get("url");
-					String fileName = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".jar") + 4);
+					String fileName;
+					if (urlJson.get("rename") == null) {
+						fileName = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".jar") + 4);
+					}else{
+						fileName = (String) urlJson.get("rename");
+					}
 					downloadFile(url, modFolder, fileName);
 				}
 			}
@@ -107,7 +112,8 @@ public class ModPackDownloader {
 					String location = con.getHeaderField("Location");
 					String projectName = location.split("/")[2];
 					logger.info("Downloading " + projectName);
-					downloadCurseForgeFile(createCurseDownloadUrl(projectName, fileID), modFolder, projectName);
+					downloadCurseForgeFile(createCurseDownloadUrl(projectName, fileID), modFolder, projectName,
+							modJson);
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -132,10 +138,14 @@ public class ModPackDownloader {
 		}
 	}
 
-	private static void downloadCurseForgeFile(String url, String folder, String projectName) {
+	private static void downloadCurseForgeFile(String url, String folder, String projectName, JSONObject modJson) {
 		String fileName = projectName;
 		try {
-			fileName = getCurseForgeDownloadLocation(url, projectName, fileName);
+			if (modJson.get("rename") == null) {
+				fileName = getCurseForgeDownloadLocation(url, projectName, fileName);
+			} else {
+				fileName = (String) modJson.get("rename");
+			}
 			downloadFile(url, folder, fileName);
 		} catch (MalformedURLException e) {
 			logger.error(e.getMessage());
