@@ -24,6 +24,7 @@ public class ModPackDownloader {
 	private static final String CURSEFORGE_BASE_URL = "http://minecraft.curseforge.com/projects/";
 	private static final String COOKIE_TEST_1 = "?cookieTest=1";
 	private static final int RETRY_COUNTER = 5;
+	private static int DOWNLOAD_COUNT = 1;
 	static Logger logger = LogManager.getRootLogger();
 
 	public static void main(String[] args) {
@@ -67,6 +68,8 @@ public class ModPackDownloader {
 			JSONArray urlList = (JSONArray) jsons.get("thirdParty");
 			if (urlList != null) {
 				Iterator iterator = urlList.iterator();
+				logger.info("Starting download of " + urlList.size() + " 3rd party mods");
+				DOWNLOAD_COUNT = 1;
 				while (iterator.hasNext()) {
 					JSONObject urlJson = (JSONObject) iterator.next();
 					String url = (String) urlJson.get("url");
@@ -76,7 +79,9 @@ public class ModPackDownloader {
 					}else{
 						fileName = (String) urlJson.get("rename");
 					}
+					logger.info("Downloading " + fileName + ". Mod "+DOWNLOAD_COUNT+" of "+urlList.size());
 					downloadFile(url, modFolder, fileName);
+					DOWNLOAD_COUNT++;
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -101,6 +106,7 @@ public class ModPackDownloader {
 			if (fileList != null) {
 				logger.info("Starting download of " + fileList.size() + " mods from Curse");
 				Iterator iterator = fileList.iterator();
+				DOWNLOAD_COUNT = 1;
 				while (iterator.hasNext()) {
 					JSONObject modJson = (JSONObject) iterator.next();
 					projectID = (Long) modJson.get("projectID");
@@ -111,9 +117,10 @@ public class ModPackDownloader {
 					con.connect();
 					String location = con.getHeaderField("Location");
 					String projectName = location.split("/")[2];
-					logger.info("Downloading " + projectName);
+					logger.info("Downloading " + projectName + ". Mod "+DOWNLOAD_COUNT+" of "+fileList.size());
 					downloadCurseForgeFile(createCurseDownloadUrl(projectName, fileID), modFolder, projectName,
 							modJson);
+					DOWNLOAD_COUNT++;
 				}
 			}
 		} catch (FileNotFoundException e) {
