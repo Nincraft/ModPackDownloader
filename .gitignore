@@ -4,3 +4,4 @@
 target/
 cache/
 all/
+*.jar
