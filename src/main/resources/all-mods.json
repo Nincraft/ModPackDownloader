@@ -99,12 +99,15 @@
     ],
     "thirdParty": [
         {
+        	"name": "Botania",
             "url": "https://github.com/williewillus/Botania/releases/download/v0.5.3-beta/Botania.r1.8-248-MC1.8-779cc76.jar"
         },
         {
+        	"name": "Buildcraft",
             "url": "https://www.dropbox.com/s/q1qppz3sq447173/buildcraft-7.2.0-pre6.jar?dl=1"
         },
         {
+        	"name": "Charset",
         	"url": "http://charset.asie.pl/files/Charset-0.2.1-945baf5589832f727c42cf77.jar"
         }
     ]
