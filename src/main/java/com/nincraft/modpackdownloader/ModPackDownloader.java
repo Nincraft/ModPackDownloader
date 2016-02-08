@@ -213,6 +213,9 @@ public class ModPackDownloader {
 
 	private static void copyToLocalRepo(String projectName, File downloadedFile) {
 		try {
+			if (projectName == null) {
+				projectName = "thirdParty";
+			}
 			File localRepoFolder = new File(userhome + projectName);
 			FileUtils.copyFileToDirectory(downloadedFile, localRepoFolder);
 		} catch (IOException e) {
@@ -222,6 +225,9 @@ public class ModPackDownloader {
 
 	private static void copyFromLocalRepo(String projectName, String fileName, String folder) {
 		try {
+			if (projectName == null) {
+				projectName = "thirdParty";
+			}
 			File localRepoMod = new File(userhome + projectName + File.separator + fileName);
 			FileUtils.copyFileToDirectory(localRepoMod, new File(folder));
 		} catch (IOException e) {
@@ -230,6 +236,9 @@ public class ModPackDownloader {
 	}
 
 	private static boolean isInLocalRepo(String projectName, String fileName) {
+		if (projectName == null) {
+			projectName = "thirdParty";
+		}
 		File localCheck = new File(userhome + projectName + File.separator + fileName);
 		return localCheck.exists();
 	}
