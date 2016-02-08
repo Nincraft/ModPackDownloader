@@ -6,3 +6,5 @@ Execute via command line with two arguments, the manifest json and the folder wh
 Example: java -jar modpackdownloader.jar mods.json mods
 
 This will read the mods.json and download all mods to the mods folder.
+
+For additional examples check out the [NEB3 modpack repo](https://github.com/Nincraft/NincraftElectricBoogaloo3TheLightAmongTheLongForgottenDarkness/tree/develop).
