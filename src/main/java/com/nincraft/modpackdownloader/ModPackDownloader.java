@@ -30,8 +30,6 @@ public class ModPackDownloader {
 
 	private static int DOWNLOAD_COUNT = 1;
 	static Logger logger = LogManager.getRootLogger();
-	private static String userhome;
-	private static String os;
 
 	public static void main(String[] args) {
 		String manifestFile = null;
@@ -56,22 +54,22 @@ public class ModPackDownloader {
 	}
 
 	private static void setupRepo() {
-		userhome = System.getProperty("user.home");
-		os = System.getProperty("os.name");
-		if (os.startsWith("Windows")) {
-			userhome += "\\.modpackdownloader\\";
-		} else if (os.startsWith("Mac")) {
-			userhome += "/Library/Application Support/modpackdownloader/";
+		Reference.userhome = System.getProperty("user.home");
+		Reference.os = System.getProperty("os.name");
+		if (Reference.os.startsWith("Windows")) {
+			Reference.userhome += "\\.modpackdownloader\\";
+		} else if (Reference.os.startsWith("Mac")) {
+			Reference.userhome += "/Library/Application Support/modpackdownloader/";
 		} else {
-			userhome += "/.modpackdownloader/";
+			Reference.userhome += "/.modpackdownloader/";
 		}
-		createFolder(userhome);
+		createFolder(Reference.userhome);
 	}
 
 	private static void downloadFromGithubSource(String manifestFile, String modFolder) {
 		try {
 			String URL = "https://github.com/TPPIDev/Modpack-Tweaks/archive/824ef29f76bab126f4299724ab4f9e658b340639.zip";
-			downloadFile(URL, "github", "Modpack-Tweaks.zip", "Modpack Tweaks");
+			downloadFile(URL, "github", "Modpack-Tweaks.zip", "Modpack Tweaks", false);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
@@ -99,7 +97,7 @@ public class ModPackDownloader {
 						fileName = (String) urlJson.get("rename");
 					}
 					logger.info("Downloading " + fileName + ". Mod " + DOWNLOAD_COUNT + " of " + urlList.size());
-					downloadFile(url, modFolder, fileName, projectName);
+					downloadFile(url, modFolder, fileName, projectName, false);
 					DOWNLOAD_COUNT++;
 				}
 			}
@@ -172,7 +170,7 @@ public class ModPackDownloader {
 			} else {
 				fileName = (String) modJson.get("rename");
 			}
-			downloadFile(url, folder, fileName, projectName);
+			downloadFile(url, folder, fileName, projectName, false);
 		} catch (MalformedURLException e) {
 			logger.error(e.getMessage());
 		} catch (FileNotFoundException e) {
@@ -182,13 +180,21 @@ public class ModPackDownloader {
 		}
 	}
 
-	private static void downloadFile(String url, String folder, String fileName, String projectName)
-			throws MalformedURLException, FileNotFoundException {
+	private static void downloadFile(String url, String folder, String fileName, String projectName,
+			boolean useUserAgent) throws MalformedURLException, FileNotFoundException {
 		try {
 			fileName = fileName.replace("%20", " ");
 			if (!isInLocalRepo(projectName, fileName)) {
-				URL fileThing = new URL(url);
-				ReadableByteChannel rbc = Channels.newChannel(fileThing.openStream());
+				ReadableByteChannel rbc;
+				if (useUserAgent) {
+					HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+					con.addRequestProperty("User-Agent", "Mozilla/4.0");
+					rbc = Channels.newChannel(con.getInputStream());
+
+				} else {
+					URL fileThing = new URL(url);
+					rbc = Channels.newChannel(fileThing.openStream());
+				}
 				FileOutputStream fos;
 				File downloadedFile;
 				if (folder != null) {
@@ -207,7 +213,7 @@ public class ModPackDownloader {
 			}
 		} catch (IOException e) {
 			logger.warn("Error getting " + fileName + ". Attempting redownload with alternate method.");
-			downloadFileWithUserAgent(url, folder, fileName, projectName);
+			downloadFile(url, folder, fileName, projectName, true);
 		}
 	}
 
@@ -216,7 +222,7 @@ public class ModPackDownloader {
 			if (projectName == null) {
 				projectName = "thirdParty";
 			}
-			File localRepoFolder = new File(userhome + projectName);
+			File localRepoFolder = new File(Reference.userhome + projectName);
 			FileUtils.copyFileToDirectory(downloadedFile, localRepoFolder);
 		} catch (IOException e) {
 			logger.error("Could not copy " + projectName + " to local repo", e);
@@ -228,7 +234,7 @@ public class ModPackDownloader {
 			if (projectName == null) {
 				projectName = "thirdParty";
 			}
-			File localRepoMod = new File(userhome + projectName + File.separator + fileName);
+			File localRepoMod = new File(Reference.userhome + projectName + File.separator + fileName);
 			FileUtils.copyFileToDirectory(localRepoMod, new File(folder));
 		} catch (IOException e) {
 			logger.error("Could not copy " + projectName + " from local repo", e);
@@ -239,35 +245,8 @@ public class ModPackDownloader {
 		if (projectName == null) {
 			projectName = "thirdParty";
 		}
-		File localCheck = new File(userhome + projectName + File.separator + fileName);
+		File localCheck = new File(Reference.userhome + projectName + File.separator + fileName);
 		return localCheck.exists();
-	}
-
-	private static void downloadFileWithUserAgent(String url, String folder, String fileName, String projectName) {
-		try {
-			if (!isInLocalRepo(projectName, fileName)) {
-				HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
-				con.addRequestProperty("User-Agent", "Mozilla/4.0");
-				ReadableByteChannel rbc = Channels.newChannel(con.getInputStream());
-				FileOutputStream fos;
-				File downloadedFile;
-				if (folder != null) {
-					createFolder(folder);
-					downloadedFile = new File(folder + File.separator + fileName);
-					fos = new FileOutputStream(downloadedFile);
-				} else {
-					downloadedFile = new File(fileName);
-					fos = new FileOutputStream(downloadedFile);
-				}
-				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-				fos.close();
-				copyToLocalRepo(projectName, downloadedFile);
-			} else {
-				copyFromLocalRepo(projectName, fileName, folder);
-			}
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-		}
 	}
 
 	private static String getCurseForgeDownloadLocation(String url, String projectName, String downloadLocation)
