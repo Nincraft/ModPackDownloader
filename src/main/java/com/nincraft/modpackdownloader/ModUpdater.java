@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -26,8 +25,8 @@ public class ModUpdater {
 
 	static Logger logger = LogManager.getRootLogger();
 
-	private static final String[] formats = { "yyyy-MM-dd'T'HH:mm:ss'Z'", "yyyy-MM-dd'T'HH:mm:ssZ",
-			"yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+	private static final String[] formats = { "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss'Z'",
+			"yyyy-MM-dd'T'HH:mm:ssZ", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
 			"yyyy-MM-dd HH:mm:ss", "MM/dd/yyyy HH:mm:ss", "MM/dd/yyyy'T'HH:mm:ss.SSS'Z'", "MM/dd/yyyy'T'HH:mm:ss.SSSZ",
 			"MM/dd/yyyy'T'HH:mm:ss.SSS", "MM/dd/yyyy'T'HH:mm:ssZ", "MM/dd/yyyy'T'HH:mm:ss", "yyyy:MM:dd HH:mm:ss", };
 
@@ -54,9 +53,7 @@ public class ModUpdater {
 					String location = con.getHeaderField("Location");
 					String projectName = location.split("/")[2];
 					JSONParser projectParser = new JSONParser();
-					JSONObject projectJson = (JSONObject) projectParser.parse(new BufferedReader(new InputStreamReader(
-							new URL("http://widget.mcf.li/mc-mods/minecraft/237892-nincrafty-things.json")
-									.openStream())));
+					JSONObject projectJson = getCurseProjectJson(projectID, projectName, projectParser);
 					JSONObject fileListJson = (JSONObject) projectJson.get("files");
 					Date lastDate = null;
 					Long mostRecent = fileID;
@@ -72,9 +69,12 @@ public class ModUpdater {
 							lastDate = date;
 						}
 					}
-					logger.info("Most recent version of " + projectName + " is " + mostRecent+". Old version was "+fileID);
-					modJson.remove("fileID");
-					modJson.put("fileID", mostRecent);
+					if (!mostRecent.equals(fileID)) {
+						logger.info("Most recent version of " + projectName + " is " + mostRecent + ". Old version was "
+								+ fileID);
+						modJson.remove("fileID");
+						modJson.put("fileID", mostRecent);
+					}
 				}
 			}
 			FileWriter file = new FileWriter(manifestFile);
@@ -91,6 +91,18 @@ public class ModUpdater {
 			logger.error(e.getMessage());
 		} catch (ParseException e) {
 			logger.error(e.getMessage());
+		}
+	}
+
+	private static JSONObject getCurseProjectJson(Long projectID, String projectName, JSONParser projectParser)
+			throws ParseException, IOException {
+		try {
+			return (JSONObject) projectParser.parse(new BufferedReader(new InputStreamReader(
+					new URL("http://widget.mcf.li/mc-mods/minecraft/" + projectName + ".json").openStream())));
+		} catch (FileNotFoundException e) {
+			return (JSONObject) projectParser.parse(new BufferedReader(new InputStreamReader(
+					new URL("http://widget.mcf.li/mc-mods/minecraft/" + projectID + "-" + projectName + ".json")
+							.openStream())));
 		}
 	}
 
