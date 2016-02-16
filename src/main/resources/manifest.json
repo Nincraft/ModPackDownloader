@@ -1,4 +1,10 @@
 {
+    "curseFiles": [
+        {
+            "fileID": 2269703,
+            "projectID": 237892
+        }
+    ],
     "thirdParty": [
         {
         	"name": "Yampst-TWBB", 
