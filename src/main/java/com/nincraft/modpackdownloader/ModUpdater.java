@@ -113,7 +113,6 @@ public class ModUpdater {
 				SimpleDateFormat sdf = new SimpleDateFormat(parse);
 				try {
 					d = sdf.parse(date);
-					logger.info("using format " + parse);
 				} catch (java.text.ParseException e) {
 
 				}
