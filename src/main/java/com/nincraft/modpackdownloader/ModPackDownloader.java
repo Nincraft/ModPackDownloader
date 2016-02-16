@@ -10,13 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Iterator;
-
-import com.nincraft.modpackdownloader.util.Reference;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -26,31 +20,37 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.nincraft.modpackdownloader.util.Reference;
+
 public class ModPackDownloader {
 
 	private static int DOWNLOAD_COUNT = 1;
 	static Logger logger = LogManager.getRootLogger();
 
 	public static void main(String[] args) {
-		String manifestFile = null;
-		String modFolder = null;
-		switch (args.length) {
-		case 0:
+		if (args.length < 2) {
 			logger.error("Arguments required: manifest file location, mod download location");
 			return;
-		case 2:
-			manifestFile = args[0];
-			modFolder = args[1];
-			break;
-		default:
-			logger.error("Incorrect number of arguments");
-			break;
+		} else {
+			processArguments(args);
 		}
-		logger.info("Starting download with parameters: " + manifestFile + ", " + modFolder);
+		logger.info("Starting download with parameters: " + Reference.manifestFile + ", " + Reference.modFolder);
 		setupRepo();
-		downloadCurseMods(manifestFile, modFolder);
-		downloadThirdPartyMods(manifestFile, modFolder);
+		downloadCurseMods(Reference.manifestFile, Reference.modFolder);
+		downloadThirdPartyMods(Reference.manifestFile, Reference.modFolder);
 		logger.info("Finished downloading mods");
+	}
+
+	private static void processArguments(String[] args) {
+		Reference.manifestFile = args[0];
+		Reference.modFolder = args[1];
+		if (args.length > 2) {
+			for (String arg : args) {
+				if (arg.equals("-forceDownload")) {
+					Reference.forceDownload = true;
+				}
+			}
+		}
 	}
 
 	private static void setupRepo() {
@@ -184,7 +184,7 @@ public class ModPackDownloader {
 			boolean useUserAgent) throws MalformedURLException, FileNotFoundException {
 		try {
 			fileName = fileName.replace("%20", " ");
-			if (!isInLocalRepo(projectName, fileName)) {
+			if (!isInLocalRepo(projectName, fileName) || Reference.forceDownload) {
 				ReadableByteChannel rbc;
 				if (useUserAgent) {
 					HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();

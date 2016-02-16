@@ -6,5 +6,7 @@ public class Reference {
 	public static final int RETRY_COUNTER = 5;
 	public static String userhome;
 	public static String os;
-
+	public static String manifestFile;
+	public static String modFolder;
+	public static boolean forceDownload = false;
 }
