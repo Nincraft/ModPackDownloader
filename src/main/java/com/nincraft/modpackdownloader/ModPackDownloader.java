@@ -57,11 +57,11 @@ public class ModPackDownloader {
 		Reference.userhome = System.getProperty("user.home");
 		Reference.os = System.getProperty("os.name");
 		if (Reference.os.startsWith("Windows")) {
-			Reference.userhome += "\\.modpackdownloader\\";
+			Reference.userhome += Reference.windowsFolder;
 		} else if (Reference.os.startsWith("Mac")) {
-			Reference.userhome += "/Library/Application Support/modpackdownloader/";
+			Reference.userhome += Reference.macFolder;
 		} else {
-			Reference.userhome += "/.modpackdownloader/";
+			Reference.userhome += Reference.otherFolder;
 		}
 		createFolder(Reference.userhome);
 	}
