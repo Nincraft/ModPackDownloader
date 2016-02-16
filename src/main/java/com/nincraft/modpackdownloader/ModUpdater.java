@@ -57,6 +57,8 @@ public class ModUpdater {
 					JSONObject fileListJson = (JSONObject) projectJson.get("files");
 					Date lastDate = null;
 					Long mostRecent = fileID;
+					String mostRecentFile = null;
+					String currentFile = null;
 					for (Object thing : fileListJson.keySet()) {
 						JSONObject file = (JSONObject) fileListJson.get(thing);
 						Date date = parseDate((String) file.get("created_at"));
@@ -66,15 +68,22 @@ public class ModUpdater {
 						if (lastDate.before(date) && file.get("type").equals(releaseType)
 								&& file.get("version").equals(mcVersion)) {
 							mostRecent = (Long) file.get("id");
+							mostRecentFile = (String) file.get("name");
 							lastDate = date;
+						}
+						if(fileID.equals((Long) file.get("id"))){
+							currentFile = (String) file.get("name");
 						}
 					}
 					if (!mostRecent.equals(fileID)) {
-						logger.info("Most recent version of " + projectName + " is " + mostRecent + ". Old version was "
-								+ fileID);
+						logger.info("Most recent version of " + projectName + " is " + mostRecentFile + ". Old version was "
+								+ currentFile);
+
 						modJson.remove("fileID");
 						modJson.put("fileID", mostRecent);
 					}
+					modJson.remove("name");
+					modJson.put("name", projectName);
 				}
 			}
 			FileWriter file = new FileWriter(manifestFile);
