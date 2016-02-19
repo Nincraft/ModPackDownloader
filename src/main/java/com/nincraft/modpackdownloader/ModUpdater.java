@@ -42,6 +42,7 @@ public class ModUpdater {
 			}
 			if (fileList != null) {
 				Iterator iterator = fileList.iterator();
+				logger.info("Checking for updates from " + fileList.size() + " mods");
 				while (iterator.hasNext()) {
 					JSONObject modJson = (JSONObject) iterator.next();
 					projectID = (Long) modJson.get("projectID");
@@ -71,19 +72,20 @@ public class ModUpdater {
 							mostRecentFile = (String) file.get("name");
 							lastDate = date;
 						}
-						if(fileID.equals((Long) file.get("id"))){
+						if (fileID.equals((Long) file.get("id"))) {
 							currentFile = (String) file.get("name");
 						}
 					}
 					if (!mostRecent.equals(fileID)) {
-						logger.info("Most recent version of " + projectName + " is " + mostRecentFile + ". Old version was "
-								+ currentFile);
+						logger.info("Update found for " + projectName + ". Most recent version is " + mostRecentFile
+								+ ". Old version was " + currentFile);
 
 						modJson.remove("fileID");
 						modJson.put("fileID", mostRecent);
 					}
-					modJson.remove("name");
-					modJson.put("name", projectName);
+					if (!modJson.containsKey("name")) {
+						modJson.put("name", projectName);
+					}
 				}
 			}
 			FileWriter file = new FileWriter(manifestFile);
