@@ -20,6 +20,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.nincraft.modpackdownloader.container.ModContainer;
+import com.nincraft.modpackdownloader.util.ModType;
 import com.nincraft.modpackdownloader.util.Reference;
 
 public class ModPackDownloader {
@@ -59,6 +61,8 @@ public class ModPackDownloader {
 					Reference.mcVersion = arg.substring(arg.lastIndexOf("=")+1);
 				} else if (arg.startsWith("-releaseType")) {
 					Reference.releaseType = arg.substring(arg.lastIndexOf("=")+1);
+				} else if (arg.equals("-generateUrlTxt")) {
+					Reference.generateUrlTxt = true;
 				}
 			}
 		}
@@ -124,8 +128,6 @@ public class ModPackDownloader {
 	private static void downloadCurseMods(String manifestFile, String modFolder) {
 		JSONParser parser = new JSONParser();
 		try {
-			Long projectID;
-			Long fileID;
 			JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(manifestFile));
 			JSONArray fileList = (JSONArray) jsonObject.get("curseFiles");
 			if (fileList == null) {
@@ -136,18 +138,15 @@ public class ModPackDownloader {
 				Iterator iterator = fileList.iterator();
 				DOWNLOAD_COUNT = 1;
 				while (iterator.hasNext()) {
-					JSONObject modJson = (JSONObject) iterator.next();
-					projectID = (Long) modJson.get("projectID");
-					fileID = (Long) modJson.get("fileID");
-					String url = Reference.CURSEFORGE_BASE_URL + projectID + Reference.COOKIE_TEST_1;
+					ModContainer mod = new ModContainer((JSONObject) iterator.next(), ModType.CURSE);
+					String url = Reference.CURSEFORGE_BASE_URL + mod.getProjectId() + Reference.COOKIE_TEST_1;
 					HttpURLConnection con = (HttpURLConnection) (new URL(url).openConnection());
 					con.setInstanceFollowRedirects(false);
 					con.connect();
-					String location = con.getHeaderField("Location");
-					String projectName = location.split("/")[2];
-					logger.info("Downloading " + projectName + ". Mod " + DOWNLOAD_COUNT + " of " + fileList.size());
-					downloadCurseForgeFile(createCurseDownloadUrl(projectName, fileID), modFolder, projectName,
-							modJson);
+					mod.setProjectName(con.getHeaderField("Location").split("/")[2]);
+					logger.info("Downloading " + mod.getProjectName() + ". Mod " + DOWNLOAD_COUNT + " of "
+							+ fileList.size());
+					downloadCurseForgeFile(mod);
 					DOWNLOAD_COUNT++;
 				}
 			}
@@ -160,8 +159,8 @@ public class ModPackDownloader {
 		}
 	}
 
-	private static String createCurseDownloadUrl(String projectName, Long fileID) {
-		return Reference.CURSEFORGE_BASE_URL + projectName + "/files/" + fileID + "/download";
+	private static String createCurseDownloadUrl(ModContainer mod) {
+		return Reference.CURSEFORGE_BASE_URL + mod.getProjectName() + "/files/" + mod.getFileId() + "/download";
 	}
 
 	private static void createFolder(String folder) {
@@ -173,15 +172,16 @@ public class ModPackDownloader {
 		}
 	}
 
-	private static void downloadCurseForgeFile(String url, String folder, String projectName, JSONObject modJson) {
-		String fileName = projectName;
+	private static void downloadCurseForgeFile(ModContainer mod) {
+		String fileName = mod.getProjectName();
+		String url = createCurseDownloadUrl(mod);
 		try {
-			if (modJson.get("rename") == null) {
-				fileName = getCurseForgeDownloadLocation(url, projectName, fileName);
+			if (mod.getRename() == null) {
+				fileName = getCurseForgeDownloadLocation(url, mod.getProjectName(), fileName);
 			} else {
-				fileName = (String) modJson.get("rename");
+				fileName = mod.getRename();
 			}
-			downloadFile(url, folder, fileName, projectName, false);
+			downloadFile(url, mod.getFolder(), fileName, mod.getProjectName(), false);
 		} catch (MalformedURLException e) {
 			logger.error(e.getMessage());
 		} catch (FileNotFoundException e) {
@@ -201,7 +201,6 @@ public class ModPackDownloader {
 					HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
 					con.addRequestProperty("User-Agent", "Mozilla/4.0");
 					rbc = Channels.newChannel(con.getInputStream());
-
 				} else {
 					URL fileThing = new URL(url);
 					rbc = Channels.newChannel(fileThing.openStream());
@@ -218,13 +217,29 @@ public class ModPackDownloader {
 				}
 				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 				fos.close();
+				if (Reference.generateUrlTxt) {
+					generateUrlTxt(downloadedFile, url, folder);
+				}
 				copyToLocalRepo(projectName, downloadedFile);
 			} else {
 				copyFromLocalRepo(projectName, fileName, folder);
 			}
 		} catch (IOException e) {
-			logger.warn("Error getting " + fileName + ". Attempting redownload with alternate method.");
-			downloadFile(url, folder, fileName, projectName, true);
+			if (!useUserAgent) {
+				logger.warn("Error getting " + fileName + ". Attempting redownload with alternate method.");
+				downloadFile(url, folder, fileName, projectName, true);
+			} else {
+				logger.error("Could not download " + fileName, e.getMessage());
+			}
+		}
+	}
+
+	private static void generateUrlTxt(File downloadedFile, String url, String folder) {
+		File urlTxt = null;
+		if (folder != null) {
+			urlTxt = new File(folder + File.separator + downloadedFile.getName() + ".url.txt");
+		} else {
+			urlTxt = new File(downloadedFile.getName() + "url.txt");
 		}
 	}
 

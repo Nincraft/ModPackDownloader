@@ -15,4 +15,5 @@ public class Reference {
 	public static boolean updateMods;
 	public static String mcVersion;
 	public static String releaseType;
+	public static boolean generateUrlTxt;
 }
