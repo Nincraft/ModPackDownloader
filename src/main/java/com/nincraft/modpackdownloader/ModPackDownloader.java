@@ -56,9 +56,9 @@ public class ModPackDownloader {
 				} else if (arg.equals("-updateMods")) {
 					Reference.updateMods = true;
 				} else if (arg.startsWith("-mcVersion")) {
-					Reference.mcVersion = arg.substring(arg.lastIndexOf("-mcVersion") + "-mcVersion".length());
+					Reference.mcVersion = arg.substring(arg.lastIndexOf("=")+1);
 				} else if (arg.startsWith("-releaseType")) {
-					Reference.releaseType = arg.substring(arg.indexOf("-releaseType") + "-releaseType".length());
+					Reference.releaseType = arg.substring(arg.lastIndexOf("=")+1);
 				}
 			}
 		}

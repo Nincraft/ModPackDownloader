@@ -66,7 +66,7 @@ public class ModUpdater {
 						if (lastDate == null) {
 							lastDate = date;
 						}
-						if (lastDate.before(date) && file.get("type").equals(releaseType)
+						if (lastDate.before(date) && equalOrLessThan((String) file.get("type"), releaseType)
 								&& file.get("version").equals(mcVersion)) {
 							mostRecent = (Long) file.get("id");
 							mostRecentFile = (String) file.get("name");
@@ -103,6 +103,13 @@ public class ModUpdater {
 		} catch (ParseException e) {
 			logger.error(e.getMessage());
 		}
+	}
+
+	private static boolean equalOrLessThan(String modRelease, String releaseType) {
+		if (releaseType.equals(modRelease) || "beta".equals(releaseType) && "release".equals(modRelease)) {
+			return true;
+		}
+		return false;
 	}
 
 	private static JSONObject getCurseProjectJson(Long projectID, String projectName, JSONParser projectParser)
