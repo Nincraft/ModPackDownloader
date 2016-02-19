@@ -143,6 +143,7 @@ public class ModPackDownloader {
 					HttpURLConnection con = (HttpURLConnection) (new URL(url).openConnection());
 					con.setInstanceFollowRedirects(false);
 					con.connect();
+					mod.setFolder(modFolder);
 					mod.setProjectName(con.getHeaderField("Location").split("/")[2]);
 					logger.info("Downloading " + mod.getProjectName() + ". Mod " + DOWNLOAD_COUNT + " of "
 							+ fileList.size());
