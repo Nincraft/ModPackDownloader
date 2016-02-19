@@ -34,11 +34,16 @@ public class ModPackDownloader {
 		} else {
 			processArguments(args);
 		}
-		logger.info("Starting download with parameters: " + Reference.manifestFile + ", " + Reference.modFolder);
+
 		setupRepo();
-		downloadCurseMods(Reference.manifestFile, Reference.modFolder);
-		downloadThirdPartyMods(Reference.manifestFile, Reference.modFolder);
-		logger.info("Finished downloading mods");
+		if (Reference.updateMods) {
+			ModUpdater.updateCurseMods(Reference.manifestFile, Reference.mcVersion, Reference.releaseType);
+		} else {
+			logger.info("Starting download with parameters: " + Reference.manifestFile + ", " + Reference.modFolder);
+			downloadCurseMods(Reference.manifestFile, Reference.modFolder);
+			downloadThirdPartyMods(Reference.manifestFile, Reference.modFolder);
+			logger.info("Finished downloading mods");
+		}
 	}
 
 	private static void processArguments(String[] args) {
@@ -48,6 +53,12 @@ public class ModPackDownloader {
 			for (String arg : args) {
 				if (arg.equals("-forceDownload")) {
 					Reference.forceDownload = true;
+				} else if (arg.equals("-updateMods")) {
+					Reference.updateMods = true;
+				} else if (arg.startsWith("-mcVersion")) {
+					Reference.mcVersion = arg.substring(arg.lastIndexOf("=")+1);
+				} else if (arg.startsWith("-releaseType")) {
+					Reference.releaseType = arg.substring(arg.lastIndexOf("=")+1);
 				}
 			}
 		}

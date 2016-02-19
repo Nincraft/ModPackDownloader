@@ -12,4 +12,7 @@ public class Reference {
 	public static String manifestFile;
 	public static String modFolder;
 	public static boolean forceDownload = false;
+	public static boolean updateMods;
+	public static String mcVersion;
+	public static String releaseType;
 }

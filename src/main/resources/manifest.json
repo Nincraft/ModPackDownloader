@@ -1,16 +1,22 @@
 {
+    "curseFiles": [
+        {
+            "fileID": 2269703,
+            "projectID": 237892
+        }
+    ],
     "thirdParty": [
         {
-        	"name": "Yampst-TWBB", 
+            "name": "Yampst-TWBB",
             "url": "http://en.yampst.net/gettracker.php/Yampst-There%20Will%20Be%20Blood-0.5.0.jar?trackid=fa65e1dc97876791e521a3d6e6b0ddea27e86ee4010b5d47e9d48767&file=e775b851a66544fcc52a1f3404ee7eb023c7964a47edfc639afa9bcb"
         },
         {
-        	"name": "Buildcraft",
+            "name": "Buildcraft",
             "url": "https://www.dropbox.com/s/q1qppz3sq447173/buildcraft-7.2.0-pre6.jar?dl=1"
         },
         {
-        	"name": "Charset",
-        	"url": "http://charset.asie.pl/files/Charset-0.2.1-945baf5589832f727c42cf77.jar"
+            "name": "Charset",
+            "url": "http://charset.asie.pl/files/Charset-0.2.1-945baf5589832f727c42cf77.jar"
         }
     ]
 }
