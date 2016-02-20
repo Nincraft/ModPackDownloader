@@ -56,6 +56,10 @@ public class ModUpdater {
 					JSONParser projectParser = new JSONParser();
 					JSONObject projectJson = getCurseProjectJson(projectID, projectName, projectParser);
 					JSONObject fileListJson = (JSONObject) projectJson.get("files");
+					if (fileListJson == null) {
+						logger.error("No file list found for " + projectName);
+						return;
+					}
 					Date lastDate = null;
 					Long mostRecent = fileID;
 					String mostRecentFile = null;
