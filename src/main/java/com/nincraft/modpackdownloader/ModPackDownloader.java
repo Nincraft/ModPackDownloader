@@ -40,12 +40,17 @@ public class ModPackDownloader {
 		}
 
 		setupRepo();
+
 		if (Reference.updateMods) {
+			logger.info(String.format("Updating mods with parameters: {}, {}, {}", Reference.manifestFile,
+					Reference.mcVersion, Reference.releaseType));
 			ModUpdater.updateCurseMods(Reference.manifestFile, Reference.mcVersion, Reference.releaseType);
+			logger.info("Finished updating mods.");
 		} else {
-			logger.info("Starting download with parameters: " + Reference.manifestFile + ", " + Reference.modFolder);
+			logger.info(String.format("Starting download with parameters: {}, {}", Reference.manifestFile,
+					Reference.modFolder));
 			downloadMods(Reference.manifestFile, Reference.modFolder);
-			logger.info("Finished downloading mods");
+			logger.info("Finished downloading mods.");
 		}
 	}
 
@@ -63,20 +68,30 @@ public class ModPackDownloader {
 	private static void processArgument(final String arg) {
 		if (arg.equals("-forceDownload")) {
 			Reference.forceDownload = true;
+			logger.debug("Downloads are now being forced.");
 		} else if (arg.equals("-updateMods")) {
 			Reference.updateMods = true;
+			logger.debug("mods will be updated instead of downloaded.");
 		} else if (arg.startsWith("-mcVersion")) {
 			Reference.mcVersion = arg.substring(arg.lastIndexOf("=") + 1);
+			logger.debug(String.format("Minecraft Version set to: {}", Reference.mcVersion));
 		} else if (arg.startsWith("-releaseType")) {
 			Reference.releaseType = arg.substring(arg.lastIndexOf("=") + 1);
+			logger.debug(String.format("Checking against mod release type: {}", Reference.releaseType));
 		} else if (arg.equals("-generateUrlTxt")) {
 			Reference.generateUrlTxt = true;
+			logger.debug("Mod URL Text files will now be generated.");
 		}
 	}
 
 	private static void setupRepo() {
+		logger.info("Setting up local repository...");
 		Reference.userhome = System.getProperty("user.home");
+		logger.debug(String.format("User Home System Property detected as: {}", Reference.userhome));
+
 		Reference.os = System.getProperty("os.name");
+		logger.debug(String.format("Operating System detected as: {}", Reference.os));
+
 		if (Reference.os.startsWith("Windows")) {
 			Reference.userhome += Reference.WINDOWS_FOLDER;
 		} else if (Reference.os.startsWith("Mac")) {
@@ -84,7 +99,10 @@ public class ModPackDownloader {
 		} else {
 			Reference.userhome += Reference.OTHER_FOLDER;
 		}
+		logger.debug(String.format("User Home Folder set to: {}", Reference.userhome));
+
 		createFolder(Reference.userhome);
+		logger.info("Finished setting up local repository.");
 	}
 
 	private static void downloadMods(final String manifestFile, final String modFolder) {
