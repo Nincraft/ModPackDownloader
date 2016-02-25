@@ -21,6 +21,7 @@ import org.json.simple.parser.ParseException;
 
 import com.nincraft.modpackdownloader.container.CurseMod;
 import com.nincraft.modpackdownloader.container.ModContainer;
+import com.nincraft.modpackdownloader.container.ThirdPartyMod;
 import com.nincraft.modpackdownloader.util.Reference;
 import com.nincraft.modpackdownloader.util.URLHelper;
 
@@ -106,43 +107,40 @@ public class ModPackDownloader {
 	}
 
 	private static void downloadMods(final String manifestFile, final String modFolder) {
-		downloadCurseMods(manifestFile, modFolder);
-		downloadThirdPartyMods(manifestFile, modFolder);
-	}
-
-	private static void downloadThirdPartyMods(final String manifestFile, final String modFolder) {
 		try {
-			val jsons = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
-			val urlList = (JSONArray) jsons.get("thirdParty");
-
-			if (urlList != null) {
-				logger.info("Starting download of " + urlList.size() + " 3rd party mods");
-				DOWNLOAD_COUNT = 1;
-
-				for (val item : urlList) {
-					val urlJson = (JSONObject) item;
-					val url = (String) urlJson.get("url");
-					val projectName = (String) urlJson.get("name");
-					val fileName = urlJson.get("rename") == null
-							? url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".jar") + 4)
-							: (String) urlJson.get("rename");
-
-					logger.info(
-							String.format("Downloading %s. Mod %s of %s", fileName, DOWNLOAD_COUNT, urlList.size()));
-					downloadFile(url, modFolder, fileName, projectName, false);
-					DOWNLOAD_COUNT++;
-				}
-			}
-		} catch (final IOException | ParseException e) {
+			val jsonList = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
+			downloadCurseMods(jsonList, modFolder);
+			downloadThirdPartyMods(jsonList, modFolder);
+		} catch (IOException | ParseException e) {
 			logger.error(e.getMessage());
 		}
 	}
 
-	private static void downloadCurseMods(final String manifestFile, final String modFolder) {
+	private static void downloadThirdPartyMods(final JSONObject jsonList, final String modFolder) {
+		val urlList = (JSONArray) jsonList.get("thirdParty");
+
+		if (urlList != null) {
+			logger.info("Starting download of " + urlList.size() + " 3rd party mods");
+			DOWNLOAD_COUNT = 1;
+
+			for (val item : urlList) {
+				val mod = new ThirdPartyMod((JSONObject) item);
+				logger.info(String.format("Downloading %s. Mod %s of %s", mod.getFileName(), DOWNLOAD_COUNT,
+						urlList.size()));
+				try {
+					downloadFile(mod.getDownloadUrl(), modFolder, mod.getFileName(), mod.getProjectName(), false);
+				} catch (MalformedURLException | FileNotFoundException e) {
+					logger.error(e.getMessage());
+				}
+				DOWNLOAD_COUNT++;
+			}
+		}
+	}
+
+	private static void downloadCurseMods(final JSONObject jsonList, final String modFolder) {
 		try {
-			val jsonObject = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
-			val fileList = (JSONArray) (jsonObject.containsKey("curseFiles") ? jsonObject.get("curseFiles")
-					: jsonObject.get("files"));
+			val fileList = (JSONArray) (jsonList.containsKey("curseFiles") ? jsonList.get("curseFiles")
+					: jsonList.get("files"));
 
 			if (fileList != null) {
 				logger.info(String.format("Starting download of %s mods from Curse.", fileList.size()));
@@ -164,8 +162,6 @@ public class ModPackDownloader {
 				}
 			}
 		} catch (final IOException e) {
-			logger.error(e.getMessage());
-		} catch (final ParseException e) {
 			logger.error(e.getMessage());
 		}
 	}
@@ -259,15 +255,13 @@ public class ModPackDownloader {
 		}
 	}
 
-	private static void copyFromLocalRepo(String projectName, final String fileName, final String folder) {
+	private static void copyFromLocalRepo(final String projectName, final String fileName, final String folder) {
+		val newProjectName = projectName != null ? projectName : "thirdParty";
 		try {
-			if (projectName == null) {
-				projectName = "thirdParty";
-			}
-			final File localRepoMod = new File(Reference.userhome + projectName + File.separator + fileName);
+			final File localRepoMod = new File(Reference.userhome + newProjectName + File.separator + fileName);
 			FileUtils.copyFileToDirectory(localRepoMod, new File(folder));
 		} catch (final IOException e) {
-			logger.error("Could not copy " + projectName + " from local repo", e);
+			logger.error("Could not copy " + newProjectName + " from local repo", e);
 		}
 	}
 

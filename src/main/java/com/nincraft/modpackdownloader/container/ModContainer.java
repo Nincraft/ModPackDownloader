@@ -13,11 +13,10 @@ public abstract class ModContainer {
 	private String rename;
 	private String fileName;
 	private String folder;
-	private String url;
 	private String downloadUrl;
 
 	public ModContainer(final JSONObject modJson) {
-
+		setRename(modJson.get("rename").toString());
 	}
 
 }
