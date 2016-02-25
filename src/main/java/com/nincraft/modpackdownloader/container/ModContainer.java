@@ -16,7 +16,7 @@ public abstract class ModContainer {
 	private String downloadUrl;
 
 	public ModContainer(final JSONObject modJson) {
-		setRename(modJson.get("rename").toString());
+		setRename((String) modJson.get("rename"));
 	}
 
 }

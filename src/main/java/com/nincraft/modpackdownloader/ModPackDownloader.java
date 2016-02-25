@@ -29,7 +29,11 @@ import lombok.val;
 
 public class ModPackDownloader {
 
-	private static int DOWNLOAD_COUNT = 1;
+	private static int CURSE_DOWNLOAD_COUNT = 0;
+	private static int CURSE_DOWNLOAD_TOTAL = 0;
+	private static int THIRD_PARTY_DOWNLOAD_COUNT = 0;
+	private static int THIRD_PARTY_DOWNLOAD_TOTAL = 0;
+
 	static Logger logger = LogManager.getRootLogger();
 
 	public static void main(final String[] args) {
@@ -51,8 +55,14 @@ public class ModPackDownloader {
 			logger.info(String.format("Starting download with parameters: %s, %s", Reference.manifestFile,
 					Reference.modFolder));
 			downloadMods(Reference.manifestFile, Reference.modFolder);
+			while (!checkFinished()) {
+			}
 			logger.info("Finished downloading mods.");
 		}
+	}
+
+	private static boolean checkFinished() {
+		return CURSE_DOWNLOAD_COUNT == CURSE_DOWNLOAD_TOTAL && THIRD_PARTY_DOWNLOAD_COUNT == THIRD_PARTY_DOWNLOAD_TOTAL;
 	}
 
 	private static void processArguments(final String[] args) {
@@ -86,7 +96,7 @@ public class ModPackDownloader {
 	}
 
 	private static void setupRepo() {
-		logger.info("Setting up local repository...");
+		logger.trace("Setting up local repository...");
 		Reference.userhome = System.getProperty("user.home");
 		logger.debug(String.format("User Home System Property detected as: %s", Reference.userhome));
 
@@ -103,7 +113,7 @@ public class ModPackDownloader {
 		logger.debug(String.format("User Home Folder set to: %s", Reference.userhome));
 
 		createFolder(Reference.userhome);
-		logger.info("Finished setting up local repository.");
+		logger.trace("Finished setting up local repository.");
 	}
 
 	private static void downloadMods(final String manifestFile, final String modFolder) {
@@ -121,18 +131,27 @@ public class ModPackDownloader {
 
 		if (urlList != null) {
 			logger.info("Starting download of " + urlList.size() + " 3rd party mods");
-			DOWNLOAD_COUNT = 1;
+			int thirdPartyCount = 1;
 
 			for (val item : urlList) {
 				val mod = new ThirdPartyMod((JSONObject) item);
-				logger.info(String.format("Downloading %s. Mod %s of %s", mod.getFileName(), DOWNLOAD_COUNT,
-						urlList.size()));
-				try {
-					downloadFile(mod.getDownloadUrl(), modFolder, mod.getFileName(), mod.getProjectName(), false);
-				} catch (MalformedURLException | FileNotFoundException e) {
-					logger.error(e.getMessage());
-				}
-				DOWNLOAD_COUNT++;
+				THIRD_PARTY_DOWNLOAD_TOTAL = urlList.size();
+				logger.info(String.format("Downloading %s. Mod %s of %s", mod.getFileName(), thirdPartyCount,
+						THIRD_PARTY_DOWNLOAD_TOTAL));
+				new Thread(new Runnable() {
+					public void run() {
+						try {
+							downloadFile(mod.getDownloadUrl(), modFolder, mod.getFileName(), mod.getProjectName(),
+									false);
+							THIRD_PARTY_DOWNLOAD_COUNT++;
+							logger.info(String.format("Finished downloading %s", mod.getFileName()));
+						} catch (MalformedURLException | FileNotFoundException e) {
+							logger.error(e.getMessage());
+						}
+					}
+				}).start();
+
+				thirdPartyCount++;
 			}
 		}
 	}
@@ -143,8 +162,9 @@ public class ModPackDownloader {
 					: jsonList.get("files"));
 
 			if (fileList != null) {
-				logger.info(String.format("Starting download of %s mods from Curse.", fileList.size()));
-				DOWNLOAD_COUNT = 1;
+				CURSE_DOWNLOAD_TOTAL = fileList.size();
+				logger.info(String.format("Starting download of %s mods from Curse.", CURSE_DOWNLOAD_TOTAL));
+				int curseCount = 1;
 				for (val file : fileList) {
 					val mod = new CurseMod((JSONObject) file);
 
@@ -155,10 +175,16 @@ public class ModPackDownloader {
 					mod.setFolder(modFolder);
 					mod.setProjectName(conn.getHeaderField("Location").split("/")[2]);
 
-					logger.info(String.format("Downloading %s. Mod %s of %s", mod.getProjectName(), DOWNLOAD_COUNT,
+					logger.info(String.format("Downloading %s. Mod %s of %s", mod.getProjectName(), curseCount,
 							fileList.size()));
-					downloadCurseForgeFile(mod);
-					DOWNLOAD_COUNT++;
+					new Thread(new Runnable() {
+						public void run() {
+							downloadCurseForgeFile(mod);
+							CURSE_DOWNLOAD_COUNT++;
+							logger.info(String.format("Finished downloading %s", mod.getProjectName()));
+						}
+					}).start();
+					curseCount++;
 				}
 			}
 		} catch (final IOException e) {
