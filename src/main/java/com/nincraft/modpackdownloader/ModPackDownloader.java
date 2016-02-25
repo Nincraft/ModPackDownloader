@@ -139,12 +139,12 @@ public class ModPackDownloader {
 
 			for (val item : urlList) {
 				val mod = new ThirdPartyMod((JSONObject) item);
+				logger.info(String.format("Downloading %s. Mod %s of %s", mod.getFileName(), thirdPartyCount,
+						THIRD_PARTY_DOWNLOAD_TOTAL));
 
 				new Thread(new Runnable() {
 					public void run() {
 						try {
-							logger.info(String.format("Downloading %s. Mod %s of %s", mod.getFileName(), thirdPartyCount,
-									THIRD_PARTY_DOWNLOAD_TOTAL));
 							downloadFile(mod.getDownloadUrl(), modFolder, mod.getFileName(), mod.getProjectName(),
 									false);
 							THIRD_PARTY_DOWNLOAD_COUNT++;
@@ -172,6 +172,8 @@ public class ModPackDownloader {
 
 				for (val file : fileList) {
 					val mod = new CurseMod((JSONObject) file);
+					logger.info(String.format("Downloading %s. Mod %s of %s", mod.getProjectName(), curseCount,
+							CURSE_DOWNLOAD_TOTAL));
 
 					val conn = (HttpURLConnection) new URL(mod.getProjectURL()).openConnection();
 					conn.setInstanceFollowRedirects(false);
@@ -182,8 +184,6 @@ public class ModPackDownloader {
 
 					new Thread(new Runnable() {
 						public void run() {
-							logger.info(String.format("Downloading %s. Mod %s of %s", mod.getProjectName(), curseCount,
-									fileList.size()));
 							downloadCurseForgeFile(mod);
 							CURSE_DOWNLOAD_COUNT++;
 							logger.info(String.format("Finished downloading %s", mod.getProjectName()));
