@@ -78,6 +78,7 @@ public class ModPackDownloader {
 	}
 
 	private static void processArgument(final String arg) {
+		logger.trace("Processing given arguments...");
 		if (arg.equals("-forceDownload")) {
 			Reference.forceDownload = true;
 			logger.debug("Downloads are now being forced.");
@@ -94,6 +95,7 @@ public class ModPackDownloader {
 			Reference.generateUrlTxt = true;
 			logger.debug("Mod URL Text files will now be generated.");
 		}
+		logger.trace("Finished processing given arguments.");
 	}
 
 	private static void setupRepo() {
@@ -131,17 +133,18 @@ public class ModPackDownloader {
 		val urlList = (JSONArray) jsonList.get("thirdParty");
 
 		if (urlList != null) {
-			logger.info("Starting download of " + urlList.size() + " 3rd party mods");
+			THIRD_PARTY_DOWNLOAD_TOTAL = urlList.size();
+			logger.info(String.format("Starting download of %s thirdparty mods.", THIRD_PARTY_DOWNLOAD_TOTAL));
 			int thirdPartyCount = 1;
 
 			for (val item : urlList) {
 				val mod = new ThirdPartyMod((JSONObject) item);
-				THIRD_PARTY_DOWNLOAD_TOTAL = urlList.size();
-				logger.info(String.format("Downloading %s. Mod %s of %s", mod.getFileName(), thirdPartyCount,
-						THIRD_PARTY_DOWNLOAD_TOTAL));
+
 				new Thread(new Runnable() {
 					public void run() {
 						try {
+							logger.info(String.format("Downloading %s. Mod %s of %s", mod.getFileName(), thirdPartyCount,
+									THIRD_PARTY_DOWNLOAD_TOTAL));
 							downloadFile(mod.getDownloadUrl(), modFolder, mod.getFileName(), mod.getProjectName(),
 									false);
 							THIRD_PARTY_DOWNLOAD_COUNT++;
@@ -166,6 +169,7 @@ public class ModPackDownloader {
 				CURSE_DOWNLOAD_TOTAL = fileList.size();
 				logger.info(String.format("Starting download of %s mods from Curse.", CURSE_DOWNLOAD_TOTAL));
 				int curseCount = 1;
+
 				for (val file : fileList) {
 					val mod = new CurseMod((JSONObject) file);
 
@@ -176,10 +180,10 @@ public class ModPackDownloader {
 					mod.setFolder(modFolder);
 					mod.setProjectName(conn.getHeaderField("Location").split("/")[2]);
 
-					logger.info(String.format("Downloading %s. Mod %s of %s", mod.getProjectName(), curseCount,
-							fileList.size()));
 					new Thread(new Runnable() {
 						public void run() {
+							logger.info(String.format("Downloading %s. Mod %s of %s", mod.getProjectName(), curseCount,
+									fileList.size()));
 							downloadCurseForgeFile(mod);
 							CURSE_DOWNLOAD_COUNT++;
 							logger.info(String.format("Finished downloading %s", mod.getProjectName()));
@@ -259,7 +263,7 @@ public class ModPackDownloader {
 						String.format("Error getting %s. Attempting to redownload using alternate method.", fileName));
 				downloadFile(url, folder, fileName, projectName, true);
 			} else {
-				logger.error("Could not download " + fileName, e.getMessage());
+				logger.error(String.format("Could not download %s.", fileName), e.getMessage());
 			}
 		}
 	}
