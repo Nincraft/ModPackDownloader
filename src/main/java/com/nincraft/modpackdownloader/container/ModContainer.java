@@ -14,10 +14,10 @@ public abstract class ModContainer {
 	private String fileName;
 	private String folder;
 	private String url;
+	private String downloadUrl;
 
 	public ModContainer(final JSONObject modJson) {
-		setUrl(buildUrl(modJson));
+
 	}
 
-	abstract String buildUrl(final JSONObject modJson);
 }

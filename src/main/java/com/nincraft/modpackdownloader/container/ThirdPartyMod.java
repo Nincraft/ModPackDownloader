@@ -8,13 +8,9 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class ThirdPartyMod extends ModContainer {
-
+	
 	public ThirdPartyMod(final JSONObject modJson) {
 		super(modJson);
-	}
-
-	@Override
-	String buildUrl(final JSONObject modJson) {
-		return modJson.get("url").toString();
+		setDownloadUrl(modJson.get("url").toString());
 	}
 }

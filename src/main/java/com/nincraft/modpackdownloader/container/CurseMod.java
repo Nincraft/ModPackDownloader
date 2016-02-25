@@ -16,16 +16,20 @@ public class CurseMod extends ModContainer {
 		super(modJson);
 		setProjectId((Long) modJson.get("projectID"));
 		setFileId((Long) modJson.get("fileID"));
-		setProjectURL(buildProjectUrl(modJson));
-	}
-
-	private String buildProjectUrl(final JSONObject modJson) {
-		return String.format(Reference.CURSEFORGE_BASE_URL + "{}" + Reference.COOKIE_TEST_1, modJson.get("projectID"));
+		setProjectURL(buildProjectUrl());
 	}
 
 	@Override
-	String buildUrl(final JSONObject modJson) {
-		return String.format(Reference.CURSEFORGE_BASE_URL + "{}/files/{}/download", modJson.get("projectID"),
-				modJson.get("fileID"));
+	public String getDownloadUrl() {
+		return String.format(Reference.CURSEFORGE_BASE_URL + "%s-%s/files/%s/download", getProjectId(),
+				getProjectName(), getFileId());
+	}
+
+	String getAlternateDownloadUrl(final JSONObject modJson) {
+		return String.format(Reference.CURSEFORGE_BASE_URL + "%s/files/%s/download", getProjectName(), getFileId());
+	}
+
+	String buildProjectUrl() {
+		return String.format(Reference.CURSEFORGE_BASE_URL + "%s" + Reference.COOKIE_TEST_1, getProjectId());
 	}
 }
