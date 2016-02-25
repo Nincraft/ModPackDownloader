@@ -36,7 +36,7 @@ public class ModPackDownloader {
 
 	static Logger logger = LogManager.getRootLogger();
 
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws InterruptedException {
 		if (args.length < 2) {
 			logger.error("Arguments required: manifest file location, mod download location");
 			return;
@@ -56,6 +56,7 @@ public class ModPackDownloader {
 					Reference.modFolder));
 			downloadMods(Reference.manifestFile, Reference.modFolder);
 			while (!checkFinished()) {
+				Thread.sleep(1);
 			}
 			logger.info("Finished downloading mods.");
 		}
