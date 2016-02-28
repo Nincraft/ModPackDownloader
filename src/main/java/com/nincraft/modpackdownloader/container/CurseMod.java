@@ -22,6 +22,9 @@ public class CurseMod extends ModContainer {
 	private String projectName;
 	private String projectUrl;
 
+	public CurseMod() {
+	}
+
 	public CurseMod(final JSONObject modJson) {
 		super(modJson);
 		setProjectId((Long) modJson.get("projectID"));
@@ -53,5 +56,10 @@ public class CurseMod extends ModContainer {
 	public String getDownloadUrl() {
 		return String.format(Reference.CURSEFORGE_BASE_URL + "%s-%s/files/%s/download", getProjectId(),
 				getProjectName(), getFileId());
+	}
+
+	@Override
+	public CurseMod clone() throws CloneNotSupportedException {
+		return (CurseMod) super.clone();
 	}
 }

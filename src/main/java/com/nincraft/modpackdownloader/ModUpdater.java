@@ -28,98 +28,120 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class ModUpdater {
-
 	public static void updateCurseMods(final List<ModContainer> modList, final String mcVersion,
 			final String releaseType) {
 		log.trace("Updating Curse Mods...");
 		val curseMods = new JSONArray();
+
+		checkForUpdates(modList, mcVersion, releaseType, curseMods);
+
+		updateManifest(curseMods);
+		log.trace("Finished Updating Curse Mods.");
+	}
+
+	@SuppressWarnings("unchecked")
+	private static void updateManifest(final JSONArray curseMods) {
+		log.info("Updating Manifest File...");
 		try {
-			log.info(String.format("Checking for updates from %s mods.", modList.size()));
-			for (val mod : modList) {
-				if (!(mod instanceof CurseMod)) {
-					log.debug(String.format("Mod '%s' is not a Curse Mod, and will be skipped.", mod.getModName()));
-					continue;
-				}
+			val jsonLists = (JSONObject) new JSONParser().parse(new FileReader(Reference.manifestFile));
+			log.debug(jsonLists);
+			jsonLists.remove("curseFiles");
+			log.debug(jsonLists);
+			jsonLists.put("curseFiles", curseMods);
+			log.debug(jsonLists);
 
-				val curseMod = (CurseMod) mod;
+			val file = new FileWriter(Reference.manifestFile);
+			file.write(jsonLists.toJSONString());
+			file.flush();
+			file.close();
+		} catch (final IOException | ParseException e) {
+			log.error(e.getMessage());
+		}
+	}
 
-				final HttpURLConnection conn = (HttpURLConnection) new URL(curseMod.getProjectUrl()).openConnection();
+	@SuppressWarnings({ "unchecked" })
+	private static void checkForUpdates(final List<ModContainer> modList, final String mcVersion,
+			final String releaseType, final org.json.simple.JSONArray curseMods) {
+		log.info(String.format("Checking for updates from %s mods.", modList.size()));
+		for (val mod : modList) {
+			if (!(mod instanceof CurseMod)) {
+				log.debug(String.format("Mod '%s' is not a Curse Mod, and will be skipped.", mod.getModName()));
+				continue;
+			}
+
+			val curseMod = (CurseMod) mod;
+
+			JSONObject fileListJson = null;
+			try {
+				val conn = (HttpURLConnection) new URL(curseMod.getProjectUrl()).openConnection();
 				conn.setInstanceFollowRedirects(false);
 				conn.connect();
 
 				val location = conn.getHeaderField("Location");
-				val projectName = location.split("/")[2];
-				val fileListJson = (JSONObject) getCurseProjectJson(curseMod.getProjectId(), projectName,
+				curseMod.setProjectName(location.split("/")[2]);
+				fileListJson = (JSONObject) getCurseProjectJson(curseMod.getProjectId(), curseMod.getProjectName(),
 						new JSONParser()).get("files");
 
 				if (fileListJson == null) {
-					log.error(String.format("No file list found for %s.", projectName));
+					log.error(String.format("No file list found for %s, and will be skipped.",
+							curseMod.getProjectName()));
 					continue;
 				}
-
-				Date lastDate = null;
-				Long mostRecent = curseMod.getFileId();
-				String mostRecentFile = null;
-				String currentFile = null;
-
-				log.info("Getting most recent available file...");
-				for (val newFileJson : fileListJson.values()) {
-					val newMod = (JSONObject) newFileJson;
-					val date = parseDate((String) newMod.get("created_at"));
-
-					if (lastDate == null) {
-						lastDate = date;
-					}
-
-					if (lastDate.before(date) && equalOrLessThan((String) newMod.get("type"), releaseType)
-							&& newMod.get("version").equals(mcVersion)) {
-						mostRecent = (Long) newMod.get("id");
-						mostRecentFile = (String) newMod.get("name");
-						lastDate = date;
-					}
-
-					if (curseMod.getFileId().equals(newMod.get("id"))) {
-						currentFile = (String) newMod.get("name");
-					}
-				}
-				log.info("Finished getting most recent available file.");
-
-				if (!mostRecent.equals(curseMod.getFileId())) {
-					log.info(String.format("Update found for %s.  Most recent version is %s.  Old version was %s.",
-							projectName, mostRecentFile, currentFile));
-					curseMod.setFileId(mostRecent);
-				}
-
-				if (Strings.isNullOrEmpty(curseMod.getModName())) {
-					curseMod.setModName(projectName);
-				}
-
-				val json = CurseModMapper.map(curseMod);
-				log.debug(json);
-				curseMods.add(json);
+			} catch (IOException | ParseException e) {
+				log.error(e.getMessage());
+				continue;
 			}
-			log.info("Finished checking for updates.");
 
-			log.info("Updating Manifest File...");
-			FileWriter file = null;
-			try {
-				val jsonLists = (JSONObject) new JSONParser().parse(new FileReader(Reference.manifestFile));
-				log.debug(jsonLists);
-				jsonLists.remove("curseFiles");
-				log.debug(jsonLists);
-				jsonLists.put("curseFiles", curseMods);
-				log.debug(jsonLists);
-
-				file = new FileWriter(Reference.manifestFile);
-				file.write(jsonLists.toJSONString());
-			} finally {
-				file.flush();
-				file.close();
+			val newMod = getLatestVersion(mcVersion, releaseType, curseMod, fileListJson);
+			log.debug(newMod);
+			if (curseMod.getFileId().compareTo(newMod.getFileId()) < 0) {
+				log.info(String.format("Update found for %s.  Most recent version is %s.  Old version was %s.",
+						curseMod.getProjectName(), newMod.getVersion(), curseMod.getVersion()));
+				curseMod.setFileId(newMod.getFileId());
+				curseMod.setVersion(newMod.getVersion());
 			}
-		} catch (final IOException | ParseException e) {
-			log.error(e.getMessage());
+
+			if (Strings.isNullOrEmpty(curseMod.getModName())) {
+				curseMod.setModName(curseMod.getProjectName());
+			}
+
+			val json = CurseModMapper.map(curseMod);
+			log.debug(json);
+			curseMods.add(json);
 		}
-		log.trace("Finished Updating Curse Mods.");
+		log.info("Finished checking for updates.");
+	}
+
+	private static CurseMod getLatestVersion(final String mcVersion, final String releaseType, final CurseMod curseMod,
+			final JSONObject fileListJson) {
+		log.trace("Getting most recent available file...");
+		CurseMod newMod = null;
+		try {
+			newMod = curseMod.clone();
+		} catch (CloneNotSupportedException e) {
+			log.warn("Couldn't clone existing mod reference, creating new one instead.");
+			newMod = new CurseMod();
+		}
+
+		for (val newFileJson : fileListJson.values()) {
+			val newModJson = (JSONObject) newFileJson;
+			val date = parseDate((String) newModJson.get("created_at"));
+
+			Date latestDate = date;
+			if (!latestDate.after(date) && equalOrLessThan((String) newModJson.get("type"), releaseType)
+					&& newModJson.get("version").equals(mcVersion)) {
+				newMod.setFileId((Long) newModJson.get("id"));
+				newMod.setVersion((String) newModJson.get("name"));
+				latestDate = date;
+			}
+
+			if (curseMod.getFileId().equals(newMod.getFileId())) {
+				log.debug("Ensuring the current version is set on the mod.");
+				curseMod.setVersion(newMod.getVersion());
+			}
+		}
+		log.trace("Finished getting most recent available file.");
+		return newMod;
 	}
 
 	private static boolean equalOrLessThan(final String modRelease, final String releaseType) {
