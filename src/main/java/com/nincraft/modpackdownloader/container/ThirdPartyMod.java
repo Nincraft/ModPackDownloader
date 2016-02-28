@@ -18,7 +18,7 @@ public class ThirdPartyMod extends ModContainer {
 			return getDownloadUrl().substring(getDownloadUrl().lastIndexOf("/") + 1,
 					getDownloadUrl().lastIndexOf(".jar") + 4);
 		}
-		return null;
+		return getRename();
 	}
 
 	@Override

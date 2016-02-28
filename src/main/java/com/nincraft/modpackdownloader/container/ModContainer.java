@@ -9,7 +9,6 @@ public abstract class ModContainer implements Cloneable {
 	private String modName;
 	private String rename;
 	private String fileName;
-	private String folder;
 	private String downloadUrl;
 	private String version;
 

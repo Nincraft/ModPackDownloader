@@ -18,6 +18,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.container.CurseMod;
 import com.nincraft.modpackdownloader.container.ModContainer;
 import com.nincraft.modpackdownloader.container.ThirdPartyMod;
@@ -223,7 +224,7 @@ public class ModPackDownloader {
 		val modName = mod.getModName();
 
 		try {
-			val fileName = !mod.getRename().isEmpty() ? mod.getRename()
+			val fileName = !Strings.isNullOrEmpty(mod.getRename()) ? mod.getRename()
 					: getCurseForgeDownloadLocation(mod.getDownloadUrl(), modName, modName);
 			mod.setFileName(fileName);
 
@@ -269,26 +270,22 @@ public class ModPackDownloader {
 				}
 			}
 		} else {
-			copyFromLocalRepo(mod.getModName(), decodedFileName, mod.getFolder());
+			copyFromLocalRepo(mod.getModName(), decodedFileName, Reference.modFolder);
 		}
 	}
 
 	private static File getDownloadedFile(final ModContainer mod, final String fileName) {
-		val folder = mod.getFolder();
-
-		if (folder != null) {
-			createFolder(folder);
-			return new File(folder + File.separator + fileName);
+		if (Reference.modFolder != null) {
+			createFolder(Reference.modFolder);
+			return new File(Reference.modFolder + File.separator + fileName);
 		} else {
 			return new File(fileName);
 		}
 	}
 
 	private static void generateUrlTxt(final File downloadedFile, final ModContainer mod) {
-		val folder = mod.getFolder();
-
-		if (folder != null) {
-			new File(folder + File.separator + downloadedFile.getName() + ".url.txt");
+		if (Reference.modFolder != null) {
+			new File(Reference.modFolder + File.separator + downloadedFile.getName() + ".url.txt");
 		} else {
 			new File(downloadedFile.getName() + "url.txt");
 		}

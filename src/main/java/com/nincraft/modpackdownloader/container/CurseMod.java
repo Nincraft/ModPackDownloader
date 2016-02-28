@@ -37,7 +37,6 @@ public class CurseMod extends ModContainer {
 			conn.setInstanceFollowRedirects(false);
 			conn.connect();
 
-			setFolder(Reference.modFolder);
 			setProjectName(conn.getHeaderField("Location").split("/")[2]);
 		} catch (final IOException e) {
 			log.error(e.getMessage());
