@@ -1,7 +1,6 @@
 package com.nincraft.modpackdownloader;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,10 +9,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -26,19 +25,19 @@ import com.nincraft.modpackdownloader.util.Reference;
 import com.nincraft.modpackdownloader.util.URLHelper;
 
 import lombok.val;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class ModPackDownloader {
 
-	private static int CURSE_DOWNLOAD_COUNT = 0;
-	private static int CURSE_DOWNLOAD_TOTAL = 0;
-	private static int THIRD_PARTY_DOWNLOAD_COUNT = 0;
-	private static int THIRD_PARTY_DOWNLOAD_TOTAL = 0;
+	private static int DOWNLOAD_COUNT = 0;
+	private static int DOWNLOAD_TOTAL = 0;
 
-	static Logger logger = LogManager.getRootLogger();
+	private static final List<ModContainer> MOD_LIST = new ArrayList<ModContainer>();
 
 	public static void main(final String[] args) throws InterruptedException {
 		if (args.length < 2) {
-			logger.error("Arguments required: manifest file location, mod download location");
+			log.error("Arguments required: manifest file location, mod download location");
 			return;
 		} else {
 			processArguments(args);
@@ -46,24 +45,7 @@ public class ModPackDownloader {
 
 		setupRepo();
 
-		if (Reference.updateMods) {
-			logger.info(String.format("Updating mods with parameters: %s, %s, %s", Reference.manifestFile,
-					Reference.mcVersion, Reference.releaseType));
-			ModUpdater.updateCurseMods(Reference.manifestFile, Reference.mcVersion, Reference.releaseType);
-			logger.info("Finished updating mods.");
-		} else {
-			logger.info(String.format("Starting download with parameters: %s, %s", Reference.manifestFile,
-					Reference.modFolder));
-			downloadMods(Reference.manifestFile, Reference.modFolder);
-			while (!checkFinished()) {
-				Thread.sleep(1);
-			}
-			logger.info("Finished downloading mods.");
-		}
-	}
-
-	private static boolean checkFinished() {
-		return CURSE_DOWNLOAD_COUNT == CURSE_DOWNLOAD_TOTAL && THIRD_PARTY_DOWNLOAD_COUNT == THIRD_PARTY_DOWNLOAD_TOTAL;
+		processMods();
 	}
 
 	private static void processArguments(final String[] args) {
@@ -78,33 +60,33 @@ public class ModPackDownloader {
 	}
 
 	private static void processArgument(final String arg) {
-		logger.trace("Processing given arguments...");
+		log.trace("Processing given arguments...");
 		if (arg.equals("-forceDownload")) {
 			Reference.forceDownload = true;
-			logger.debug("Downloads are now being forced.");
+			log.debug("Downloads are now being forced.");
 		} else if (arg.equals("-updateMods")) {
 			Reference.updateMods = true;
-			logger.debug("mods will be updated instead of downloaded.");
+			log.debug("mods will be updated instead of downloaded.");
 		} else if (arg.startsWith("-mcVersion")) {
 			Reference.mcVersion = arg.substring(arg.lastIndexOf("=") + 1);
-			logger.debug(String.format("Minecraft Version set to: %s", Reference.mcVersion));
+			log.debug(String.format("Minecraft Version set to: %s", Reference.mcVersion));
 		} else if (arg.startsWith("-releaseType")) {
 			Reference.releaseType = arg.substring(arg.lastIndexOf("=") + 1);
-			logger.debug(String.format("Checking against mod release type: %s", Reference.releaseType));
+			log.debug(String.format("Checking against mod release type: %s", Reference.releaseType));
 		} else if (arg.equals("-generateUrlTxt")) {
 			Reference.generateUrlTxt = true;
-			logger.debug("Mod URL Text files will now be generated.");
+			log.debug("Mod URL Text files will now be generated.");
 		}
-		logger.trace("Finished processing given arguments.");
+		log.trace("Finished processing given arguments.");
 	}
 
 	private static void setupRepo() {
-		logger.trace("Setting up local repository...");
+		log.trace("Setting up local repository...");
 		Reference.userhome = System.getProperty("user.home");
-		logger.debug(String.format("User Home System Property detected as: %s", Reference.userhome));
+		log.debug(String.format("User Home System Property detected as: %s", Reference.userhome));
 
 		Reference.os = System.getProperty("os.name");
-		logger.debug(String.format("Operating System detected as: %s", Reference.os));
+		log.debug(String.format("Operating System detected as: %s", Reference.os));
 
 		if (Reference.os.startsWith("Windows")) {
 			Reference.userhome += Reference.WINDOWS_FOLDER;
@@ -113,88 +95,119 @@ public class ModPackDownloader {
 		} else {
 			Reference.userhome += Reference.OTHER_FOLDER;
 		}
-		logger.debug(String.format("User Home Folder set to: %s", Reference.userhome));
+		log.debug(String.format("User Home Folder set to: %s", Reference.userhome));
 
 		createFolder(Reference.userhome);
-		logger.trace("Finished setting up local repository.");
+		log.trace("Finished setting up local repository.");
 	}
 
-	private static void downloadMods(final String manifestFile, final String modFolder) {
+	private static void processMods() throws InterruptedException {
+		log.trace("Processing Mods...");
+		buildModList();
+
+		if (Reference.updateMods) {
+			log.info(String.format("Updating mods with parameters: %s, %s, %s", Reference.manifestFile,
+					Reference.mcVersion, Reference.releaseType));
+			ModUpdater.updateCurseMods(MOD_LIST, Reference.mcVersion, Reference.releaseType);
+			log.info("Finished updating mods.");
+		} else {
+			log.info(String.format("Starting download with parameters: %s, %s", Reference.manifestFile,
+					Reference.modFolder));
+			downloadMods(MOD_LIST, Reference.modFolder);
+
+			while (!checkFinished()) {
+				Thread.sleep(1);
+			}
+			log.info("Finished downloading mods.");
+		}
+		log.trace("Finished Processing Mods.");
+	}
+
+	private static void buildModList() {
+		log.trace("Building Mod List...");
+		JSONObject jsonLists = null;
 		try {
-			val jsonList = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
-			downloadCurseMods(jsonList, modFolder);
-			downloadThirdPartyMods(jsonList, modFolder);
+			jsonLists = (JSONObject) new JSONParser().parse(new FileReader(Reference.manifestFile));
 		} catch (IOException | ParseException e) {
-			logger.error(e.getMessage());
+			log.error(e.getMessage());
+			return;
 		}
-	}
 
-	private static void downloadThirdPartyMods(final JSONObject jsonList, final String modFolder) {
-		val urlList = (JSONArray) jsonList.get("thirdParty");
-
-		if (urlList != null) {
-			THIRD_PARTY_DOWNLOAD_TOTAL = urlList.size();
-			logger.info(String.format("Starting download of %s thirdparty mods.", THIRD_PARTY_DOWNLOAD_TOTAL));
-			int thirdPartyCount = 1;
-
-			for (val item : urlList) {
-				val mod = new ThirdPartyMod((JSONObject) item);
-				logger.info(String.format("Downloading %s. Mod %s of %s", mod.getFileName(), thirdPartyCount,
-						THIRD_PARTY_DOWNLOAD_TOTAL));
-
-				new Thread(new Runnable() {
-					public void run() {
-						try {
-							downloadFile(mod.getDownloadUrl(), modFolder, mod.getFileName(), mod.getProjectName(),
-									false);
-							THIRD_PARTY_DOWNLOAD_COUNT++;
-							logger.info(String.format("Finished downloading %s", mod.getFileName()));
-						} catch (MalformedURLException | FileNotFoundException e) {
-							logger.error(e.getMessage());
-						}
-					}
-				}).start();
-
-				thirdPartyCount++;
+		val curseMods = getCurseModList(jsonLists);
+		if (curseMods != null) {
+			for (val curseMod : curseMods) {
+				val mod = new CurseMod((JSONObject) curseMod);
+				MOD_LIST.add(mod);
+				log.debug(String.format("Curse Mod '%s' found.", mod.getModName()));
 			}
 		}
+
+		val thirdPartyMods = getThirdPartyModList(jsonLists);
+		if (thirdPartyMods != null) {
+			for (val thirdPartyMod : thirdPartyMods) {
+				val mod = new ThirdPartyMod((JSONObject) thirdPartyMod);
+				MOD_LIST.add(mod);
+				log.debug(String.format("Third Party Mod '%s' found.", mod.getModName()));
+			}
+		}
+
+		DOWNLOAD_TOTAL = MOD_LIST.size();
+		log.debug(String.format("A total of %s mods will be downloaded.", DOWNLOAD_TOTAL));
+
+		MOD_LIST.sort((mod1, mod2) -> mod1.getModName().compareToIgnoreCase(mod2.getModName()));
+		log.trace("Finished Building Mod List.");
 	}
 
-	private static void downloadCurseMods(final JSONObject jsonList, final String modFolder) {
-		try {
-			val fileList = (JSONArray) (jsonList.containsKey("curseFiles") ? jsonList.get("curseFiles")
-					: jsonList.get("files"));
+	private static JSONArray getCurseModList(final JSONObject jsonList) {
+		return (JSONArray) (jsonList.containsKey("curseFiles") ? jsonList.get("curseFiles") : jsonList.get("files"));
+	}
 
-			if (fileList != null) {
-				CURSE_DOWNLOAD_TOTAL = fileList.size();
-				logger.info(String.format("Starting download of %s mods from Curse.", CURSE_DOWNLOAD_TOTAL));
-				int curseCount = 1;
+	private static JSONArray getThirdPartyModList(final JSONObject jsonLists) {
+		return (JSONArray) jsonLists.get("thirdParty");
+	}
 
-				for (val file : fileList) {
-					val mod = new CurseMod((JSONObject) file);
-					logger.info(String.format("Downloading %s. Mod %s of %s", mod.getProjectName(), curseCount,
-							CURSE_DOWNLOAD_TOTAL));
+	private static boolean checkFinished() {
+		return DOWNLOAD_COUNT == DOWNLOAD_TOTAL;
+	}
 
-					val conn = (HttpURLConnection) new URL(mod.getProjectURL()).openConnection();
-					conn.setInstanceFollowRedirects(false);
-					conn.connect();
+	private static void downloadMods(final List<ModContainer> modList, final String modFolder) {
+		log.trace(String.format("Starting download of %s mods...", DOWNLOAD_TOTAL));
+		int curseCount = 1;
+		int thirdPartyCount = 1;
 
-					mod.setFolder(modFolder);
-					mod.setProjectName(conn.getHeaderField("Location").split("/")[2]);
+		for (val mod : modList) {
+			mod.getModName();
 
-					new Thread(new Runnable() {
-						public void run() {
-							downloadCurseForgeFile(mod);
-							CURSE_DOWNLOAD_COUNT++;
-							logger.info(String.format("Finished downloading %s", mod.getProjectName()));
-						}
-					}).start();
-					curseCount++;
-				}
+			if (mod instanceof CurseMod) {
+				downloadCurseMod((CurseMod) mod, curseCount++, modFolder);
+			} else if (mod instanceof ThirdPartyMod) {
+				downloadThirdPartyMod((ThirdPartyMod) mod, thirdPartyCount++, modFolder);
 			}
-		} catch (final IOException e) {
-			logger.error(e.getMessage());
 		}
+		log.trace(String.format("Finished downloading %s mods.", DOWNLOAD_TOTAL));
+	}
+
+	private static void downloadCurseMod(final CurseMod mod, final int downloadCount, final String modFolder) {
+		new Thread(() -> {
+			String modName = mod.getModName();
+
+			log.info(String.format(Reference.DOWNLOADING_MOD_X_OF_Y, modName, downloadCount, DOWNLOAD_TOTAL));
+			downloadCurseForgeFile(mod);
+			DOWNLOAD_COUNT++;
+			log.info(String.format("Finished downloading %s", modName));
+		}).start();
+	}
+
+	private static void downloadThirdPartyMod(final ThirdPartyMod mod, final int downloadCount,
+			final String modFolder) {
+		new Thread(() -> {
+			String modName = mod.getModName();
+
+			log.info(String.format(Reference.DOWNLOADING_MOD_X_OF_Y, modName, downloadCount, DOWNLOAD_TOTAL));
+			downloadFile(mod, false);
+			DOWNLOAD_COUNT++;
+			log.info(String.format("Finished downloading %s", modName));
+		}).start();
 	}
 
 	private static void createFolder(final String folder) {
@@ -206,69 +219,74 @@ public class ModPackDownloader {
 		}
 	}
 
-	private static void downloadCurseForgeFile(final ModContainer mod) {
-		try {
-			val fileName = mod.getRename() == null
-					? getCurseForgeDownloadLocation(mod.getDownloadUrl(), mod.getProjectName(), mod.getProjectName())
-					: mod.getRename();
+	private static void downloadCurseForgeFile(final CurseMod mod) {
+		val modName = mod.getModName();
 
-			downloadFile(mod.getDownloadUrl(), mod.getFolder(), fileName, mod.getProjectName(), false);
-		} catch (final MalformedURLException e) {
-			logger.error(e.getMessage());
-		} catch (final FileNotFoundException e) {
-			logger.error(String.format("Could not find: %s", mod.getProjectName()), e);
+		try {
+			val fileName = !mod.getRename().isEmpty() ? mod.getRename()
+					: getCurseForgeDownloadLocation(mod.getDownloadUrl(), modName, modName);
+			mod.setFileName(fileName);
+
+			downloadFile(mod, false);
 		} catch (final IOException e) {
-			logger.error(e.getMessage());
+			log.error(e.getMessage());
 		}
 	}
 
-	private static void downloadFile(final String url, final String folder, final String fileName,
-			final String projectName, final boolean useUserAgent) throws MalformedURLException, FileNotFoundException {
-		try {
-			val decodedFileName = URLHelper.decodeSpaces(fileName);
-			if (!isInLocalRepo(projectName, decodedFileName) || Reference.forceDownload) {
+	private static void downloadFile(final ModContainer mod, final boolean useUserAgent) {
+		val decodedFileName = URLHelper.decodeSpaces(mod.getFileName());
+
+		if (!isInLocalRepo(mod.getModName(), decodedFileName) || Reference.forceDownload) {
+			try {
 				ReadableByteChannel rbc;
 
 				if (useUserAgent) {
-					val conn = (HttpURLConnection) new URL(url).openConnection();
+					val conn = (HttpURLConnection) new URL(mod.getDownloadUrl()).openConnection();
 					conn.addRequestProperty("User-Agent", "Mozilla/4.0");
 					rbc = Channels.newChannel(conn.getInputStream());
 				} else {
-					rbc = Channels.newChannel(new URL(url).openStream());
+					rbc = Channels.newChannel(new URL(mod.getDownloadUrl()).openStream());
 				}
 
-				File downloadedFile;
-				if (folder != null) {
-					createFolder(folder);
-					downloadedFile = new File(folder + File.separator + decodedFileName);
-				} else {
-					downloadedFile = new File(decodedFileName);
-				}
+				val downloadedFile = getDownloadedFile(mod, decodedFileName);
 
 				val fos = new FileOutputStream(downloadedFile);
 				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 				fos.close();
 
 				if (Reference.generateUrlTxt) {
-					generateUrlTxt(downloadedFile, url, folder);
+					generateUrlTxt(downloadedFile, mod);
 				}
 
-				copyToLocalRepo(projectName, downloadedFile);
-			} else {
-				copyFromLocalRepo(projectName, decodedFileName, folder);
+				copyToLocalRepo(mod.getModName(), downloadedFile);
+			} catch (final IOException e) {
+				if (!useUserAgent) {
+					log.warn(String.format("Error getting %s. Attempting to redownload using alternate method.",
+							mod.getFileName()));
+					downloadFile(mod, true);
+				} else {
+					log.error(String.format("Could not download %s.", mod.getFileName()), e.getMessage());
+				}
 			}
-		} catch (final IOException e) {
-			if (!useUserAgent) {
-				logger.warn(
-						String.format("Error getting %s. Attempting to redownload using alternate method.", fileName));
-				downloadFile(url, folder, fileName, projectName, true);
-			} else {
-				logger.error(String.format("Could not download %s.", fileName), e.getMessage());
-			}
+		} else {
+			copyFromLocalRepo(mod.getModName(), decodedFileName, mod.getFolder());
 		}
 	}
 
-	private static void generateUrlTxt(final File downloadedFile, final String url, final String folder) {
+	private static File getDownloadedFile(final ModContainer mod, final String fileName) {
+		val folder = mod.getFolder();
+
+		if (folder != null) {
+			createFolder(folder);
+			return new File(folder + File.separator + fileName);
+		} else {
+			return new File(fileName);
+		}
+	}
+
+	private static void generateUrlTxt(final File downloadedFile, final ModContainer mod) {
+		val folder = mod.getFolder();
+
 		if (folder != null) {
 			new File(folder + File.separator + downloadedFile.getName() + ".url.txt");
 		} else {
@@ -278,30 +296,30 @@ public class ModPackDownloader {
 
 	private static void copyToLocalRepo(final String projectName, final File downloadedFile) {
 		val newProjectName = projectName != null ? projectName : "thirdParty";
+
 		try {
 			val localRepoFolder = new File(Reference.userhome + newProjectName);
 			FileUtils.copyFileToDirectory(downloadedFile, localRepoFolder);
 		} catch (final IOException e) {
-			logger.error(String.format("Could not copy %s to local repo.", newProjectName), e);
+			log.error(String.format("Could not copy %s to local repo.", newProjectName), e);
 		}
 	}
 
 	private static void copyFromLocalRepo(final String projectName, final String fileName, final String folder) {
 		val newProjectName = projectName != null ? projectName : "thirdParty";
+
 		try {
 			final File localRepoMod = new File(Reference.userhome + newProjectName + File.separator + fileName);
 			FileUtils.copyFileToDirectory(localRepoMod, new File(folder));
 		} catch (final IOException e) {
-			logger.error("Could not copy " + newProjectName + " from local repo", e);
+			log.error(String.format("Could not copy %s from local repo.", newProjectName), e);
 		}
 	}
 
-	private static boolean isInLocalRepo(String projectName, final String fileName) {
-		if (projectName == null) {
-			projectName = "thirdParty";
-		}
-		final File localCheck = new File(Reference.userhome + projectName + File.separator + fileName);
-		return localCheck.exists();
+	private static boolean isInLocalRepo(final String projectName, final String fileName) {
+		val newProjectName = projectName != null ? projectName : "thirdParty";
+
+		return new File(Reference.userhome + newProjectName + File.separator + fileName).exists();
 	}
 
 	private static String getCurseForgeDownloadLocation(final String url, final String projectName,

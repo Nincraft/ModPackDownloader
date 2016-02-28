@@ -1,9 +1,5 @@
 package com.nincraft.modpackdownloader;
 
-import static com.nincraft.modpackdownloader.util.Reference.COOKIE_TEST_1;
-import static com.nincraft.modpackdownloader.util.Reference.CURSEFORGE_BASE_URL;
-import static com.nincraft.modpackdownloader.util.Reference.DATE_FORMATS;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -14,102 +10,116 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.common.base.Strings;
+import com.nincraft.modpackdownloader.container.CurseMod;
+import com.nincraft.modpackdownloader.container.ModContainer;
+import com.nincraft.modpackdownloader.mapper.CurseModMapper;
 import com.nincraft.modpackdownloader.util.Reference;
 
 import lombok.val;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class ModUpdater {
-	static Logger logger = LogManager.getRootLogger();
 
-	public static void updateCurseMods(final String manifestFile, final String mcVersion, final String releaseType) {
+	public static void updateCurseMods(final List<ModContainer> modList, final String mcVersion,
+			final String releaseType) {
+		log.trace("Updating Curse Mods...");
+		val curseMods = new JSONArray();
 		try {
-			val jsons = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
-			val fileList = (JSONArray) (jsons.containsKey("curseFiles") ? jsons.get("curseFiles") : jsons.get("files"));
+			log.info(String.format("Checking for updates from %s mods.", modList.size()));
+			for (val mod : modList) {
+				if (!(mod instanceof CurseMod)) {
+					log.debug(String.format("Mod '%s' is not a Curse Mod, and will be skipped.", mod.getModName()));
+					continue;
+				}
 
-			if (fileList != null) {
-				logger.info("Checking for updates from " + fileList.size() + " mods");
-				for (val file : fileList) {
-					val modJson = (JSONObject) file;
-					val projectID = (Long) modJson.get("projectID");
-					val fileID = (Long) modJson.get("fileID");
-					val url = CURSEFORGE_BASE_URL + projectID + COOKIE_TEST_1;
+				val curseMod = (CurseMod) mod;
 
-					final HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
-					con.setInstanceFollowRedirects(false);
-					con.connect();
+				final HttpURLConnection conn = (HttpURLConnection) new URL(curseMod.getProjectUrl()).openConnection();
+				conn.setInstanceFollowRedirects(false);
+				conn.connect();
 
-					val location = con.getHeaderField("Location");
-					val projectName = location.split("/")[2];
-					val projectParser = new JSONParser();
-					val fileListJson = (JSONObject) getCurseProjectJson(projectID, projectName, projectParser)
-							.get("files");
+				val location = conn.getHeaderField("Location");
+				val projectName = location.split("/")[2];
+				val fileListJson = (JSONObject) getCurseProjectJson(curseMod.getProjectId(), projectName,
+						new JSONParser()).get("files");
 
-					if (fileListJson == null) {
-						logger.error(String.format("No file list found for {}.", projectName));
-						return;
+				if (fileListJson == null) {
+					log.error(String.format("No file list found for %s.", projectName));
+					continue;
+				}
+
+				Date lastDate = null;
+				Long mostRecent = curseMod.getFileId();
+				String mostRecentFile = null;
+				String currentFile = null;
+
+				log.info("Getting most recent available file...");
+				for (val newFileJson : fileListJson.values()) {
+					val newMod = (JSONObject) newFileJson;
+					val date = parseDate((String) newMod.get("created_at"));
+
+					if (lastDate == null) {
+						lastDate = date;
 					}
 
-					Date lastDate = null;
-					Long mostRecent = fileID;
-					String mostRecentFile = null;
-					String currentFile = null;
-
-					for (val thing : fileListJson.values()) {
-						val mod = (JSONObject) fileListJson.get(thing);
-						val date = parseDate((String) mod.get("created_at"));
-
-						if (lastDate == null) {
-							lastDate = date;
-						}
-
-						if (lastDate.before(date) && equalOrLessThan((String) mod.get("type"), releaseType)
-								&& mod.get("version").equals(mcVersion)) {
-							mostRecent = (Long) mod.get("id");
-							mostRecentFile = (String) mod.get("name");
-							lastDate = date;
-						}
-
-						if (fileID.equals(mod.get("id"))) {
-							currentFile = (String) mod.get("name");
-						}
+					if (lastDate.before(date) && equalOrLessThan((String) newMod.get("type"), releaseType)
+							&& newMod.get("version").equals(mcVersion)) {
+						mostRecent = (Long) newMod.get("id");
+						mostRecentFile = (String) newMod.get("name");
+						lastDate = date;
 					}
 
-					if (!mostRecent.equals(fileID)) {
-						logger.info(
-								String.format("Update found for {}.  Most recent version is {}.  Old version was {}.",
-										projectName, mostRecentFile, currentFile));
-
-						modJson.remove("fileID");
-						modJson.put("fileID", mostRecent);
-					}
-
-					if (!modJson.containsKey("name")) {
-						modJson.put("name", projectName);
+					if (curseMod.getFileId().equals(newMod.get("id"))) {
+						currentFile = (String) newMod.get("name");
 					}
 				}
+				log.info("Finished getting most recent available file.");
+
+				if (!mostRecent.equals(curseMod.getFileId())) {
+					log.info(String.format("Update found for %s.  Most recent version is %s.  Old version was %s.",
+							projectName, mostRecentFile, currentFile));
+					curseMod.setFileId(mostRecent);
+				}
+
+				if (Strings.isNullOrEmpty(curseMod.getModName())) {
+					curseMod.setModName(projectName);
+				}
+
+				val json = CurseModMapper.map(curseMod);
+				log.debug(json);
+				curseMods.add(json);
 			}
+			log.info("Finished checking for updates.");
 
-			val file = new FileWriter(manifestFile);
-
+			log.info("Updating Manifest File...");
+			FileWriter file = null;
 			try {
-				file.write(jsons.toJSONString());
+				val jsonLists = (JSONObject) new JSONParser().parse(new FileReader(Reference.manifestFile));
+				log.debug(jsonLists);
+				jsonLists.remove("curseFiles");
+				log.debug(jsonLists);
+				jsonLists.put("curseFiles", curseMods);
+				log.debug(jsonLists);
+
+				file = new FileWriter(Reference.manifestFile);
+				file.write(jsonLists.toJSONString());
 			} finally {
 				file.flush();
 				file.close();
 			}
-		} catch (final IOException e) {
-			logger.error(e.getMessage());
-		} catch (final ParseException e) {
-			logger.error(e.getMessage());
+		} catch (final IOException | ParseException e) {
+			log.error(e.getMessage());
 		}
+		log.trace("Finished Updating Curse Mods.");
 	}
 
 	private static boolean equalOrLessThan(final String modRelease, final String releaseType) {
@@ -118,21 +128,28 @@ public class ModUpdater {
 
 	private static JSONObject getCurseProjectJson(final Long projectID, final String projectName,
 			final JSONParser projectParser) throws ParseException, IOException {
+		log.trace("Getting CurseForge Widget JSON...");
 		try {
-			return (JSONObject) projectParser.parse(new BufferedReader(new InputStreamReader(
-					new URL(String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, projectName)).openStream())));
+			String urlStr = String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, projectName);
+			log.debug(urlStr);
+			return (JSONObject) projectParser
+					.parse(new BufferedReader(new InputStreamReader(new URL(urlStr).openStream())));
 		} catch (final FileNotFoundException e) {
-			return (JSONObject) projectParser.parse(new BufferedReader(new InputStreamReader(
-					new URL(String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, projectID + "-" + projectName))
-							.openStream())));
+			String urlStr = String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, projectID + "-" + projectName);
+			log.debug(urlStr);
+			return (JSONObject) projectParser
+					.parse(new BufferedReader(new InputStreamReader(new URL(urlStr).openStream())));
+		} finally {
+			log.trace("Finished Getting CurseForge Widget JSON.");
 		}
 	}
 
 	private static Date parseDate(final String date) {
-		for (val parse : DATE_FORMATS) {
+		for (val parse : Reference.DATE_FORMATS) {
 			try {
 				return new SimpleDateFormat(parse).parse(date);
 			} catch (final java.text.ParseException e) {
+				log.error(e.getMessage());
 			}
 		}
 		return null;

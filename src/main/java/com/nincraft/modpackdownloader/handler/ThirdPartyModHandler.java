@@ -1,6 +1,6 @@
 package com.nincraft.modpackdownloader.handler;
 
-public class CurseModHandler implements ModHandler {
+public class ThirdPartyModHandler implements ModHandler {
 
 	@Override
 	public void downloadMod() {

@@ -1,5 +1,7 @@
 package com.nincraft.modpackdownloader.handler;
 
-public abstract class ModHandler {
+public interface ModHandler {
+	public void downloadMod();
 
+	public void updateMod();
 }
