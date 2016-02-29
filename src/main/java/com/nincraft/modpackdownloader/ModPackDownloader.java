@@ -193,9 +193,8 @@ public class ModPackDownloader {
 		new Thread(() -> {
 			String modName = mod.getModName();
 
-			log.info(String.format(Reference.DOWNLOADING_MOD_X_OF_Y, modName, downloadCount, DOWNLOAD_TOTAL));
+			log.info(String.format(Reference.DOWNLOADING_MOD_X_OF_Y, modName, DOWNLOAD_COUNT.incrementAndGet(), DOWNLOAD_TOTAL));
 			downloadCurseForgeFile(mod);
-			DOWNLOAD_COUNT.incrementAndGet();
 			log.info(String.format("Finished downloading %s", modName));
 		}).start();
 	}
@@ -205,9 +204,8 @@ public class ModPackDownloader {
 		new Thread(() -> {
 			String modName = mod.getModName();
 
-			log.info(String.format(Reference.DOWNLOADING_MOD_X_OF_Y, modName, downloadCount, DOWNLOAD_TOTAL));
+			log.info(String.format(Reference.DOWNLOADING_MOD_X_OF_Y, modName, DOWNLOAD_COUNT.incrementAndGet(), DOWNLOAD_TOTAL));
 			downloadFile(mod, false);
-			DOWNLOAD_COUNT.incrementAndGet();
 			log.info(String.format("Finished downloading %s", modName));
 		}).start();
 	}
