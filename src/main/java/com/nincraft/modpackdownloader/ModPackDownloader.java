@@ -11,6 +11,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
@@ -31,8 +32,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ModPackDownloader {
 
-	private static int DOWNLOAD_COUNT = 0;
 	private static int DOWNLOAD_TOTAL = 0;
+	private static AtomicInteger DOWNLOAD_COUNT = new AtomicInteger(0);
 
 	private static final List<ModContainer> MOD_LIST = new ArrayList<ModContainer>();
 
@@ -168,7 +169,7 @@ public class ModPackDownloader {
 	}
 
 	private static boolean checkFinished() {
-		return DOWNLOAD_COUNT == DOWNLOAD_TOTAL;
+		return DOWNLOAD_COUNT.get() == DOWNLOAD_TOTAL;
 	}
 
 	private static void downloadMods(final List<ModContainer> modList, final String modFolder) {
@@ -194,7 +195,7 @@ public class ModPackDownloader {
 
 			log.info(String.format(Reference.DOWNLOADING_MOD_X_OF_Y, modName, downloadCount, DOWNLOAD_TOTAL));
 			downloadCurseForgeFile(mod);
-			DOWNLOAD_COUNT++;
+			DOWNLOAD_COUNT.incrementAndGet();
 			log.info(String.format("Finished downloading %s", modName));
 		}).start();
 	}
@@ -206,7 +207,7 @@ public class ModPackDownloader {
 
 			log.info(String.format(Reference.DOWNLOADING_MOD_X_OF_Y, modName, downloadCount, DOWNLOAD_TOTAL));
 			downloadFile(mod, false);
-			DOWNLOAD_COUNT++;
+			DOWNLOAD_COUNT.incrementAndGet();
 			log.info(String.format("Finished downloading %s", modName));
 		}).start();
 	}
