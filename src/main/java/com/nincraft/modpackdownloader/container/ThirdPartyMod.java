@@ -14,7 +14,7 @@ public class ThirdPartyMod extends ModContainer {
 	}
 
 	private String buildFileName() {
-		if (getDownloadUrl().endsWith(".jar")) {
+		if (getDownloadUrl().contains(".jar")) {
 			return getDownloadUrl().substring(getDownloadUrl().lastIndexOf("/") + 1,
 					getDownloadUrl().lastIndexOf(".jar") + 4);
 		}
