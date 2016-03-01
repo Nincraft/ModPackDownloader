@@ -66,6 +66,7 @@ public class ModUpdater {
 		for (val mod : modList) {
 			if (!(mod instanceof CurseMod)) {
 				log.debug(String.format("Mod '%s' is not a Curse Mod, and will be skipped.", mod.getModName()));
+				Reference.updateCount++;
 				continue;
 			}
 
@@ -85,6 +86,7 @@ public class ModUpdater {
 				if (fileListJson == null) {
 					log.error(String.format("No file list found for %s, and will be skipped.",
 							curseMod.getProjectName()));
+					Reference.updateCount++;
 					continue;
 				}
 			} catch (IOException | ParseException e) {
@@ -108,6 +110,7 @@ public class ModUpdater {
 			val json = CurseModMapper.map(curseMod);
 			log.debug(json);
 			curseMods.add(json);
+			Reference.updateCount++;
 		}
 		log.info("Finished checking for updates.");
 	}

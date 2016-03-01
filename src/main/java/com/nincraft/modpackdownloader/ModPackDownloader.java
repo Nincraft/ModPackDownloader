@@ -157,7 +157,7 @@ public class ModPackDownloader {
 			}
 		}
 
-		Reference.updateCount = Reference.downloadTotal = MOD_LIST.size();
+		Reference.updateTotal = Reference.downloadTotal = MOD_LIST.size();
 		log.debug(String.format("A total of %s mods will be %s.", Reference.downloadTotal,
 				Reference.updateMods ? "updated" : "downloaded"));
 
