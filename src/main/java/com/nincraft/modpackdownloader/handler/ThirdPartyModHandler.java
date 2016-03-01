@@ -1,17 +1,17 @@
 package com.nincraft.modpackdownloader.handler;
 
-public class ThirdPartyModHandler implements ModHandler {
+import com.nincraft.modpackdownloader.container.ModContainer;
+
+public class ThirdPartyModHandler extends ModHandler {
 
 	@Override
-	public void downloadMod() {
-		// TODO Auto-generated method stub
-
+	public void downloadMod(final ModContainer mod) {
+		downloadFile(mod, false);
 	}
 
 	@Override
-	public void updateMod() {
-		// TODO Auto-generated method stub
-
+	public void updateMod(final ModContainer mod) {
+		// no-op
 	}
 
 }

@@ -1,10 +1,18 @@
 package com.nincraft.modpackdownloader.util;
 
+import java.util.Map;
+
+import com.google.common.collect.Maps;
+import com.nincraft.modpackdownloader.container.ModContainer;
+import com.nincraft.modpackdownloader.handler.ModHandler;
+
 public class Reference {
+	public static final Map<Class<? extends ModContainer>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
 	public static final String CURSEFORGE_BASE_URL = "http://minecraft.curseforge.com/projects/";
 	public static final String CURSEFORGE_WIDGET_JSON_URL = "http://widget.mcf.li/mc-mods/minecraft/%s.json";
 	public static final String COOKIE_TEST_1 = "?cookieTest=1";
-	public static final String DOWNLOADING_MOD_X_OF_Y = "Downloading %s. Mod %s of %s";
+	public static final String DOWNLOADING_MOD_X_OF_Y = "Downloading %s. Mod %s of %s.";
+	public static final String UPDATING_MOD_X_OF_Y = "Updating %s. Mod %s of %s.";
 	public static final String WINDOWS_FOLDER = "\\.modpackdownloader\\";
 	public static final String MAC_FOLDER = "/Library/Application Support/modpackdownloader/";
 	public static final String OTHER_FOLDER = "/.modpackdownloader/";
@@ -24,4 +32,8 @@ public class Reference {
 	public static String mcVersion;
 	public static String releaseType;
 	public static boolean generateUrlTxt;
+	public static int downloadCount = 0;
+	public static int downloadTotal = 0;
+	public static int updateCount = 0;
+	public static int updateTotal = 0;
 }
