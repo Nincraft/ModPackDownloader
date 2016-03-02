@@ -2,7 +2,7 @@ package com.nincraft.modpackdownloader.container;
 
 import org.json.simple.JSONObject;
 
-public class ThirdPartyMod extends ModContainer {
+public class ThirdPartyMod extends Mod {
 
 	public ThirdPartyMod() {
 	}

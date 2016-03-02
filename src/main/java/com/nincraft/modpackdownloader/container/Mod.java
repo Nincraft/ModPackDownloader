@@ -5,24 +5,24 @@ import org.json.simple.JSONObject;
 import lombok.Data;
 
 @Data
-public abstract class ModContainer implements Cloneable {
+public abstract class Mod implements Cloneable {
 	private String modName;
 	private String rename;
 	private String fileName;
 	private String downloadUrl;
 	private String version;
 
-	public ModContainer() {
+	public Mod() {
 	}
 
-	public ModContainer(final JSONObject modJson) {
+	public Mod(final JSONObject modJson) {
 		setModName((String) modJson.get("name"));
 		setRename((String) modJson.get("rename"));
 		setVersion((String) modJson.get("version"));
 	}
 
 	@Override
-	public ModContainer clone() throws CloneNotSupportedException {
-		return (ModContainer) super.clone();
+	public Mod clone() throws CloneNotSupportedException {
+		return (Mod) super.clone();
 	}
 }

@@ -9,7 +9,7 @@ import lombok.val;
 
 public class ThirdPartyMapper {
 	@SuppressWarnings("unchecked")
-	public JSONObject map(final ThirdPartyMod mod) {
+	public static JSONObject map(final ThirdPartyMod mod) {
 		val json = new JSONObject();
 
 		json.put("name", mod.getModName());
@@ -22,7 +22,7 @@ public class ThirdPartyMapper {
 		return json;
 	}
 
-	public ThirdPartyMod map(final JSONObject json) {
+	public static ThirdPartyMod map(final JSONObject json) {
 		return new ThirdPartyMod(json);
 	}
 }

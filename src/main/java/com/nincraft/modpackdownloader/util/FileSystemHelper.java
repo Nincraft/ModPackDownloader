@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 
-import com.nincraft.modpackdownloader.container.ModContainer;
+import com.nincraft.modpackdownloader.container.Mod;
 
 import lombok.val;
 import lombok.extern.log4j.Log4j2;
@@ -48,7 +48,7 @@ public final class FileSystemHelper {
 		return getLocalFile(fileName, getProjectNameOrDefault(projectName)).exists();
 	}
 
-	public static File getDownloadedFile(final ModContainer mod, final String fileName) {
+	public static File getDownloadedFile(final Mod mod, final String fileName) {
 		if (Reference.modFolder != null) {
 			createFolder(Reference.modFolder);
 			return new File(Reference.modFolder + File.separator + fileName);

@@ -16,7 +16,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class CurseMod extends ModContainer {
+public class CurseMod extends Mod {
 	private Long fileId;
 	private Long projectId;
 	private String projectName;
