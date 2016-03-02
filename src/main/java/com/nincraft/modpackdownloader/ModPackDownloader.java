@@ -1,313 +1,104 @@
 package com.nincraft.modpackdownloader;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.util.Iterator;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import com.nincraft.modpackdownloader.container.ModContainer;
-import com.nincraft.modpackdownloader.util.ModType;
+import com.nincraft.modpackdownloader.manager.ModListManager;
+import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 
+import lombok.val;
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 public class ModPackDownloader {
-
-	private static int DOWNLOAD_COUNT = 1;
-	static Logger logger = LogManager.getRootLogger();
-
-	public static void main(String[] args) {
+	public static void main(final String[] args) throws InterruptedException {
 		if (args.length < 2) {
-			logger.error("Arguments required: manifest file location, mod download location");
+			log.error("Arguments required: manifest file location, mod download location");
 			return;
 		} else {
 			processArguments(args);
 		}
 
 		setupRepo();
-		if (Reference.updateMods) {
-			ModUpdater.updateCurseMods(Reference.manifestFile, Reference.mcVersion, Reference.releaseType);
-		} else {
-			logger.info("Starting download with parameters: " + Reference.manifestFile + ", " + Reference.modFolder);
-			downloadCurseMods(Reference.manifestFile, Reference.modFolder);
-			downloadThirdPartyMods(Reference.manifestFile, Reference.modFolder);
-			logger.info("Finished downloading mods");
+
+		processMods();
+	}
+
+	private static void processArguments(final String[] args) {
+		Reference.manifestFile = args[0];
+		Reference.modFolder = args[1];
+
+		if (args.length > 2) {
+			for (val arg : args) {
+				processArgument(arg);
+			}
 		}
 	}
 
-	private static void processArguments(String[] args) {
-		Reference.manifestFile = args[0];
-		Reference.modFolder = args[1];
-		if (args.length > 2) {
-			for (String arg : args) {
-				if (arg.equals("-forceDownload")) {
-					Reference.forceDownload = true;
-				} else if (arg.equals("-updateMods")) {
-					Reference.updateMods = true;
-				} else if (arg.startsWith("-mcVersion")) {
-					Reference.mcVersion = arg.substring(arg.lastIndexOf("=")+1);
-				} else if (arg.startsWith("-releaseType")) {
-					Reference.releaseType = arg.substring(arg.lastIndexOf("=")+1);
-				} else if (arg.equals("-generateUrlTxt")) {
-					Reference.generateUrlTxt = true;
-				}
-			}
+	private static void processArgument(final String arg) {
+		log.trace("Processing given arguments...");
+		if (arg.equals("-forceDownload")) {
+			Reference.forceDownload = true;
+			log.debug("Downloads are now being forced.");
+		} else if (arg.equals("-updateMods")) {
+			Reference.updateMods = true;
+			log.debug("mods will be updated instead of downloaded.");
+		} else if (arg.startsWith("-mcVersion")) {
+			Reference.mcVersion = arg.substring(arg.lastIndexOf("=") + 1);
+			log.debug(String.format("Minecraft Version set to: %s", Reference.mcVersion));
+		} else if (arg.startsWith("-releaseType")) {
+			Reference.releaseType = arg.substring(arg.lastIndexOf("=") + 1);
+			log.debug(String.format("Checking against mod release type: %s", Reference.releaseType));
+		} else if (arg.equals("-generateUrlTxt")) {
+			Reference.generateUrlTxt = true;
+			log.debug("Mod URL Text files will now be generated.");
 		}
+		log.trace("Finished processing given arguments.");
 	}
 
 	private static void setupRepo() {
+		log.trace("Setting up local repository...");
 		Reference.userhome = System.getProperty("user.home");
+		log.debug(String.format("User Home System Property detected as: %s", Reference.userhome));
+
 		Reference.os = System.getProperty("os.name");
+		log.debug(String.format("Operating System detected as: %s", Reference.os));
+
 		if (Reference.os.startsWith("Windows")) {
-			Reference.userhome += Reference.windowsFolder;
+			Reference.userhome += Reference.WINDOWS_FOLDER;
 		} else if (Reference.os.startsWith("Mac")) {
-			Reference.userhome += Reference.macFolder;
+			Reference.userhome += Reference.MAC_FOLDER;
 		} else {
-			Reference.userhome += Reference.otherFolder;
+			Reference.userhome += Reference.OTHER_FOLDER;
 		}
-		createFolder(Reference.userhome);
+		log.debug(String.format("User Home Folder set to: %s", Reference.userhome));
+
+		FileSystemHelper.createFolder(Reference.userhome);
+		log.trace("Finished setting up local repository.");
 	}
 
-	private static void downloadFromGithubSource(String manifestFile, String modFolder) {
-		try {
-			String URL = "https://github.com/TPPIDev/Modpack-Tweaks/archive/824ef29f76bab126f4299724ab4f9e658b340639.zip";
-			downloadFile(URL, "github", "Modpack-Tweaks.zip", "Modpack Tweaks", false);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
+	private static void processMods() throws InterruptedException {
+		log.trace("Processing Mods...");
+		ModListManager.buildModList();
 
-	private static void downloadThirdPartyMods(String manifestFile, String modFolder) {
-		JSONParser parser = new JSONParser();
-		try {
-			JSONObject jsons = (JSONObject) parser.parse(new FileReader(manifestFile));
-			JSONArray urlList = (JSONArray) jsons.get("thirdParty");
-			if (urlList != null) {
-				Iterator iterator = urlList.iterator();
-				logger.info("Starting download of " + urlList.size() + " 3rd party mods");
-				DOWNLOAD_COUNT = 1;
-				while (iterator.hasNext()) {
-					JSONObject urlJson = (JSONObject) iterator.next();
-					String url = (String) urlJson.get("url");
-					String projectName = (String) urlJson.get("name");
-					String fileName;
-					if (urlJson.get("rename") == null) {
-						fileName = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".jar") + 4);
-					} else {
-						fileName = (String) urlJson.get("rename");
-					}
-					logger.info("Downloading " + fileName + ". Mod " + DOWNLOAD_COUNT + " of " + urlList.size());
-					downloadFile(url, modFolder, fileName, projectName, false);
-					DOWNLOAD_COUNT++;
-				}
+		if (Reference.updateMods) {
+			log.info(String.format("Updating mods with parameters: %s, %s, %s", Reference.manifestFile,
+					Reference.mcVersion, Reference.releaseType));
+			ModListManager.updateMods();
+
+			while (!(Reference.updateCount >= Reference.updateTotal)) {
+				Thread.sleep(1);
 			}
-		} catch (FileNotFoundException e) {
-			logger.error(e.getMessage());
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-		} catch (ParseException e) {
-			logger.error(e.getMessage());
-		}
-	}
-
-	private static void downloadCurseMods(String manifestFile, String modFolder) {
-		JSONParser parser = new JSONParser();
-		try {
-			JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(manifestFile));
-			JSONArray fileList = (JSONArray) jsonObject.get("curseFiles");
-			if (fileList == null) {
-				fileList = (JSONArray) jsonObject.get("files");
-			}
-			if (fileList != null) {
-				logger.info("Starting download of " + fileList.size() + " mods from Curse");
-				Iterator iterator = fileList.iterator();
-				DOWNLOAD_COUNT = 1;
-				while (iterator.hasNext()) {
-					ModContainer mod = new ModContainer((JSONObject) iterator.next(), ModType.CURSE);
-					String url = Reference.CURSEFORGE_BASE_URL + mod.getProjectId() + Reference.COOKIE_TEST_1;
-					HttpURLConnection con = (HttpURLConnection) (new URL(url).openConnection());
-					con.setInstanceFollowRedirects(false);
-					con.connect();
-					mod.setFolder(modFolder);
-					mod.setProjectName(con.getHeaderField("Location").split("/")[2]);
-					logger.info("Downloading " + mod.getProjectName() + ". Mod " + DOWNLOAD_COUNT + " of "
-							+ fileList.size());
-					downloadCurseForgeFile(mod);
-					DOWNLOAD_COUNT++;
-				}
-			}
-		} catch (FileNotFoundException e) {
-			logger.error(e.getMessage());
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-		} catch (ParseException e) {
-			logger.error(e.getMessage());
-		}
-	}
-
-	private static String createCurseDownloadUrl(ModContainer mod) {
-		return Reference.CURSEFORGE_BASE_URL + mod.getProjectName() + "/files/" + mod.getFileId() + "/download";
-	}
-
-	private static void createFolder(String folder) {
-		if (folder != null) {
-			File dir = new File(folder);
-			if (!dir.exists()) {
-				dir.mkdirs();
-			}
-		}
-	}
-
-	private static void downloadCurseForgeFile(ModContainer mod) {
-		String fileName = mod.getProjectName();
-		String url = createCurseDownloadUrl(mod);
-		try {
-			if (mod.getRename() == null) {
-				fileName = getCurseForgeDownloadLocation(url, mod.getProjectName(), fileName);
-			} else {
-				fileName = mod.getRename();
-			}
-			downloadFile(url, mod.getFolder(), fileName, mod.getProjectName(), false);
-		} catch (MalformedURLException e) {
-			logger.error(e.getMessage());
-		} catch (FileNotFoundException e) {
-			logger.error("Could not find: " + fileName, e);
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-		}
-	}
-
-	private static void downloadFile(String url, String folder, String fileName, String projectName,
-			boolean useUserAgent) throws MalformedURLException, FileNotFoundException {
-		try {
-			fileName = fileName.replace("%20", " ");
-			if (!isInLocalRepo(projectName, fileName) || Reference.forceDownload) {
-				ReadableByteChannel rbc;
-				if (useUserAgent) {
-					HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
-					con.addRequestProperty("User-Agent", "Mozilla/4.0");
-					rbc = Channels.newChannel(con.getInputStream());
-				} else {
-					URL fileThing = new URL(url);
-					rbc = Channels.newChannel(fileThing.openStream());
-				}
-				FileOutputStream fos;
-				File downloadedFile;
-				if (folder != null) {
-					createFolder(folder);
-					downloadedFile = new File(folder + File.separator + fileName);
-					fos = new FileOutputStream(downloadedFile);
-				} else {
-					downloadedFile = new File(fileName);
-					fos = new FileOutputStream(downloadedFile);
-				}
-				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-				fos.close();
-				if (Reference.generateUrlTxt) {
-					generateUrlTxt(downloadedFile, url, folder);
-				}
-				copyToLocalRepo(projectName, downloadedFile);
-			} else {
-				copyFromLocalRepo(projectName, fileName, folder);
-			}
-		} catch (IOException e) {
-			if (!useUserAgent) {
-				logger.warn("Error getting " + fileName + ". Attempting redownload with alternate method.");
-				downloadFile(url, folder, fileName, projectName, true);
-			} else {
-				logger.error("Could not download " + fileName, e.getMessage());
-			}
-		}
-	}
-
-	private static void generateUrlTxt(File downloadedFile, String url, String folder) {
-		File urlTxt = null;
-		if (folder != null) {
-			urlTxt = new File(folder + File.separator + downloadedFile.getName() + ".url.txt");
+			ModListManager.updateManifest();
+			log.info("Finished updating mods.");
 		} else {
-			urlTxt = new File(downloadedFile.getName() + "url.txt");
-		}
-	}
+			log.info(String.format("Downloading mods with parameters: %s, %s", Reference.manifestFile,
+					Reference.modFolder));
+			ModListManager.downloadMods();
 
-	private static void copyToLocalRepo(String projectName, File downloadedFile) {
-		try {
-			if (projectName == null) {
-				projectName = "thirdParty";
+			while (!(Reference.downloadCount >= Reference.downloadTotal)) {
+				Thread.sleep(1);
 			}
-			File localRepoFolder = new File(Reference.userhome + projectName);
-			FileUtils.copyFileToDirectory(downloadedFile, localRepoFolder);
-		} catch (IOException e) {
-			logger.error("Could not copy " + projectName + " to local repo", e);
+			log.info("Finished downloading mods.");
 		}
+		log.trace("Finished Processing Mods.");
 	}
-
-	private static void copyFromLocalRepo(String projectName, String fileName, String folder) {
-		try {
-			if (projectName == null) {
-				projectName = "thirdParty";
-			}
-			File localRepoMod = new File(Reference.userhome + projectName + File.separator + fileName);
-			FileUtils.copyFileToDirectory(localRepoMod, new File(folder));
-		} catch (IOException e) {
-			logger.error("Could not copy " + projectName + " from local repo", e);
-		}
-	}
-
-	private static boolean isInLocalRepo(String projectName, String fileName) {
-		if (projectName == null) {
-			projectName = "thirdParty";
-		}
-		File localCheck = new File(Reference.userhome + projectName + File.separator + fileName);
-		return localCheck.exists();
-	}
-
-	private static String getCurseForgeDownloadLocation(String url, String projectName, String downloadLocation)
-			throws IOException, MalformedURLException {
-		final String jarext = ".jar";
-		if (downloadLocation.indexOf(jarext) == -1) {
-			url = url + Reference.COOKIE_TEST_1;
-			HttpURLConnection con = (HttpURLConnection) (new URL(url).openConnection());
-			con.setInstanceFollowRedirects(false);
-			con.connect();
-			String actualURL = con.getURL().toString();
-			int retryCount = 0;
-			String headerLocation;
-			while (con.getResponseCode() != 200 || actualURL.indexOf(jarext) == -1) {
-				headerLocation = con.getHeaderField("Location");
-				if (headerLocation != null) {
-					actualURL = headerLocation;
-				} else {
-					actualURL = con.getURL().toString();
-				}
-				if (retryCount > Reference.RETRY_COUNTER) {
-					break;
-				}
-				con = (HttpURLConnection) (new URL(url).openConnection());
-				retryCount++;
-			}
-
-			if (actualURL.substring(actualURL.lastIndexOf('/') + 1).indexOf(jarext) != -1)
-				downloadLocation = actualURL.substring(actualURL.lastIndexOf('/') + 1);
-			else
-				downloadLocation = projectName + jarext;
-		}
-
-		return downloadLocation.replace("%20", " ");
-	}
-
 }
