@@ -36,7 +36,7 @@ public class CurseModHandler extends ModHandler {
 		updateCurseMod((CurseMod) mod);
 	}
 
-	private void downloadCurseMod(final CurseMod mod) {
+	private static void downloadCurseMod(final CurseMod mod) {
 		val modName = mod.getModName();
 
 		try {
@@ -91,7 +91,7 @@ public class CurseModHandler extends ModHandler {
 		return URLHelper.decodeSpaces(encodedDownloadLocation);
 	}
 
-	private void updateCurseMod(final CurseMod mod) {
+	private static void updateCurseMod(final CurseMod mod) {
 		JSONObject fileListJson = null;
 		try {
 			val conn = (HttpURLConnection) new URL(mod.getProjectUrl()).openConnection();
@@ -113,7 +113,6 @@ public class CurseModHandler extends ModHandler {
 		}
 
 		val newMod = getLatestVersion(Reference.mcVersion, Reference.releaseType, mod, fileListJson);
-		log.debug(newMod);
 		if (mod.getFileId().compareTo(newMod.getFileId()) < 0) {
 			log.info(String.format("Update found for %s.  Most recent version is %s.  Old version was %s.",
 					mod.getProjectName(), newMod.getVersion(), mod.getVersion()));

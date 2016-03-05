@@ -72,6 +72,10 @@ public class ModPackDownloader {
 		log.debug(String.format("User Home Folder set to: %s", Reference.userhome));
 
 		FileSystemHelper.createFolder(Reference.userhome);
+
+		log.debug("Setting User Agent...");
+		System.setProperty("http.agent", "Mozilla/4.0");
+
 		log.trace("Finished setting up local repository.");
 	}
 
@@ -87,6 +91,7 @@ public class ModPackDownloader {
 			while (!(Reference.updateCount >= Reference.updateTotal)) {
 				Thread.sleep(1);
 			}
+
 			ModListManager.updateManifest();
 			log.info("Finished updating mods.");
 		} else {
