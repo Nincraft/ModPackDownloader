@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -69,8 +70,8 @@ public class ModListManager {
 		}
 
 		val curseMods = getCurseModList(jsonLists);
-		if (curseMods != null) {
-			for (val curseMod : curseMods) {
+		if (curseMods.isPresent()) {
+			for (val curseMod : curseMods.get()) {
 				val mod = new CurseMod((JSONObject) curseMod);
 				addMod(mod);
 				processedCurseMods = true;
@@ -79,8 +80,8 @@ public class ModListManager {
 		}
 
 		val thirdPartyMods = getThirdPartyModList(jsonLists);
-		if (thirdPartyMods != null) {
-			for (val thirdPartyMod : thirdPartyMods) {
+		if (thirdPartyMods.isPresent()) {
+			for (val thirdPartyMod : thirdPartyMods.get()) {
 				val mod = new ThirdPartyMod((JSONObject) thirdPartyMod);
 				addMod(mod);
 				processedThirdPartyMods = true;
@@ -96,12 +97,13 @@ public class ModListManager {
 		log.trace("Finished Building Mod List.");
 	}
 
-	public static JSONArray getCurseModList(final JSONObject jsonList) {
-		return (JSONArray) (jsonList.containsKey("curseFiles") ? jsonList.get("curseFiles") : jsonList.get("files"));
+	public static Optional<JSONArray> getCurseModList(final JSONObject jsonList) {
+		return Optional.ofNullable(
+				(JSONArray) (jsonList.containsKey("curseFiles") ? jsonList.get("curseFiles") : jsonList.get("files")));
 	}
 
-	public static JSONArray getThirdPartyModList(final JSONObject jsonLists) {
-		return (JSONArray) jsonLists.get("thirdParty");
+	public static Optional<JSONArray> getThirdPartyModList(final JSONObject jsonLists) {
+		return Optional.ofNullable((JSONArray) jsonLists.get("thirdParty"));
 	}
 
 	public static final void downloadMods() {
