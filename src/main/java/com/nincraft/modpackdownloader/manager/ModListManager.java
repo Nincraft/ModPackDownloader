@@ -3,6 +3,9 @@ package com.nincraft.modpackdownloader.manager;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,14 +17,15 @@ import org.json.simple.parser.ParseException;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.nincraft.modpackdownloader.container.CurseMod;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.nincraft.modpackdownloader.container.CurseFile;
+import com.nincraft.modpackdownloader.container.Manifest;
 import com.nincraft.modpackdownloader.container.Mod;
-import com.nincraft.modpackdownloader.container.ThirdPartyMod;
+import com.nincraft.modpackdownloader.container.ThirdParty;
 import com.nincraft.modpackdownloader.handler.CurseModHandler;
 import com.nincraft.modpackdownloader.handler.ModHandler;
 import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
-import com.nincraft.modpackdownloader.mapper.CurseModMapper;
-import com.nincraft.modpackdownloader.mapper.ThirdPartyMapper;
 import com.nincraft.modpackdownloader.util.Reference;
 
 import lombok.val;
@@ -35,28 +39,14 @@ public class ModListManager {
 
 	private static boolean processedCurseMods = false;
 	private static boolean processedThirdPartyMods = false;
+	private static Manifest manifestFile;
+	private static Gson gson = new Gson();
 
 	static {
 		log.trace("Registering various mod type handlers...");
-		MOD_HANDLERS.put(CurseMod.class, new CurseModHandler());
-		MOD_HANDLERS.put(ThirdPartyMod.class, new ThirdPartyModHandler());
+		MOD_HANDLERS.put(CurseFile.class, new CurseModHandler());
+		MOD_HANDLERS.put(ThirdParty.class, new ThirdPartyModHandler());
 		log.trace("Finished registering various mod type handlers.");
-	}
-
-	public static void addMod(final Mod mod) {
-		MOD_LIST.add(mod);
-	}
-
-	public static void clearModList() {
-		MOD_LIST.clear();
-	}
-
-	public static void sortModList() {
-		MOD_LIST.sort((mod1, mod2) -> mod1.getModName().compareToIgnoreCase(mod2.getModName()));
-	}
-
-	public static int getModListCount() {
-		return MOD_LIST.size();
 	}
 
 	public static void buildModList() {
@@ -69,31 +59,29 @@ public class ModListManager {
 			return;
 		}
 
-		val curseMods = getCurseModList(jsonLists);
-		if (curseMods.isPresent()) {
-			for (val curseMod : curseMods.get()) {
-				val mod = new CurseMod((JSONObject) curseMod);
-				addMod(mod);
-				processedCurseMods = true;
-				log.debug(String.format("Curse Mod '%s' found.", mod.getModName()));
-			}
-		}
+		manifestFile = gson.fromJson(jsonLists.toString(), Manifest.class);
 
-		val thirdPartyMods = getThirdPartyModList(jsonLists);
-		if (thirdPartyMods.isPresent()) {
-			for (val thirdPartyMod : thirdPartyMods.get()) {
-				val mod = new ThirdPartyMod((JSONObject) thirdPartyMod);
-				addMod(mod);
-				processedThirdPartyMods = true;
-				log.debug(String.format("Third Party Mod '%s' found.", mod.getModName()));
-			}
-		}
+		MOD_LIST.addAll(manifestFile.getCurseFiles());
+		processedCurseMods = true;
 
-		Reference.updateTotal = Reference.downloadTotal = getModListCount();
+		MOD_LIST.addAll(manifestFile.getThirdParty());
+		processedThirdPartyMods = true;
+		
+		Reference.updateTotal = Reference.downloadTotal = MOD_LIST.size();
 		log.debug(String.format("A total of %s mods will be %s.", Reference.downloadTotal,
 				Reference.updateMods ? "updated" : "downloaded"));
 
-		sortModList();
+		Comparator<Mod> compareMods = new Comparator<Mod>() {
+			@Override
+			public int compare(Mod mod1, Mod mod2) {
+				return mod1.getName().toLowerCase().compareTo(mod2.getName().toLowerCase());
+			}
+		};
+		
+		Collections.sort(MOD_LIST, compareMods);
+		
+		MOD_LIST.forEach(Mod::init);
+		
 		log.trace("Finished Building Mod List.");
 	}
 
@@ -110,12 +98,12 @@ public class ModListManager {
 		log.trace(String.format("Downloading %s mods...", MOD_LIST.size()));
 		int downloadCount = 1;
 		for (val mod : MOD_LIST) {
-			log.info(String.format(Reference.DOWNLOADING_MOD_X_OF_Y, mod.getModName(), downloadCount++,
+			log.info(String.format(Reference.DOWNLOADING_MOD_X_OF_Y, mod.getName(), downloadCount++,
 					Reference.downloadTotal));
 			new Thread(() -> {
 				MOD_HANDLERS.get(mod.getClass()).downloadMod(mod);
 				Reference.downloadCount++;
-				log.info(String.format("Finished downloading %s", mod.getModName()));
+				log.info(String.format("Finished downloading %s", mod.getName()));
 			}).start();
 		}
 		log.trace(String.format("Finished downloading %s mods.", MOD_LIST.size()));
@@ -125,12 +113,12 @@ public class ModListManager {
 		log.trace(String.format("Updating %s mods...", Reference.updateTotal));
 		int updateCount = 1;
 		for (val mod : MOD_LIST) {
-			log.info(String.format(Reference.UPDATING_MOD_X_OF_Y, mod.getModName(), updateCount++,
+			log.info(String.format(Reference.UPDATING_MOD_X_OF_Y, mod.getName(), updateCount++,
 					Reference.updateTotal));
 			new Thread(() -> {
 				MOD_HANDLERS.get(mod.getClass()).updateMod(mod);
 				Reference.updateCount++;
-				log.info(String.format("Finished updating %s", mod.getModName()));
+				log.info(String.format("Finished updating %s", mod.getName()));
 			}).start();
 		}
 		log.trace(String.format("Finished updating %s mods.", Reference.updateTotal));
@@ -139,35 +127,14 @@ public class ModListManager {
 	public static void updateManifest() {
 		log.info("Updating Manifest File...");
 		try {
+			Gson prettyGson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
+					.disableHtmlEscaping().create();
 			val file = new FileWriter(Reference.manifestFile);
-			file.write(buildManifestJson());
+			file.write(prettyGson.toJson(manifestFile));
 			file.flush();
 			file.close();
 		} catch (final IOException e) {
 			log.error(e.getMessage());
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public static String buildManifestJson() {
-		JSONObject manifest = new JSONObject();
-
-		if (processedCurseMods) {
-			manifest.put("curseFiles", new JSONArray());
-		}
-
-		if (processedThirdPartyMods) {
-			manifest.put("thirdParty", new JSONArray());
-		}
-
-		for (val mod : MOD_LIST) {
-			if (mod instanceof CurseMod && manifest.containsKey("curseFiles")) {
-				((JSONArray) manifest.get("curseFiles")).add(CurseModMapper.map((CurseMod) mod));
-			} else if (mod instanceof ThirdPartyMod && manifest.containsKey("thirdParty")) {
-				((JSONArray) manifest.get("thirdParty")).add(ThirdPartyMapper.map((ThirdPartyMod) mod));
-			}
-		}
-
-		return manifest.toString();
 	}
 }

@@ -1,28 +1,28 @@
 package com.nincraft.modpackdownloader.container;
 
-import org.json.simple.JSONObject;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import lombok.Data;
 
 @Data
 public abstract class Mod implements Cloneable {
-	private String modName;
 	private String rename;
 	private String fileName;
 	private String downloadUrl;
 	private String version;
+	@SerializedName("name")
+	@Expose
+	public String name;
 
+	
 	public Mod() {
-	}
-
-	public Mod(final JSONObject modJson) {
-		setModName((String) modJson.get("name"));
-		setRename((String) modJson.get("rename"));
-		setVersion((String) modJson.get("version"));
 	}
 
 	@Override
 	public Mod clone() throws CloneNotSupportedException {
 		return (Mod) super.clone();
 	}
+	
+	public abstract void init();
 }
