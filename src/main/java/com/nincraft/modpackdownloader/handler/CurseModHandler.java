@@ -136,11 +136,14 @@ public class CurseModHandler extends ModHandler {
 			newMod = new CurseFile();
 		}
 
+		Date latestDate = null;
 		for (val newFileJson : fileListJson.values()) {
 			val newModJson = (JSONObject) newFileJson;
 			val date = parseDate((String) newModJson.get("created_at"));
 
-			Date latestDate = date;
+			if(latestDate == null){
+				latestDate = date;
+			}
 			if (!latestDate.after(date) && equalOrLessThan((String) newModJson.get("type"), releaseType)
 					&& newModJson.get("version").equals(mcVersion)) {
 				newMod.setFileID(((Long) newModJson.get("id")).intValue());
