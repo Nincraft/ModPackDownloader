@@ -7,8 +7,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -136,26 +137,19 @@ public class CurseModHandler extends ModHandler {
 			newMod = new CurseFile();
 		}
 
-		Date latestDate = null;
-		for (val newFileJson : fileListJson.values()) {
-			val newModJson = (JSONObject) newFileJson;
-			val date = parseDate((String) newModJson.get("created_at"));
-
-			if(latestDate == null){
-				latestDate = date;
-			}
-			if (!latestDate.after(date) && equalOrLessThan((String) newModJson.get("type"), releaseType)
-					&& newModJson.get("version").equals(mcVersion)) {
-				newMod.setFileID(((Long) newModJson.get("id")).intValue());
-				newMod.setVersion((String) newModJson.get("name"));
-				latestDate = date;
-			}
-
-			if (curseMod.getFileID().equals(newMod.getFileID())) {
-				log.debug("Ensuring the current version is set on the mod.");
-				curseMod.setVersion(newMod.getVersion());
+		List<JSONObject> fileList = new ArrayList<JSONObject>(fileListJson.values());
+		List<Long> fileIds = new ArrayList<Long>();
+		for (JSONObject file : fileList){
+			if (equalOrLessThan((String) file.get("type"), releaseType) && file.get("version").equals(mcVersion)) {
+				fileIds.add((Long) file.get("id"));
 			}
 		}
+		Collections.sort(fileIds);
+		Collections.reverse(fileIds);
+		if(fileIds.get(0).intValue() != curseMod.getFileID()){
+			newMod.setFileID(fileIds.get(0).intValue());
+		}
+		
 		log.trace("Finished getting most recent available file.");
 		return newMod;
 	}
@@ -180,16 +174,5 @@ public class CurseModHandler extends ModHandler {
 		} finally {
 			log.trace("Finished Getting CurseForge Widget JSON.");
 		}
-	}
-
-	private static Date parseDate(final String date) {
-		for (val parse : Reference.DATE_FORMATS) {
-			try {
-				return new SimpleDateFormat(parse).parse(date);
-			} catch (final java.text.ParseException e) {
-				log.error(e.getMessage());
-			}
-		}
-		return null;
 	}
 }

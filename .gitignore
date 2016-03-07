@@ -5,3 +5,4 @@ target/
 cache/
 all/
 *.jar
+logs/
