@@ -17,6 +17,8 @@ public class Manifest {
 	@SerializedName("curseFiles")
 	@Expose
 	public List<CurseFile> curseFiles = new ArrayList<CurseFile>();
+	@SerializedName("files")
+	public List<CurseFile> curseManifestFiles = new ArrayList<CurseFile>();
 	@SerializedName("thirdParty")
 	@Expose
 	public List<ThirdParty> thirdParty = new ArrayList<ThirdParty>();

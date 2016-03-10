@@ -100,12 +100,12 @@ public class CurseModHandler extends ModHandler {
 			conn.connect();
 
 			val location = conn.getHeaderField("Location");
-			mod.setProjectName(location.split("/")[2]);
-			fileListJson = (JSONObject) getCurseProjectJson(mod.getProjectID(), mod.getProjectName(), new JSONParser())
+			mod.setName(location.split("/")[2]);
+			fileListJson = (JSONObject) getCurseProjectJson(mod.getProjectID(), mod.getName(), new JSONParser())
 					.get("files");
 
 			if (fileListJson == null) {
-				log.error(String.format("No file list found for %s, and will be skipped.", mod.getProjectName()));
+				log.error(String.format("No file list found for %s, and will be skipped.", mod.getName()));
 				return;
 			}
 		} catch (IOException | ParseException e) {
@@ -116,13 +116,9 @@ public class CurseModHandler extends ModHandler {
 		val newMod = getLatestVersion(Reference.mcVersion, Reference.releaseType, mod, fileListJson);
 		if (mod.getFileID().compareTo(newMod.getFileID()) < 0) {
 			log.info(String.format("Update found for %s.  Most recent version is %s.  Old version was %s.",
-					mod.getProjectName(), newMod.getVersion(), mod.getVersion()));
+					mod.getName(), newMod.getVersion(), mod.getVersion()));
 			mod.setFileID(newMod.getFileID());
 			mod.setVersion(newMod.getVersion());
-		}
-
-		if (Strings.isNullOrEmpty(mod.getName())) {
-			mod.setName(mod.getProjectName());
 		}
 	}
 

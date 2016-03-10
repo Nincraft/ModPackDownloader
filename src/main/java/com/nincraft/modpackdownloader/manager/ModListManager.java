@@ -59,7 +59,8 @@ public class ModListManager {
 		}
 
 		manifestFile = gson.fromJson(jsonLists.toString(), Manifest.class);
-
+		
+		manifestFile.getCurseFiles().addAll(manifestFile.getCurseManifestFiles());
 		MOD_LIST.addAll(manifestFile.getCurseFiles());
 		processedCurseMods = true;
 
