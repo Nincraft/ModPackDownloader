@@ -40,6 +40,13 @@ public class ModListManager {
 	private static boolean processedThirdPartyMods = false;
 	private static Manifest manifestFile;
 	private static Gson gson = new Gson();
+	
+	private static Comparator<Mod> compareMods = new Comparator<Mod>() {
+		@Override
+		public int compare(Mod mod1, Mod mod2) {
+			return mod1.getName().toLowerCase().compareTo(mod2.getName().toLowerCase());
+		}
+	};
 
 	static {
 		log.trace("Registering various mod type handlers...");
@@ -71,12 +78,6 @@ public class ModListManager {
 		log.debug(String.format("A total of %s mods will be %s.", Reference.downloadTotal,
 				Reference.updateMods ? "updated" : "downloaded"));
 
-		Comparator<Mod> compareMods = new Comparator<Mod>() {
-			@Override
-			public int compare(Mod mod1, Mod mod2) {
-				return mod1.getName().toLowerCase().compareTo(mod2.getName().toLowerCase());
-			}
-		};
 		
 		Collections.sort(MOD_LIST, compareMods);
 		
@@ -127,6 +128,8 @@ public class ModListManager {
 	public static void updateManifest() {
 		log.info("Updating Manifest File...");
 		try {
+			manifestFile.getCurseFiles().sort(compareMods);
+			manifestFile.getThirdParty().sort(compareMods);
 			Gson prettyGson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
 					.disableHtmlEscaping().create();
 			val file = new FileWriter(Reference.manifestFile);
