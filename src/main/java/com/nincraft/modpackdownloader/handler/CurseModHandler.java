@@ -146,7 +146,7 @@ public class CurseModHandler extends ModHandler {
 		}
 		Collections.sort(fileIds);
 		Collections.reverse(fileIds);
-		if(fileIds.get(0).intValue() != curseMod.getFileID()){
+		if(!fileIds.isEmpty() && fileIds.get(0).intValue() != curseMod.getFileID()){
 			newMod.setFileID(fileIds.get(0).intValue());
 		}
 		
