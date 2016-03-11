@@ -115,8 +115,8 @@ public class CurseModHandler extends ModHandler {
 
 		val newMod = getLatestVersion(Reference.mcVersion, Reference.releaseType, mod, fileListJson);
 		if (mod.getFileID().compareTo(newMod.getFileID()) < 0) {
-			log.info(String.format("Update found for %s.  Most recent version is %s.  Old version was %s.",
-					mod.getName(), newMod.getVersion(), mod.getVersion()));
+			log.info(String.format("Update found for %s.  Most recent version is %s.", mod.getName(),
+					newMod.getVersion()));
 			mod.setFileID(newMod.getFileID());
 			mod.setVersion(newMod.getVersion());
 		}
@@ -135,17 +135,18 @@ public class CurseModHandler extends ModHandler {
 
 		List<JSONObject> fileList = new ArrayList<JSONObject>(fileListJson.values());
 		List<Long> fileIds = new ArrayList<Long>();
-		for (JSONObject file : fileList){
+		for (JSONObject file : fileList) {
 			if (equalOrLessThan((String) file.get("type"), releaseType) && file.get("version").equals(mcVersion)) {
 				fileIds.add((Long) file.get("id"));
 			}
 		}
 		Collections.sort(fileIds);
 		Collections.reverse(fileIds);
-		if(!fileIds.isEmpty() && fileIds.get(0).intValue() != curseMod.getFileID()){
+		if (!fileIds.isEmpty() && fileIds.get(0).intValue() != curseMod.getFileID()) {
 			newMod.setFileID(fileIds.get(0).intValue());
+			newMod.setVersion((String) ((JSONObject) fileListJson.get(newMod.getFileID().toString())).get("name"));
 		}
-		
+
 		log.trace("Finished getting most recent available file.");
 		return newMod;
 	}
