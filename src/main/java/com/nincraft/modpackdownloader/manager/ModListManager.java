@@ -36,8 +36,6 @@ public class ModListManager {
 
 	public static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
 
-	private static boolean processedCurseMods = false;
-	private static boolean processedThirdPartyMods = false;
 	private static Manifest manifestFile;
 	private static Gson gson = new Gson();
 	
@@ -69,11 +67,7 @@ public class ModListManager {
 		
 		manifestFile.getCurseFiles().addAll(manifestFile.getCurseManifestFiles());
 		MOD_LIST.addAll(manifestFile.getCurseFiles());
-		processedCurseMods = true;
-
 		MOD_LIST.addAll(manifestFile.getThirdParty());
-		processedThirdPartyMods = true;
-		
 		Reference.updateTotal = Reference.downloadTotal = MOD_LIST.size();
 		log.debug(String.format("A total of %s mods will be %s.", Reference.downloadTotal,
 				Reference.updateMods ? "updated" : "downloaded"));

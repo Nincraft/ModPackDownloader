@@ -8,12 +8,12 @@ import org.apache.commons.io.FileUtils;
 import com.nincraft.modpackdownloader.container.Mod;
 
 import lombok.val;
+import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
+@UtilityClass
 public final class FileSystemHelper {
-	private FileSystemHelper() {
-	}
 
 	public static void createFolder(final String folder) {
 		if (folder != null) {
