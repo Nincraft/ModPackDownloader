@@ -1,5 +1,6 @@
 package com.nincraft.modpackdownloader.manager;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -38,7 +40,7 @@ public class ModListManager {
 
 	private static Manifest manifestFile;
 	private static Gson gson = new Gson();
-	
+
 	private static Comparator<Mod> compareMods = new Comparator<Mod>() {
 		@Override
 		public int compare(Mod mod1, Mod mod2) {
@@ -64,7 +66,9 @@ public class ModListManager {
 		}
 
 		manifestFile = gson.fromJson(jsonLists.toString(), Manifest.class);
-		
+		if (!manifestFile.getCurseManifestFiles().isEmpty()) {
+			backupCurseManifest();
+		}
 		manifestFile.getCurseFiles().addAll(manifestFile.getCurseManifestFiles());
 		MOD_LIST.addAll(manifestFile.getCurseFiles());
 		MOD_LIST.addAll(manifestFile.getThirdParty());
@@ -72,12 +76,19 @@ public class ModListManager {
 		log.debug(String.format("A total of %s mods will be %s.", Reference.downloadTotal,
 				Reference.updateMods ? "updated" : "downloaded"));
 
-		
 		Collections.sort(MOD_LIST, compareMods);
-		
+
 		MOD_LIST.forEach(Mod::init);
-		
+
 		log.trace("Finished Building Mod List.");
+	}
+
+	private static void backupCurseManifest() {
+		try {
+			FileUtils.copyFile(new File(Reference.manifestFile), new File(Reference.manifestFile + ".bak"), true);
+		} catch (IOException e) {
+			log.error("Could not backup Curse manifest file", e.getMessage());
+		}
 	}
 
 	public static Optional<JSONArray> getCurseModList(final JSONObject jsonList) {
@@ -108,8 +119,7 @@ public class ModListManager {
 		log.trace(String.format("Updating %s mods...", Reference.updateTotal));
 		int updateCount = 1;
 		for (val mod : MOD_LIST) {
-			log.info(String.format(Reference.UPDATING_MOD_X_OF_Y, mod.getName(), updateCount++,
-					Reference.updateTotal));
+			log.info(String.format(Reference.UPDATING_MOD_X_OF_Y, mod.getName(), updateCount++, Reference.updateTotal));
 			new Thread(() -> {
 				MOD_HANDLERS.get(mod.getClass()).updateMod(mod);
 				Reference.updateCount++;
