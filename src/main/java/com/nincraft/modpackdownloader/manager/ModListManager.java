@@ -16,6 +16,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -55,19 +56,24 @@ public class ModListManager {
 		log.trace("Finished registering various mod type handlers.");
 	}
 
-	public static void buildModList() {
+	public static int buildModList() {
 		log.trace("Building Mod List...");
 		JSONObject jsonLists = null;
 		try {
 			jsonLists = (JSONObject) new JSONParser().parse(new FileReader(Reference.manifestFile));
 		} catch (IOException | ParseException e) {
 			log.error(e.getMessage());
-			return;
+			return -1;
 		}
 
 		manifestFile = gson.fromJson(jsonLists.toString(), Manifest.class);
 		if (!manifestFile.getCurseManifestFiles().isEmpty()) {
 			backupCurseManifest();
+		}
+		Reference.mcVersion = manifestFile.getMinecraftVersion();
+		if(Strings.isNullOrEmpty(Reference.mcVersion)){
+			log.error("No Minecraft version found in manifest file");
+			return -1;
 		}
 		manifestFile.getCurseFiles().addAll(manifestFile.getCurseManifestFiles());
 		MOD_LIST.addAll(manifestFile.getCurseFiles());
@@ -81,6 +87,7 @@ public class ModListManager {
 		MOD_LIST.forEach(Mod::init);
 
 		log.trace("Finished Building Mod List.");
+		return 0;
 	}
 
 	private static void backupCurseManifest() {

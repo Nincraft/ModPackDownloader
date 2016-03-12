@@ -45,9 +45,6 @@ public class ModPackDownloader {
 		} else if (arg.equals("-updateMods")) {
 			Reference.updateMods = true;
 			log.debug("mods will be updated instead of downloaded.");
-		} else if (arg.startsWith("-mcVersion")) {
-			Reference.mcVersion = arg.substring(arg.lastIndexOf("=") + 1);
-			log.debug(String.format("Minecraft Version set to: %s", Reference.mcVersion));
 		} else if (arg.startsWith("-releaseType")) {
 			Reference.releaseType = arg.substring(arg.lastIndexOf("=") + 1);
 			log.debug(String.format("Checking against mod release type: %s", Reference.releaseType));
@@ -85,8 +82,10 @@ public class ModPackDownloader {
 
 	private static void processMods() throws InterruptedException {
 		log.trace("Processing Mods...");
-		ModListManager.buildModList();
-
+		int returnCode = ModListManager.buildModList();
+		if (returnCode == -1) {
+			return;
+		}
 		if (Reference.updateMods) {
 			log.info(String.format("Updating mods with parameters: %s, %s, %s", Reference.manifestFile,
 					Reference.mcVersion, Reference.releaseType));
