@@ -44,6 +44,7 @@ public class ApplicationUpdateHandeler {
 			FileUtils.copyURLToFile(new URL(downloadUrl), updatedApp);
 		} catch (IOException e) {
 			log.error("Failed to download update", e.getMessage());
+			return;
 		}
 		log.info("Downloaded " + appName);
 	}
