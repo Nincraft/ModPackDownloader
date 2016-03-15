@@ -48,7 +48,7 @@ public final class FileSystemHelper {
 		return getLocalFile(fileName, getProjectNameOrDefault(projectName)).exists();
 	}
 
-	public static File getDownloadedFile(final Mod mod, final String fileName) {
+	public static File getDownloadedFile(final String fileName) {
 		if (Reference.modFolder != null) {
 			createFolder(Reference.modFolder);
 			return new File(Reference.modFolder + File.separator + fileName);

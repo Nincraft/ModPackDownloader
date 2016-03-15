@@ -25,7 +25,7 @@ public abstract class ModHandler {
 		val decodedFileName = URLHelper.decodeSpaces(mod.getFileName());
 
 		if (!FileSystemHelper.isInLocalRepo(mod.getName(), decodedFileName) || Reference.forceDownload) {
-			val downloadedFile = FileSystemHelper.getDownloadedFile(mod, decodedFileName);
+			val downloadedFile = FileSystemHelper.getDownloadedFile(decodedFileName);
 			try {
 				FileUtils.copyURLToFile(new URL(mod.getDownloadUrl()), downloadedFile);
 			} catch (final IOException e) {
