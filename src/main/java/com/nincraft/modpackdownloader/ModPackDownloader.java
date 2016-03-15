@@ -1,5 +1,6 @@
 package com.nincraft.modpackdownloader;
 
+import com.nincraft.modpackdownloader.handler.ApplicationUpdateHandeler;
 import com.nincraft.modpackdownloader.manager.ModListManager;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
@@ -10,7 +11,11 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ModPackDownloader {
 	public static void main(final String[] args) throws InterruptedException {
-		if (args.length < 2) {
+		if ("-updateApp".equals(args[0])){
+			ApplicationUpdateHandeler.update();
+			return;
+		}
+		else if (args.length < 2) {
 			log.error("Arguments required: manifest file location, mod download location");
 			return;
 		} else {

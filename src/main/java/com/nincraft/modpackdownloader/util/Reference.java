@@ -29,4 +29,5 @@ public class Reference {
 	public static int downloadTotal = 0;
 	public static int updateCount = 0;
 	public static int updateTotal = 0;
+	public static String updateAppURL = "http://play.nincraft.com:8080/job/Mod%20Pack%20Downloader/lastSuccessfulBuild/artifact/target/classes/latest.json";
 }

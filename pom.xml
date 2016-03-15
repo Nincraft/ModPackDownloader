@@ -48,7 +48,13 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>${project.artifactId} ${project.version}+${build.number}</finalName>
+		<finalName>${project.artifactId}-${project.version}+${build.number}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
