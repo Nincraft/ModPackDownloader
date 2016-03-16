@@ -27,6 +27,9 @@ public class CurseFile extends Mod {
 	@SerializedName("projectID")
 	@Expose
 	public Integer projectID;
+	@SerializedName("release")
+	@Expose
+	public String releaseType;
 	private String projectUrl;
 
 	public CurseFile() {
