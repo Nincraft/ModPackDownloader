@@ -5,8 +5,6 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 
-import com.nincraft.modpackdownloader.container.Mod;
-
 import lombok.val;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
