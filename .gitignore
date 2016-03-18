@@ -6,3 +6,5 @@ cache/
 all/
 *.jar
 logs/
+.idea/
+*.iml
