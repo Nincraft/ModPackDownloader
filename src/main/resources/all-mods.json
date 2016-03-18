@@ -152,12 +152,20 @@
             "url": "https://github.com/williewillus/Botania/releases/download/v0.6.2-beta/Botania.r1.8-248-unofficial-0.6.2.jar"
         },
         {
+            "name": "BetterStorage",
+            "url": "https://github.com/copygirl/BetterStorage/releases/download/v0.13.1.127/BetterStorage-1.7.10-0.13.1.127.jar"
+        },
+        {
             "name": "Buildcraft",
             "url": "https://www.dropbox.com/s/q1qppz3sq447173/buildcraft-7.2.0-pre6.jar?dl=1"
         },
         {
             "name": "Charset",
             "url": "http://charset.asie.pl/files/Charset-0.2.1-945baf5589832f727c42cf77.jar"
+        },
+        {
+            "name": "Dimensional Doors",
+            "url": "https://github.com/CannibalVox/DimDoors/releases/download/2.2.5-test9/DimensionalDoors-2.2.5-test9.jar"
         }
     ]
 }
