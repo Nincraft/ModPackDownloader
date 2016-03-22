@@ -7,7 +7,9 @@ import lombok.Data;
 
 @Data
 public abstract class Mod implements Cloneable {
-	private String rename;
+    @SerializedName("rename")
+    @Expose
+    private String rename;
 	private String fileName;
 	private String downloadUrl;
 	private String version;
