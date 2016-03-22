@@ -16,6 +16,9 @@ public abstract class Mod implements Cloneable {
 	@SerializedName("name")
 	@Expose
 	public String name;
+	@SerializedName("skipUpdate")
+    @Expose
+    private boolean skipUpdate;
 
 	
 	public Mod() {

@@ -93,6 +93,10 @@ public class CurseModHandler extends ModHandler {
 	}
 
 	private static void updateCurseMod(final CurseFile mod) {
+		if(mod.isSkipUpdate()){
+            log.info("Skipped updating " + mod.getName());
+            return;
+        }
 		JSONObject fileListJson = null;
 		try {
 			val conn = (HttpURLConnection) new URL(mod.getProjectUrl()).openConnection();
