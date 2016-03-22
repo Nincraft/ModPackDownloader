@@ -7,9 +7,9 @@ import lombok.Data;
 
 @Data
 public abstract class Mod implements Cloneable {
-    @SerializedName("rename")
-    @Expose
-    private String rename;
+	@SerializedName("rename")
+	@Expose
+	private String rename;
 	private String fileName;
 	private String downloadUrl;
 	private String version;
@@ -17,10 +17,9 @@ public abstract class Mod implements Cloneable {
 	@Expose
 	public String name;
 	@SerializedName("skipUpdate")
-    @Expose
-    private boolean skipUpdate;
+	@Expose
+	private boolean skipUpdate;
 
-	
 	public Mod() {
 	}
 
@@ -28,6 +27,6 @@ public abstract class Mod implements Cloneable {
 	public Mod clone() throws CloneNotSupportedException {
 		return (Mod) super.clone();
 	}
-	
+
 	public abstract void init();
 }

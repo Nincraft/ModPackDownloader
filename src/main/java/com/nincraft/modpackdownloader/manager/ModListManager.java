@@ -134,13 +134,13 @@ public class ModListManager {
 		try {
 			manifestFile.getCurseFiles().sort(compareMods);
 			manifestFile.getThirdParty().sort(compareMods);
-            if (manifestFile.getCurseFiles().isEmpty()) {
-                manifestFile.setCurseFiles(null);
-            }
-            if (manifestFile.getThirdParty().isEmpty()) {
-                manifestFile.setThirdParty(null);
-            }
-            Gson prettyGson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
+			if (manifestFile.getCurseFiles().isEmpty()) {
+				manifestFile.setCurseFiles(null);
+			}
+			if (manifestFile.getThirdParty().isEmpty()) {
+				manifestFile.setThirdParty(null);
+			}
+			Gson prettyGson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
 					.disableHtmlEscaping().create();
 			val file = new FileWriter(Reference.manifestFile);
 			file.write(prettyGson.toJson(manifestFile));

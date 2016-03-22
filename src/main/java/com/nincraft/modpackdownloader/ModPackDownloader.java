@@ -11,11 +11,10 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ModPackDownloader {
 	public static void main(final String[] args) throws InterruptedException {
-		if ("-updateApp".equals(args[0])){
+		if ("-updateApp".equals(args[0])) {
 			ApplicationUpdateHandeler.update();
 			return;
-		}
-		else if (args.length < 2) {
+		} else if (args.length < 2) {
 			log.error("Arguments required: manifest file location, mod download location");
 			return;
 		} else {

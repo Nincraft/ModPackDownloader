@@ -93,10 +93,10 @@ public class CurseModHandler extends ModHandler {
 	}
 
 	private static void updateCurseMod(final CurseFile mod) {
-		if(mod.isSkipUpdate()){
-            log.info("Skipped updating " + mod.getName());
-            return;
-        }
+		if (mod.isSkipUpdate()) {
+			log.info("Skipped updating " + mod.getName());
+			return;
+		}
 		JSONObject fileListJson = null;
 		try {
 			val conn = (HttpURLConnection) new URL(mod.getProjectUrl()).openConnection();
@@ -117,8 +117,8 @@ public class CurseModHandler extends ModHandler {
 			return;
 		}
 
-		val newMod = getLatestVersion(Reference.mcVersion, mod.getReleaseType() != null ?
-				mod.getReleaseType() : Reference.releaseType, mod, fileListJson);
+		val newMod = getLatestVersion(Reference.mcVersion,
+				mod.getReleaseType() != null ? mod.getReleaseType() : Reference.releaseType, mod, fileListJson);
 		if (mod.getFileID().compareTo(newMod.getFileID()) < 0) {
 			log.info(String.format("Update found for %s.  Most recent version is %s.", mod.getName(),
 					newMod.getVersion()));
@@ -157,7 +157,8 @@ public class CurseModHandler extends ModHandler {
 	}
 
 	private static boolean equalOrLessThan(final String modRelease, final String releaseType) {
-		return "alpha".equals(releaseType) || releaseType.equals(modRelease) || "beta".equals(releaseType) && "release".equals(modRelease);
+		return "alpha".equals(releaseType) || releaseType.equals(modRelease)
+				|| "beta".equals(releaseType) && "release".equals(modRelease);
 	}
 
 	private static JSONObject getCurseProjectJson(final Integer integer, final String projectName,
