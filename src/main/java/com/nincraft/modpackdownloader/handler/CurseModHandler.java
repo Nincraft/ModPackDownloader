@@ -93,7 +93,7 @@ public class CurseModHandler extends ModHandler {
 	}
 
 	private static void updateCurseMod(final CurseFile mod) {
-		if (mod.isSkipUpdate()) {
+		if (mod.getSkipUpdate() != null && mod.getSkipUpdate()) {
 			log.info("Skipped updating " + mod.getName());
 			return;
 		}
