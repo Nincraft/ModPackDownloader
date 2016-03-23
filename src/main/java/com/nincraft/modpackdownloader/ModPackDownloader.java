@@ -14,8 +14,8 @@ public class ModPackDownloader {
 		if ("-updateApp".equals(args[0])) {
 			ApplicationUpdateHandeler.update();
 			return;
-		} else if (args.length < 2) {
-			log.error("Arguments required: manifest file location, mod download location");
+		} else if (args.length < 1) {
+			log.error("Arguments required: manifest file location");
 			return;
 		} else {
 			processArguments(args);
@@ -28,7 +28,13 @@ public class ModPackDownloader {
 
 	private static void processArguments(final String[] args) {
 		Reference.manifestFile = args[0];
-		Reference.modFolder = args[1];
+
+		if (args.length < 2) {
+			log.info("No mod folder specified, defaulting to \"mods\"");
+			Reference.modFolder = "mods";
+		} else {
+			Reference.modFolder = args[1];
+		}
 
 		if (args.length > 2) {
 			for (val arg : args) {
