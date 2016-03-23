@@ -36,7 +36,7 @@ public class Manifest {
 	}
 
 	public String getForgeVersion() {
-		if (!minecraft.getModLoaders().isEmpty()) {
+		if (minecraft != null && !minecraft.getModLoaders().isEmpty()) {
 			return minecraft.getModLoaders().get(0).getId();
 		}
 		return null;

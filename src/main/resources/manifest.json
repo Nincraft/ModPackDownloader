@@ -1,4 +1,13 @@
 {
+  "minecraft": {
+    "version": "1.8.9",
+    "modLoaders": [
+      {
+        "id": "forge-11.15.1.1764",
+        "primary": true
+      }
+    ]
+  },
   "curseFiles": [
     {
       "fileID": 2269703,

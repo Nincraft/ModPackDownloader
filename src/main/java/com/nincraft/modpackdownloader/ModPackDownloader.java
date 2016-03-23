@@ -1,5 +1,6 @@
 package com.nincraft.modpackdownloader;
 
+import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.handler.ApplicationUpdateHandeler;
 import com.nincraft.modpackdownloader.manager.ModListManager;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
@@ -93,6 +94,11 @@ public class ModPackDownloader {
 			return;
 		}
 		if (Reference.updateMods) {
+			if (Strings.isNullOrEmpty(Reference.mcVersion)) {
+				log.error("No Minecraft version found in manifest file");
+				return;
+			}
+
 			log.info(String.format("Updating mods with parameters: %s, %s, %s", Reference.manifestFile,
 					Reference.mcVersion, Reference.releaseType));
 			ModListManager.updateMods();

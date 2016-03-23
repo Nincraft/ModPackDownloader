@@ -1,5 +1,6 @@
 package com.nincraft.modpackdownloader.handler;
 
+import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.extern.log4j.Log4j2;
@@ -13,6 +14,11 @@ import java.net.URL;
 @Log4j2
 public class ForgeHandler {
 	public static void downloadForgeInstaller(String minecraftVersion, String forgeVersion) {
+		if(Strings.isNullOrEmpty(forgeVersion) || Strings.isNullOrEmpty(minecraftVersion)){
+			log.debug("No Forge or Minecraft version found in manifest, skipping");
+			return;
+		}
+
 		log.info(String.format("Downloading Forge version %s", forgeVersion));
 
 		String forgeId = forgeVersion.substring(forgeVersion.indexOf("-") + 1);

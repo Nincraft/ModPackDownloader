@@ -69,10 +69,7 @@ public class ModListManager {
 			backupCurseManifest();
 		}
 		Reference.mcVersion = manifestFile.getMinecraftVersion();
-		if (Strings.isNullOrEmpty(Reference.mcVersion)) {
-			log.error("No Minecraft version found in manifest file");
-			return -1;
-		}
+
 		manifestFile.getCurseFiles().addAll(manifestFile.getCurseManifestFiles());
 		MOD_LIST.addAll(manifestFile.getCurseFiles());
 		MOD_LIST.addAll(manifestFile.getThirdParty());
