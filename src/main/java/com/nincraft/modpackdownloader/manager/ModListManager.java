@@ -77,9 +77,9 @@ public class ModListManager {
 		log.debug(String.format("A total of %s mods will be %s.", Reference.downloadTotal,
 				Reference.updateMods ? "updated" : "downloaded"));
 
-		Collections.sort(MOD_LIST, compareMods);
-
 		MOD_LIST.forEach(Mod::init);
+		
+		Collections.sort(MOD_LIST, compareMods);
 
 		log.trace("Finished Building Mod List.");
 		return 0;
