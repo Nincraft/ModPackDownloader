@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.nincraft.modpackdownloader.container.*;
+import com.nincraft.modpackdownloader.handler.ForgeHandler;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -21,10 +23,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.nincraft.modpackdownloader.container.CurseFile;
-import com.nincraft.modpackdownloader.container.Manifest;
-import com.nincraft.modpackdownloader.container.Mod;
-import com.nincraft.modpackdownloader.container.ThirdParty;
 import com.nincraft.modpackdownloader.handler.CurseModHandler;
 import com.nincraft.modpackdownloader.handler.ModHandler;
 import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
@@ -71,7 +69,7 @@ public class ModListManager {
 			backupCurseManifest();
 		}
 		Reference.mcVersion = manifestFile.getMinecraftVersion();
-		if(Strings.isNullOrEmpty(Reference.mcVersion)){
+		if (Strings.isNullOrEmpty(Reference.mcVersion)) {
 			log.error("No Minecraft version found in manifest file");
 			return -1;
 		}
@@ -108,6 +106,10 @@ public class ModListManager {
 	}
 
 	public static final void downloadMods() {
+		new Thread(() -> {
+			ForgeHandler.downloadForgeInstaller(manifestFile.getMinecraftVersion(), manifestFile.getForgeVersion());
+		}).start();
+
 		log.trace(String.format("Downloading %s mods...", MOD_LIST.size()));
 		int downloadCount = 1;
 		for (val mod : MOD_LIST) {
