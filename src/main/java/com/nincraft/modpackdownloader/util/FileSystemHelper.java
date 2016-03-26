@@ -32,9 +32,11 @@ public final class FileSystemHelper {
 		}
 	}
 
-	public static void copyFromLocalRepo(final String projectName, final String fileName, final String folder) {
+	public static void copyFromLocalRepo(final String projectName, final String fileName, String folder) {
 		val newProjectName = getProjectNameOrDefault(projectName);
-
+		if (folder == null) {
+			folder = Reference.modFolder;
+		}
 		try {
 			FileUtils.copyFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder));
 		} catch (final IOException e) {
@@ -47,12 +49,7 @@ public final class FileSystemHelper {
 	}
 
 	public static File getDownloadedFile(final String fileName) {
-		if (Reference.modFolder != null) {
-			createFolder(Reference.modFolder);
-			return new File(Reference.modFolder + File.separator + fileName);
-		} else {
-			return new File(fileName);
-		}
+		return getDownloadedFile(fileName, null);
 	}
 
 	public static String getProjectNameOrDefault(final String projectName) {
@@ -61,5 +58,17 @@ public final class FileSystemHelper {
 
 	public static File getLocalFile(final String fileName, final String newProjectName) {
 		return new File(Reference.userhome + newProjectName + File.separator + fileName);
+	}
+
+	public static File getDownloadedFile(String fileName, String folder) {
+		if (folder != null) {
+			createFolder(folder);
+			return new File(folder + File.separator + fileName);
+		} else if (Reference.modFolder != null) {
+			createFolder(Reference.modFolder);
+			return new File(Reference.modFolder + File.separator + fileName);
+		} else {
+			return new File(fileName);
+		}
 	}
 }
