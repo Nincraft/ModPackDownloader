@@ -104,7 +104,7 @@ public class ModListManager {
 
 	public static final void downloadMods() {
 		new Thread(() -> {
-			ForgeHandler.downloadForgeInstaller(manifestFile.getMinecraftVersion(), manifestFile.getForgeVersion());
+			ForgeHandler.downloadForgeInstaller(manifestFile.getMinecraftVersion(), manifestFile.getMinecraft().getModLoaders());
 		}).start();
 
 		log.trace(String.format("Downloading %s mods...", MOD_LIST.size()));

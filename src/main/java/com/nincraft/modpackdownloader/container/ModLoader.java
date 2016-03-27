@@ -20,4 +20,7 @@ public class ModLoader {
 	@SerializedName("folder")
 	@Expose
 	public String folder;
+	@SerializedName("rename")
+	@Expose
+	public String rename;
 }

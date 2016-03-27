@@ -1,6 +1,7 @@
 package com.nincraft.modpackdownloader.handler;
 
 import com.google.common.base.Strings;
+import com.nincraft.modpackdownloader.container.ModLoader;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.extern.log4j.Log4j2;
@@ -10,14 +11,19 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 @Log4j2
 public class ForgeHandler {
-	public static void downloadForgeInstaller(String minecraftVersion, String forgeVersion) {
-		if (Strings.isNullOrEmpty(forgeVersion) || Strings.isNullOrEmpty(minecraftVersion)) {
+	public static void downloadForgeInstaller(String minecraftVersion, List<ModLoader> modLoaders) {
+		if (modLoaders == null || Strings.isNullOrEmpty(minecraftVersion)) {
 			log.debug("No Forge or Minecraft version found in manifest, skipping");
 			return;
 		}
+
+		ModLoader modLoader = modLoaders.get(0);
+		String forgeVersion = modLoader.getId();
+		String folder = modLoader.getFolder();
 
 		log.info(String.format("Downloading Forge version %s", forgeVersion));
 
@@ -32,7 +38,13 @@ public class ForgeHandler {
 		forgeURL += "/" + forgeFileName;
 
 		if (!FileSystemHelper.isInLocalRepo("forge", forgeFileName) || Reference.forceDownload) {
-			val downloadedFile = FileSystemHelper.getDownloadedFile(forgeFileName);
+			File downloadedFile;
+			if (modLoader.getRename() != null) {
+				downloadedFile = FileSystemHelper.getDownloadedFile(modLoader.getRename(), folder);
+			} else {
+				downloadedFile = FileSystemHelper.getDownloadedFile(forgeFileName, folder);
+			}
+
 			try {
 				FileUtils.copyURLToFile(new URL(forgeURL), downloadedFile);
 			} catch (final IOException e) {
