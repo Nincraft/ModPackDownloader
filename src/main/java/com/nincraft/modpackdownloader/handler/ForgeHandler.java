@@ -5,7 +5,6 @@ import com.nincraft.modpackdownloader.container.ModLoader;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.extern.log4j.Log4j2;
-import lombok.val;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
