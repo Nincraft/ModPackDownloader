@@ -14,7 +14,7 @@ import java.net.URL;
 @Log4j2
 public class ForgeHandler {
 	public static void downloadForgeInstaller(String minecraftVersion, String forgeVersion) {
-		if(Strings.isNullOrEmpty(forgeVersion) || Strings.isNullOrEmpty(minecraftVersion)){
+		if (Strings.isNullOrEmpty(forgeVersion) || Strings.isNullOrEmpty(minecraftVersion)) {
 			log.debug("No Forge or Minecraft version found in manifest, skipping");
 			return;
 		}
@@ -22,10 +22,14 @@ public class ForgeHandler {
 		log.info(String.format("Downloading Forge version %s", forgeVersion));
 
 		String forgeId = forgeVersion.substring(forgeVersion.indexOf("-") + 1);
-		String forgeURL = Reference.forgeURL + minecraftVersion + "-" + forgeId + "-" + minecraftVersion +
-				"/forge-" + minecraftVersion + "-" + forgeId + "-" + minecraftVersion + "-installer.jar";
-		String forgeFileName = "forge-" + minecraftVersion + "-" + forgeId + "-" + minecraftVersion + "-installer.jar";
-		File forge = FileSystemHelper.getDownloadedFile(forgeFileName);
+		String forgeFileName = "forge-" + minecraftVersion + "-" + forgeId;
+		String forgeURL = Reference.forgeURL + minecraftVersion + "-" + forgeId;
+		if (!minecraftVersion.startsWith("1.8")) {
+			forgeFileName += "-" + minecraftVersion;
+			forgeURL += "-" + minecraftVersion;
+		}
+		forgeFileName += "-installer.jar";
+		forgeURL += "/" + forgeFileName;
 
 		if (!FileSystemHelper.isInLocalRepo("forge", forgeFileName) || Reference.forceDownload) {
 			val downloadedFile = FileSystemHelper.getDownloadedFile(forgeFileName);
