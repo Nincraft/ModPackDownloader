@@ -6,7 +6,7 @@
 		</Console>
 		<RollingFile name="RollingFile" fileName="logs/modPackDownloader.log"
 			filePattern="logs/$${date:yyyy-MM}/modPackDownloader-%d{MM-dd-yyyy}-%i.log.gz">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<PatternLayout pattern="%d{MM-dd-yyyy} %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
 				<SizeBasedTriggeringPolicy size="5 MB" />
