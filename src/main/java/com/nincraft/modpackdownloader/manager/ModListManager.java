@@ -18,7 +18,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -104,7 +103,7 @@ public class ModListManager {
 
 	public static final void downloadMods() {
 		new Thread(() -> {
-			ForgeHandler.downloadForgeInstaller(manifestFile.getMinecraftVersion(), manifestFile.getMinecraft().getModLoaders());
+			ForgeHandler.downloadForge(manifestFile.getMinecraftVersion(), manifestFile.getMinecraft().getModLoaders());
 		}).start();
 
 		log.trace(String.format("Downloading %s mods...", MOD_LIST.size()));

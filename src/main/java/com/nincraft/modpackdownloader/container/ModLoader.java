@@ -13,14 +13,20 @@ public class ModLoader {
 
 	@SerializedName("id")
 	@Expose
-	public String id;
+	private String id;
 	@SerializedName("primary")
 	@Expose
-	public Boolean primary;
+	private Boolean primary;
 	@SerializedName("folder")
 	@Expose
-	public String folder;
+	private String folder;
 	@SerializedName("rename")
 	@Expose
-	public String rename;
+	private String rename;
+	@SerializedName("downloadInstaller")
+	@Expose
+	private Boolean downloadInstaller;
+	@SerializedName("downloadUniversal")
+	@Expose
+	private Boolean downloadUniversal;
 }
