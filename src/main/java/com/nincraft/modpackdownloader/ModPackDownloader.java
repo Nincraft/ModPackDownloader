@@ -1,5 +1,6 @@
 package com.nincraft.modpackdownloader;
 
+import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.handler.ApplicationUpdateHandeler;
 import com.nincraft.modpackdownloader.manager.ModListManager;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
@@ -14,8 +15,8 @@ public class ModPackDownloader {
 		if ("-updateApp".equals(args[0])) {
 			ApplicationUpdateHandeler.update();
 			return;
-		} else if (args.length < 2) {
-			log.error("Arguments required: manifest file location, mod download location");
+		} else if (args.length < 1) {
+			log.error("Arguments required: manifest file location");
 			return;
 		} else {
 			processArguments(args);
@@ -28,7 +29,13 @@ public class ModPackDownloader {
 
 	private static void processArguments(final String[] args) {
 		Reference.manifestFile = args[0];
-		Reference.modFolder = args[1];
+
+		if (args.length < 2) {
+			log.info("No mod folder specified, defaulting to \"mods\"");
+			Reference.modFolder = "mods";
+		} else {
+			Reference.modFolder = args[1];
+		}
 
 		if (args.length > 2) {
 			for (val arg : args) {
@@ -45,9 +52,6 @@ public class ModPackDownloader {
 		} else if (arg.equals("-updateMods")) {
 			Reference.updateMods = true;
 			log.debug("mods will be updated instead of downloaded.");
-		} else if (arg.startsWith("-mcVersion")) {
-			Reference.mcVersion = arg.substring(arg.lastIndexOf("=") + 1);
-			log.debug(String.format("Minecraft Version set to: %s", Reference.mcVersion));
 		} else if (arg.startsWith("-releaseType")) {
 			Reference.releaseType = arg.substring(arg.lastIndexOf("=") + 1);
 			log.debug(String.format("Checking against mod release type: %s", Reference.releaseType));
@@ -85,9 +89,16 @@ public class ModPackDownloader {
 
 	private static void processMods() throws InterruptedException {
 		log.trace("Processing Mods...");
-		ModListManager.buildModList();
-
+		int returnCode = ModListManager.buildModList();
+		if (returnCode == -1) {
+			return;
+		}
 		if (Reference.updateMods) {
+			if (Strings.isNullOrEmpty(Reference.mcVersion)) {
+				log.error("No Minecraft version found in manifest file");
+				return;
+			}
+
 			log.info(String.format("Updating mods with parameters: %s, %s, %s", Reference.manifestFile,
 					Reference.mcVersion, Reference.releaseType));
 			ModListManager.updateMods();

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.nincraft.modpackdownloader.container.*;
+import com.nincraft.modpackdownloader.handler.ForgeHandler;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,10 +22,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.nincraft.modpackdownloader.container.CurseFile;
-import com.nincraft.modpackdownloader.container.Manifest;
-import com.nincraft.modpackdownloader.container.Mod;
-import com.nincraft.modpackdownloader.container.ThirdParty;
 import com.nincraft.modpackdownloader.handler.CurseModHandler;
 import com.nincraft.modpackdownloader.handler.ModHandler;
 import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
@@ -55,20 +53,22 @@ public class ModListManager {
 		log.trace("Finished registering various mod type handlers.");
 	}
 
-	public static void buildModList() {
+	public static int buildModList() {
 		log.trace("Building Mod List...");
 		JSONObject jsonLists = null;
 		try {
 			jsonLists = (JSONObject) new JSONParser().parse(new FileReader(Reference.manifestFile));
 		} catch (IOException | ParseException e) {
 			log.error(e.getMessage());
-			return;
+			return -1;
 		}
 
 		manifestFile = gson.fromJson(jsonLists.toString(), Manifest.class);
 		if (!manifestFile.getCurseManifestFiles().isEmpty()) {
 			backupCurseManifest();
 		}
+		Reference.mcVersion = manifestFile.getMinecraftVersion();
+
 		manifestFile.getCurseFiles().addAll(manifestFile.getCurseManifestFiles());
 		MOD_LIST.addAll(manifestFile.getCurseFiles());
 		MOD_LIST.addAll(manifestFile.getThirdParty());
@@ -76,11 +76,12 @@ public class ModListManager {
 		log.debug(String.format("A total of %s mods will be %s.", Reference.downloadTotal,
 				Reference.updateMods ? "updated" : "downloaded"));
 
+		MOD_LIST.forEach(Mod::init);
+		
 		Collections.sort(MOD_LIST, compareMods);
 
-		MOD_LIST.forEach(Mod::init);
-
 		log.trace("Finished Building Mod List.");
+		return 0;
 	}
 
 	private static void backupCurseManifest() {
@@ -101,6 +102,10 @@ public class ModListManager {
 	}
 
 	public static final void downloadMods() {
+		new Thread(() -> {
+			ForgeHandler.downloadForge(manifestFile.getMinecraftVersion(), manifestFile.getMinecraft().getModLoaders());
+		}).start();
+
 		log.trace(String.format("Downloading %s mods...", MOD_LIST.size()));
 		int downloadCount = 1;
 		for (val mod : MOD_LIST) {
