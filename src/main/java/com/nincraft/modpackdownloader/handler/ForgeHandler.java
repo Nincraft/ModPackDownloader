@@ -27,10 +27,10 @@ public class ForgeHandler {
 
 		log.info(String.format("Downloading Forge version %s", forgeVersion));
 
-		if (modLoader.getDownloadInstaller()) {
+		if (modLoader.getDownloadInstaller() != null && modLoader.getDownloadInstaller()) {
 			downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, Reference.forgeInstaller);
 		}
-		if (modLoader.getDownloadUniversal()) {
+		if (modLoader.getDownloadUniversal() != null && modLoader.getDownloadUniversal()) {
 			downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, Reference.forgeUniversal);
 		}
 	}
@@ -61,7 +61,7 @@ public class ForgeHandler {
 			}
 			FileSystemHelper.copyToLocalRepo("forge", downloadedFile);
 		} else {
-			FileSystemHelper.copyFromLocalRepo("forge", forgeFileName, Reference.modFolder);
+			FileSystemHelper.copyFromLocalRepo("forge", forgeFileName, folder);
 		}
 		log.info(String.format("Completed downloading Forge version %s", forgeFileName));
 	}
