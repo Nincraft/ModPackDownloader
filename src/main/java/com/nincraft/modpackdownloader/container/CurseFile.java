@@ -6,6 +6,7 @@ import java.net.URL;
 
 import javax.annotation.Generated;
 
+import com.google.common.base.Strings;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.nincraft.modpackdownloader.util.Reference;
@@ -44,7 +45,7 @@ public class CurseFile extends Mod {
 			conn.setInstanceFollowRedirects(false);
 			conn.connect();
 
-			if (getName() == null) {
+			if (Strings.isNullOrEmpty(getName())) {
 				setName(conn.getHeaderField("Location").split("/")[2]);
 			}
 		} catch (final IOException e) {
