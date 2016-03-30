@@ -16,7 +16,7 @@ import java.util.List;
 @Log4j2
 public class ForgeHandler {
 	public static void downloadForge(String minecraftVersion, List<ModLoader> modLoaders) {
-		if (CollectionUtils.isNotEmpty(modLoaders) || Strings.isNullOrEmpty(minecraftVersion)) {
+		if (CollectionUtils.isEmpty(modLoaders) || Strings.isNullOrEmpty(minecraftVersion)) {
 			log.debug("No Forge or Minecraft version found in manifest, skipping");
 			return;
 		}
