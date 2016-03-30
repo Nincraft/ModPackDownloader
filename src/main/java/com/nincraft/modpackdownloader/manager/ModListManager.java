@@ -77,7 +77,7 @@ public class ModListManager {
 				Reference.updateMods ? "updated" : "downloaded"));
 
 		MOD_LIST.forEach(Mod::init);
-		
+
 		Collections.sort(MOD_LIST, compareMods);
 
 		log.trace("Finished Building Mod List.");
@@ -144,6 +144,9 @@ public class ModListManager {
 			}
 			if (manifestFile.getThirdParty().isEmpty()) {
 				manifestFile.setThirdParty(null);
+			}
+			if (manifestFile.getMinecraft().getModLoaders().isEmpty()) {
+				manifestFile.getMinecraft().setModLoaders(null);
 			}
 			Gson prettyGson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
 					.disableHtmlEscaping().create();
