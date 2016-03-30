@@ -44,7 +44,9 @@ public class CurseFile extends Mod {
 			conn.setInstanceFollowRedirects(false);
 			conn.connect();
 
-			setName(conn.getHeaderField("Location").split("/")[2]);
+			if (getName() == null) {
+				setName(conn.getHeaderField("Location").split("/")[2]);
+			}
 		} catch (final IOException e) {
 			log.error(e.getMessage());
 		}
