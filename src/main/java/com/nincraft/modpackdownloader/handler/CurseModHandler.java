@@ -103,8 +103,6 @@ public class CurseModHandler extends ModHandler {
 			conn.setInstanceFollowRedirects(false);
 			conn.connect();
 
-			val location = conn.getHeaderField("Location");
-			mod.setName(location.split("/")[2]);
 			fileListJson = (JSONObject) getCurseProjectJson(mod.getProjectID(), mod.getName(), new JSONParser())
 					.get("files");
 

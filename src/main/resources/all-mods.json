@@ -2,147 +2,147 @@
     "curseFiles": [
         {
             "fileID": 2277394,
-            "name": "applecore",
+            "name": "AppleCore",
             "projectID": 224472
         },
         {
             "fileID": 2284622,
-            "name": "aroma1997core",
+            "name": "Aroma1997Core",
             "projectID": 223735
         },
         {
             "fileID": 2277001,
-            "name": "aromabackup",
+            "name": "AromaBackup",
             "projectID": 225658
         },
         {
             "fileID": 2273274,
-            "name": "baubles",
+            "name": "Baubles",
             "projectID": 227083
         },
         {
             "fileID": 2274840,
-            "name": "baubleshud",
+            "name": "Baubles HUD",
             "projectID": 230751
         },
         {
             "fileID": 2279388,
-            "name": "biomes-o-plenty",
+            "name": "Biomes O' Plenty",
             "projectID": 220318
         },
         {
             "fileID": 2279356,
-            "name": "blood-magic",
+            "name": "Blood Magic",
             "projectID": 224791
         },
         {
             "fileID": 2269766,
-            "name": "bloodmoon",
+            "name": "Bloodmoon",
             "projectID": 226321
         },
         {
             "fileID": 2280253,
-            "name": "chisels-bits",
+            "name": "Chisels and Bits",
             "projectID": 231095
         },
         {
             "fileID": 2273148,
-            "name": "durability-show",
+            "name": "Durability Show",
             "projectID": 226099
         },
         {
             "fileID": 2269767,
-            "name": "fast-leaf-decay",
+            "name": "Fast Leaf Decay",
             "projectID": 225839
         },
         {
             "fileID": 2272962,
-            "name": "helpfixer",
+            "name": "Help Fixer",
             "projectID": 223797
         },
         {
             "fileID": 2281942,
-            "name": "immersive-craft",
+            "name": "Immersive Craft",
             "projectID": 241268
         },
         {
             "fileID": 2283028,
-            "name": "in-case-of-emergency",
+            "name": "In Case of Emergency",
             "projectID": 241925
         },
         {
             "fileID": 2280666,
-            "name": "intangible",
+            "name": "Intangible",
             "projectID": 241350
         },
         {
             "fileID": 2275675,
-            "name": "inventory-tweaks",
+            "name": "Inventory Tweaks",
             "projectID": 223094
         },
         {
             "fileID": 2278859,
-            "name": "iron-chests",
+            "name": "Iron Chests",
             "projectID": 228756
         },
         {
             "fileID": 2282784,
-            "name": "just-enough-items-jei",
+            "name": "Just Enough Items",
             "projectID": 238222
         },
         {
             "fileID": 2276884,
-            "name": "mantle",
+            "name": "Mantle",
             "projectID": 74924
         },
         {
             "fileID": 2276306,
-            "name": "mcmultipart",
+            "name": "MCMultipart",
             "projectID": 239431
         },
         {
             "fileID": 2280806,
-            "name": "not-enough-wands",
+            "name": "Not Enough Wands",
             "projectID": 235595
         },
         {
             "fileID": 2280569,
-            "name": "opencomputers",
+            "name": "Open Computers",
             "projectID": 223008
         },
         {
             "fileID": 2284425,
-            "name": "psi",
+            "name": "Psi",
             "projectID": 241665
         },
         {
             "fileID": 2283433,
-            "name": "random-things",
+            "name": "Random Things",
             "projectID": 59816
         },
         {
             "fileID": 2275910,
-            "name": "simpleretrogen",
+            "name": "SimpleRetrogen",
             "projectID": 240566
         },
         {
             "fileID": 2279246,
-            "name": "substratum",
+            "name": "Substratum",
             "projectID": 241113
         },
         {
             "fileID": 2279928,
-            "name": "thaumcraft",
+            "name": "Thaumcraft",
             "projectID": 223628
         },
         {
             "fileID": 2276883,
-            "name": "tinkers-construct",
+            "name": "Tinkers' Construct",
             "projectID": 74072
         },
         {
             "fileID": 2279788,
-            "name": "tis-3d",
+            "name": "TIS 3D",
             "projectID": 238603
         }
     ],
