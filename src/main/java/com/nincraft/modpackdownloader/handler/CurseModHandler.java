@@ -103,7 +103,7 @@ public class CurseModHandler extends ModHandler {
 			conn.setInstanceFollowRedirects(false);
 			conn.connect();
 
-			fileListJson = (JSONObject) getCurseProjectJson(mod.getProjectID(), mod.getName(), new JSONParser())
+			fileListJson = (JSONObject) getCurseProjectJson(mod.getProjectID(), mod.getProjectName(), new JSONParser())
 					.get("files");
 
 			if (fileListJson == null) {
