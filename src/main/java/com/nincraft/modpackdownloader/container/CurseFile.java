@@ -32,11 +32,13 @@ public class CurseFile extends Mod {
 	@Expose
 	public String releaseType;
 	private String projectUrl;
+	private String projectName;
 
 	public CurseFile() {
 
 	}
 
+	@Override
 	public void init() {
 		setProjectUrl(buildProjectUrl());
 
@@ -45,8 +47,10 @@ public class CurseFile extends Mod {
 			conn.setInstanceFollowRedirects(false);
 			conn.connect();
 
+			setProjectName(conn.getHeaderField("Location").split("/")[2]);
+
 			if (Strings.isNullOrEmpty(getName())) {
-				setName(conn.getHeaderField("Location").split("/")[2]);
+				setName(getProjectName());
 			}
 		} catch (final IOException e) {
 			log.error(e.getMessage());
@@ -61,7 +65,7 @@ public class CurseFile extends Mod {
 
 	@Override
 	public String getDownloadUrl() {
-		return String.format(Reference.CURSEFORGE_BASE_URL + "%s-%s/files/%s/download", getProjectID(), getName(),
+		return String.format(Reference.CURSEFORGE_BASE_URL + "%s-%s/files/%s/download", getProjectID(), getProjectName(),
 				getFileID());
 	}
 
