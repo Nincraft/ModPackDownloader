@@ -20,13 +20,20 @@ public class ModLoader {
 	@SerializedName("folder")
 	@Expose
 	private String folder;
-	@SerializedName("rename")
-	@Expose
-	private String rename;
 	@SerializedName("downloadInstaller")
 	@Expose
 	private Boolean downloadInstaller;
 	@SerializedName("downloadUniversal")
 	@Expose
 	private Boolean downloadUniversal;
+	@SerializedName("renameInstaller")
+	@Expose
+	private String renameInstaller;
+	@SerializedName("renameUniversal")
+	@Expose
+	private String renameUniversal;
+
+	public String getRename(boolean downloadInstaller) {
+		return downloadInstaller ? getRenameInstaller() : getRenameUniversal();
+	}
 }

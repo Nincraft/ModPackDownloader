@@ -29,27 +29,28 @@ public class ForgeHandler {
 		log.info(String.format("Downloading Forge version %s", forgeVersion));
 
 		if (modLoader.getDownloadInstaller() != null && modLoader.getDownloadInstaller()) {
-			downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, Reference.forgeInstaller);
+			downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, true);
 		}
 		if (modLoader.getDownloadUniversal() != null && modLoader.getDownloadUniversal()) {
-			downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, Reference.forgeUniversal);
+			downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, false);
 		}
 	}
 
-	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, String folder, String forgeId, String fileType) {
+	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, String folder, String forgeId, boolean downloadInstaller) {
 		String forgeFileName = "forge-" + minecraftVersion + "-" + forgeId;
 		String forgeURL = Reference.forgeURL + minecraftVersion + "-" + forgeId;
 		if (!minecraftVersion.startsWith("1.8")) {
 			forgeFileName += "-" + minecraftVersion;
 			forgeURL += "-" + minecraftVersion;
 		}
-		forgeFileName += fileType;
+
+		forgeFileName += downloadInstaller ? Reference.forgeInstaller : Reference.forgeUniversal;
 		forgeURL += "/" + forgeFileName;
 
 		if (!FileSystemHelper.isInLocalRepo("forge", forgeFileName) || Reference.forceDownload) {
 			File downloadedFile;
-			if (modLoader.getRename() != null) {
-				downloadedFile = FileSystemHelper.getDownloadedFile(modLoader.getRename(), folder);
+			if (modLoader.getRename(downloadInstaller) != null) {
+				downloadedFile = FileSystemHelper.getDownloadedFile(modLoader.getRename(downloadInstaller), folder);
 			} else {
 				downloadedFile = FileSystemHelper.getDownloadedFile(forgeFileName, folder);
 			}
@@ -60,9 +61,9 @@ public class ForgeHandler {
 				log.error(String.format("Could not download %s.", forgeFileName), e.getMessage());
 				return;
 			}
-			FileSystemHelper.copyToLocalRepo("forge", downloadedFile);
+			FileSystemHelper.copyToLocalRepo("forge", downloadedFile, forgeFileName);
 		} else {
-			FileSystemHelper.copyFromLocalRepo("forge", forgeFileName, folder);
+			FileSystemHelper.copyFromLocalRepo("forge", forgeFileName, folder, modLoader.getRename(downloadInstaller));
 		}
 		log.info(String.format("Completed downloading Forge version %s", forgeFileName));
 	}

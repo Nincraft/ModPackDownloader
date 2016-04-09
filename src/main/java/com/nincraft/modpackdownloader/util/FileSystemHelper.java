@@ -32,13 +32,33 @@ public final class FileSystemHelper {
 		}
 	}
 
+	public static void copyToLocalRepo(final String projectName, File downloadedFile, String originalName) {
+		val newProjectName = getProjectNameOrDefault(projectName);
+
+		try {
+			File copyFile = getLocalFile(downloadedFile.getName(), newProjectName);
+			FileUtils.copyFileToDirectory(downloadedFile, new File(Reference.userhome + newProjectName));
+			copyFile.renameTo(new File(copyFile.getParent() + File.separator + originalName));
+		} catch (final IOException e) {
+			log.error(String.format("Could not copy %s to local repo.", newProjectName), e);
+		}
+	}
+
 	public static void copyFromLocalRepo(final String projectName, final String fileName, String folder) {
+		copyFromLocalRepo(projectName, fileName, folder, null);
+	}
+
+	public static void copyFromLocalRepo(final String projectName, final String fileName, String folder, String rename) {
 		val newProjectName = getProjectNameOrDefault(projectName);
 		if (folder == null) {
 			folder = Reference.modFolder;
 		}
 		try {
-			FileUtils.copyFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder));
+			File copyFile = getLocalFile(fileName, newProjectName);
+			FileUtils.copyFileToDirectory(copyFile, new File(folder));
+			if (rename != null) {
+				copyFile.renameTo(new File(copyFile.getParent() + File.separator + rename));
+			}
 		} catch (final IOException e) {
 			log.error(String.format("Could not copy %s from local repo.", newProjectName), e);
 		}
