@@ -54,10 +54,10 @@ public final class FileSystemHelper {
 			folder = Reference.modFolder;
 		}
 		try {
-			File copyFile = getLocalFile(fileName, newProjectName);
-			FileUtils.copyFileToDirectory(copyFile, new File(folder));
+			FileUtils.copyFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder));
+			File downloadedFile = getDownloadedFile(fileName);
 			if (rename != null) {
-				copyFile.renameTo(new File(copyFile.getParent() + File.separator + rename));
+				downloadedFile.renameTo(new File(downloadedFile.getParent() + File.separator + rename));
 			}
 		} catch (final IOException e) {
 			log.error(String.format("Could not copy %s from local repo.", newProjectName), e);
