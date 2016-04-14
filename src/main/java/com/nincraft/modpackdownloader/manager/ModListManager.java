@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,7 +15,6 @@ import com.nincraft.modpackdownloader.container.*;
 import com.nincraft.modpackdownloader.handler.ForgeHandler;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -95,15 +93,6 @@ public class ModListManager {
 		} catch (IOException e) {
 			log.error("Could not backup Curse manifest file", e.getMessage());
 		}
-	}
-
-	public static Optional<JSONArray> getCurseModList(final JSONObject jsonList) {
-		return Optional.ofNullable(
-				(JSONArray) (jsonList.containsKey("curseFiles") ? jsonList.get("curseFiles") : jsonList.get("files")));
-	}
-
-	public static Optional<JSONArray> getThirdPartyModList(final JSONObject jsonLists) {
-		return Optional.ofNullable((JSONArray) jsonLists.get("thirdParty"));
 	}
 
 	public static final void downloadMods() {
