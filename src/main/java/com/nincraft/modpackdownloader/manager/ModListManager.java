@@ -64,12 +64,11 @@ public class ModListManager {
 		}
 
 		manifestFile = gson.fromJson(jsonLists.toString(), Manifest.class);
-		if (!manifestFile.getCurseManifestFiles().isEmpty()) {
+		if (!manifestFile.getCurseFiles().isEmpty()) {
 			backupCurseManifest();
 		}
 		Reference.mcVersion = manifestFile.getMinecraftVersion();
 
-		manifestFile.getCurseFiles().addAll(manifestFile.getCurseManifestFiles());
 		MOD_LIST.addAll(manifestFile.getCurseFiles());
 		MOD_LIST.addAll(manifestFile.getThirdParty());
 		Reference.updateTotal = Reference.downloadTotal = MOD_LIST.size();
