@@ -9,9 +9,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.nincraft.modpackdownloader.container.*;
 import com.nincraft.modpackdownloader.handler.ForgeHandler;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -35,6 +38,9 @@ public class ModListManager {
 	private static final List<Mod> MOD_LIST = Lists.newArrayList();
 
 	public static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
+
+	@Getter
+	public static ExecutorService executorService;
 
 	private static Manifest manifestFile;
 	private static Gson gson = new Gson();
@@ -101,35 +107,44 @@ public class ModListManager {
 	}
 
 	public static final void downloadMods() {
-		new Thread(() -> {
+		executorService = Executors.newFixedThreadPool(MOD_LIST.size()+1);
+		Runnable forgeThread = new Thread(() -> {
 			ForgeHandler.downloadForge(manifestFile.getMinecraftVersion(), manifestFile.getMinecraft().getModLoaders());
-		}).start();
+		});
+
+		executorService.execute(forgeThread);
 
 		log.trace(String.format("Downloading %s mods...", MOD_LIST.size()));
 		int downloadCount = 1;
 		for (val mod : MOD_LIST) {
 			log.info(String.format(Reference.DOWNLOADING_MOD_X_OF_Y, mod.getName(), downloadCount++,
 					Reference.downloadTotal));
-			new Thread(() -> {
+
+			Runnable modDownload = new Thread(() -> {
 				MOD_HANDLERS.get(mod.getClass()).downloadMod(mod);
 				Reference.downloadCount++;
 				log.info(String.format("Finished downloading %s", mod.getName()));
-			}).start();
+			});
+			executorService.execute(modDownload);
 		}
+		executorService.shutdown();
 		log.trace(String.format("Finished downloading %s mods.", MOD_LIST.size()));
 	}
 
 	public static final void updateMods() {
 		log.trace(String.format("Updating %s mods...", Reference.updateTotal));
+		executorService = Executors.newFixedThreadPool(MOD_LIST.size());
 		int updateCount = 1;
 		for (val mod : MOD_LIST) {
 			log.info(String.format(Reference.UPDATING_MOD_X_OF_Y, mod.getName(), updateCount++, Reference.updateTotal));
-			new Thread(() -> {
+			Runnable modUpdate = new Thread(() -> {
 				MOD_HANDLERS.get(mod.getClass()).updateMod(mod);
 				Reference.updateCount++;
 				log.info(String.format("Finished updating %s", mod.getName()));
-			}).start();
+			});
+			executorService.execute(modUpdate);
 		}
+		executorService.shutdown();
 		log.trace(String.format("Finished updating %s mods.", Reference.updateTotal));
 	}
 

@@ -103,7 +103,7 @@ public class ModPackDownloader {
 					Reference.mcVersion, Reference.releaseType));
 			ModListManager.updateMods();
 
-			while (!(Reference.updateCount >= Reference.updateTotal)) {
+			while (!ModListManager.getExecutorService().isTerminated()) {
 				Thread.sleep(1);
 			}
 
@@ -114,7 +114,7 @@ public class ModPackDownloader {
 					Reference.modFolder));
 			ModListManager.downloadMods();
 
-			while (!(Reference.downloadCount >= Reference.downloadTotal)) {
+			while (!ModListManager.getExecutorService().isTerminated()) {
 				Thread.sleep(1);
 			}
 			log.info("Finished downloading mods.");
