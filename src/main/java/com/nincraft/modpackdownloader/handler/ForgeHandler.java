@@ -7,6 +7,7 @@ import com.nincraft.modpackdownloader.util.Reference;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,18 +22,19 @@ public class ForgeHandler {
 			return;
 		}
 
-		ModLoader modLoader = modLoaders.get(0);
-		String forgeVersion = modLoader.getId();
-		String folder = modLoader.getFolder();
-		String forgeId = forgeVersion.substring(forgeVersion.indexOf("-") + 1);
+		for (ModLoader modLoader : modLoaders) {
+			String forgeVersion = modLoader.getId();
+			String folder = modLoader.getFolder();
+			String forgeId = forgeVersion.substring(forgeVersion.indexOf("-") + 1);
 
-		log.info(String.format("Downloading Forge version %s", forgeVersion));
+			log.info(String.format("Downloading Forge version %s", forgeVersion));
 
-		if (modLoader.getDownloadInstaller() != null && modLoader.getDownloadInstaller()) {
-			downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, true);
-		}
-		if (modLoader.getDownloadUniversal() != null && modLoader.getDownloadUniversal()) {
-			downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, false);
+			if (BooleanUtils.isTrue(modLoader.getDownloadInstaller())) {
+				downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, true);
+			}
+			if (BooleanUtils.isTrue(modLoader.getDownloadUniversal())) {
+				downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, false);
+			}
 		}
 	}
 
