@@ -39,6 +39,11 @@ public class CurseModHandler extends ModHandler {
 	}
 
 	private static void downloadCurseMod(final CurseFile mod) {
+		if(BooleanUtils.isTrue(mod.getSkipDownload())){
+			log.info(String.format("Skipped downloading %s", mod.getName()));
+			return;
+		}
+
 		val modName = mod.getName();
 
 		try {
@@ -150,13 +155,13 @@ public class CurseModHandler extends ModHandler {
 			newMod.setFileID(fileIds.get(0).intValue());
 			newMod.setVersion((String) ((JSONObject) fileListJson.get(newMod.getFileID().toString())).get("name"));
 		}
-		if (!releaseType.equals("alpha") && fileIds.isEmpty()) {
+		if (!"alpha".equals(releaseType) && fileIds.isEmpty()) {
 			log.info(String.format("No files found for this Minecraft version, disabling download of %s", curseMod.getName()));
-			curseMod.setSkipUpdate(true);
+			curseMod.setSkipDownload(true);
 		}
 		if (BooleanUtils.isTrue(curseMod.getSkipUpdate()) && !fileIds.isEmpty()) {
 			log.info(String.format("Found files for this Minecraft version, enabling download of %s", curseMod.getName()));
-			curseMod.setSkipUpdate(null);
+			curseMod.setSkipDownload(null);
 		}
 
 		log.trace("Finished getting most recent available file.");
