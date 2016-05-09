@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -149,6 +150,14 @@ public class CurseModHandler extends ModHandler {
 			newMod.setFileID(fileIds.get(0).intValue());
 			newMod.setVersion((String) ((JSONObject) fileListJson.get(newMod.getFileID().toString())).get("name"));
 		}
+		if (!releaseType.equals("alpha") && fileIds.isEmpty()) {
+			log.info(String.format("No files found for this Minecraft version, disabling download of %s", curseMod.getName()));
+			curseMod.setSkipUpdate(true);
+		}
+		if (BooleanUtils.isTrue(curseMod.getSkipUpdate()) && !fileIds.isEmpty()) {
+			log.info(String.format("Found files for this Minecraft version, enabling download of %s", curseMod.getName()));
+			curseMod.setSkipUpdate(null);
+		}
 
 		log.trace("Finished getting most recent available file.");
 		return newMod;
@@ -159,7 +168,7 @@ public class CurseModHandler extends ModHandler {
 				|| "beta".equals(releaseType) && "release".equals(modRelease);
 	}
 
-	private static JSONObject getCurseProjectJson(final Integer integer, final String projectName,
+	private static JSONObject getCurseProjectJson(final Integer projectId, final String projectName,
 			final JSONParser projectParser) throws ParseException, IOException {
 		log.trace("Getting CurseForge Widget JSON...");
 		try {
@@ -168,7 +177,7 @@ public class CurseModHandler extends ModHandler {
 			return (JSONObject) projectParser
 					.parse(new BufferedReader(new InputStreamReader(new URL(urlStr).openStream())));
 		} catch (final FileNotFoundException e) {
-			String urlStr = String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, integer + "-" + projectName);
+			String urlStr = String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, projectId + "-" + projectName);
 			log.debug(urlStr);
 			return (JSONObject) projectParser
 					.parse(new BufferedReader(new InputStreamReader(new URL(urlStr).openStream())));
