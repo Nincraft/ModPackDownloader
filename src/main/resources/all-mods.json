@@ -1,114 +1,171 @@
 {
-    "curseFiles": [
-        {
-            "fileID": 2273274,
-            "projectID": 227083
-        },
+    "files": [
         {
             "fileID": 2277394,
+            "name": "AppleCore",
             "projectID": 224472
         },
         {
+            "fileID": 2284622,
+            "name": "Aroma1997Core",
+            "projectID": 223735
+        },
+        {
+            "fileID": 2277001,
+            "name": "AromaBackup",
+            "projectID": 225658
+        },
+        {
+            "fileID": 2273274,
+            "name": "Baubles",
+            "projectID": 227083
+        },
+        {
             "fileID": 2274840,
+            "name": "Baubles HUD",
             "projectID": 230751
         },
         {
             "fileID": 2279388,
+            "name": "Biomes O' Plenty",
             "projectID": 220318
         },
         {
             "fileID": 2279356,
+            "name": "Blood Magic",
             "projectID": 224791
         },
         {
             "fileID": 2269766,
+            "name": "Bloodmoon",
             "projectID": 226321
         },
         {
-            "fileID": 2279333,
+            "fileID": 2280253,
+            "name": "Chisels and Bits",
             "projectID": 231095
         },
         {
-        	"fileID": 2273148,
-        	"projectID": 226099
+            "fileID": 2273148,
+            "name": "Durability Show",
+            "projectID": 226099
         },
         {
-        	"fileID": 2269767,
-        	"projectID": 225839
+            "fileID": 2269767,
+            "name": "Fast Leaf Decay",
+            "projectID": 225839
         },
         {
-        	"fileID": 2272962,
-        	"projectID": 223797
+            "fileID": 2272962,
+            "name": "Help Fixer",
+            "projectID": 223797
         },
         {
-        	"fileID": 2279274,
-        	"projectID": 241268
+            "fileID": 2281942,
+            "name": "Immersive Craft",
+            "projectID": 241268
         },
         {
-        	"fileID": 2275675,
-        	"projectID": 223094
+            "fileID": 2283028,
+            "name": "In Case of Emergency",
+            "projectID": 241925
         },
         {
-        	"fileID": 2278859,
-        	"projectID": 228756
+            "fileID": 2280666,
+            "name": "Intangible",
+            "projectID": 241350
         },
         {
-        	"fileID": 2279280,
-        	"projectID": 238222
+            "fileID": 2275675,
+            "name": "Inventory Tweaks",
+            "projectID": 223094
         },
         {
-        	"fileID": 2276884,
-        	"projectID": 74924
+            "fileID": 2278859,
+            "name": "Iron Chests",
+            "projectID": 228756
         },
         {
-        	"fileID": 2276306,
-        	"projectID": 239431
+            "fileID": 2282784,
+            "name": "Just Enough Items",
+            "projectID": 238222
         },
         {
-        	"fileID": 2278855,
-        	"projectID": 235595
+            "fileID": 2276884,
+            "name": "Mantle",
+            "projectID": 74924
         },
         {
-        	"fileID": 2279372,
-        	"projectID": 223008
+            "fileID": 2276306,
+            "name": "MCMultipart",
+            "projectID": 239431
         },
         {
-        	"fileID": 2276399,
-        	"projectID": 59816
+            "fileID": 2280806,
+            "name": "Not Enough Wands",
+            "projectID": 235595
         },
         {
-        	"fileID": 2275910,
-        	"projectID": 240566
+            "fileID": 2280569,
+            "name": "Open Computers",
+            "projectID": 223008
         },
         {
-        	"fileID": 2279246,
-        	"projectID": 241113
+            "fileID": 2284425,
+            "name": "Psi",
+            "projectID": 241665
         },
         {
-        	"fileID": 2276883,
-        	"projectID": 74072
+            "fileID": 2283433,
+            "name": "Random Things",
+            "projectID": 59816
         },
         {
-        	"fileID": 2276528,
-        	"projectID": 223628
+            "fileID": 2275910,
+            "name": "SimpleRetrogen",
+            "projectID": 240566
         },
         {
-        	"fileID": 2276285,
-        	"projectID": 238603
+            "fileID": 2279246,
+            "name": "Substratum",
+            "projectID": 241113
+        },
+        {
+            "fileID": 2279928,
+            "name": "Thaumcraft",
+            "projectID": 223628
+        },
+        {
+            "fileID": 2276883,
+            "name": "Tinkers' Construct",
+            "projectID": 74072
+        },
+        {
+            "fileID": 2279788,
+            "name": "TIS 3D",
+            "projectID": 238603
         }
     ],
     "thirdParty": [
         {
-        	"name": "Botania",
-            "url": "https://github.com/williewillus/Botania/releases/download/v0.5.3-beta/Botania.r1.8-248-MC1.8-779cc76.jar"
+            "name": "Botania",
+            "url": "https://github.com/williewillus/Botania/releases/download/v0.6.2-beta/Botania.r1.8-248-unofficial-0.6.2.jar"
         },
         {
-        	"name": "Buildcraft",
+            "name": "BetterStorage",
+            "url": "https://github.com/copygirl/BetterStorage/releases/download/v0.13.1.127/BetterStorage-1.7.10-0.13.1.127.jar"
+        },
+        {
+            "name": "Buildcraft",
             "url": "https://www.dropbox.com/s/q1qppz3sq447173/buildcraft-7.2.0-pre6.jar?dl=1"
         },
         {
-        	"name": "Charset",
-        	"url": "http://charset.asie.pl/files/Charset-0.2.1-945baf5589832f727c42cf77.jar"
+            "name": "Charset",
+            "url": "http://charset.asie.pl/files/Charset-0.2.1-945baf5589832f727c42cf77.jar"
+        },
+        {
+            "name": "Dimensional Doors",
+            "url": "https://github.com/CannibalVox/DimDoors/releases/download/2.2.5-test9/DimensionalDoors-2.2.5-test9.jar"
         }
     ]
 }

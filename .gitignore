@@ -5,3 +5,6 @@ target/
 cache/
 all/
 *.jar
+logs/
+.idea/
+*.iml

@@ -1,0 +1,200 @@
+{
+  "minecraft": {
+    "version": "1.7.10",
+    "modLoaders": [
+      {
+        "id": "forge-10.13.4.1566",
+        "primary": true
+      }
+    ]
+  },
+  "manifestType": "minecraftModpack",
+  "manifestVersion": 1,
+  "name": "Botania Skyblock The Modpack The Mod The Modpack",
+  "version": "1.0.28",
+  "author": "Vazkii",
+  "projectID": 233293,
+  "files": [
+    {
+      "projectID": 227706,
+      "fileID": 2226922,
+      "required": true
+    },
+    {
+      "projectID": 227979,
+      "fileID": 2229254,
+      "required": true
+    },
+    {
+      "projectID": 231454,
+      "fileID": 2242852,
+      "required": true
+    },
+    {
+      "projectID": 232502,
+      "fileID": 2246106,
+      "required": true
+    },
+    {
+      "projectID": 232919,
+      "fileID": 2248061,
+      "required": true
+    },
+    {
+      "projectID": 231879,
+      "fileID": 2243821,
+      "required": true
+    },
+    {
+      "projectID": 223094,
+      "fileID": 2210792,
+      "required": true
+    },
+    {
+      "projectID": 229068,
+      "fileID": 2232104,
+      "required": true
+    },
+    {
+      "projectID": 235577,
+      "fileID": 2267308,
+      "required": true
+    },
+    {
+      "projectID": 233716,
+      "fileID": 2254315,
+      "required": true
+    },
+    {
+      "projectID": 238372,
+      "fileID": 2268525,
+      "required": true
+    },
+    {
+      "projectID": 238618,
+      "fileID": 2269669,
+      "required": true
+    },
+    {
+      "projectID": 233342,
+      "fileID": 2270358,
+      "required": true
+    },
+    {
+      "projectID": 228932,
+      "fileID": 2255823,
+      "required": true
+    },
+    {
+      "projectID": 231453,
+      "fileID": 2242214,
+      "required": true
+    },
+    {
+      "projectID": 227083,
+      "fileID": 2224857,
+      "required": true
+    },
+    {
+      "projectID": 227441,
+      "fileID": 2272557,
+      "required": true
+    },
+    {
+      "projectID": 237852,
+      "fileID": 2272796,
+      "required": true
+    },
+    {
+      "projectID": 227795,
+      "fileID": 2271214,
+      "required": true
+    },
+    {
+      "projectID": 224472,
+      "fileID": 2277393,
+      "required": true
+    },
+    {
+      "projectID": 238534,
+      "fileID": 2275426,
+      "required": true
+    },
+    {
+      "projectID": 232131,
+      "fileID": 2277197,
+      "required": true
+    },
+    {
+      "projectID": 230114,
+      "fileID": 2281148,
+      "required": true
+    },
+    {
+      "projectID": 69118,
+      "fileID": 2280761,
+      "required": true
+    },
+    {
+      "projectID": 225643,
+      "fileID": 2283837,
+      "required": true
+    },
+    {
+      "projectID": 239049,
+      "fileID": 2271870,
+      "required": true
+    },
+    {
+      "projectID": 238891,
+      "fileID": 2282307,
+      "required": true
+    },
+    {
+      "projectID": 222789,
+      "fileID": 2224003,
+      "required": true
+    },
+    {
+      "projectID": 230898,
+      "fileID": 2274165,
+      "required": true
+    },
+    {
+      "projectID": 241895,
+      "fileID": 2284547,
+      "required": true
+    },
+    {
+      "projectID": 228525,
+      "fileID": 2278984,
+      "required": true
+    },
+    {
+      "projectID": 222213,
+      "fileID": 2262089,
+      "required": true
+    },
+    {
+      "projectID": 222211,
+      "fileID": 2262091,
+      "required": true
+    },
+    {
+      "projectID": 222303,
+      "fileID": 2284819,
+      "required": true
+    },
+    {
+      "projectID": 233071,
+      "fileID": 2285865,
+      "required": true
+    },
+    {
+      "projectID": 223852,
+      "fileID": 2284904,
+      "required": true
+    }
+  ],
+  "overrides": "overrides"
+}
