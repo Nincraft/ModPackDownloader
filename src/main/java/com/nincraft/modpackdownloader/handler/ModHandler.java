@@ -21,7 +21,7 @@ public abstract class ModHandler {
 
 	public abstract void updateMod(final Mod mod);
 
-	protected static void downloadFile(final Mod mod, final boolean useUserAgent) {
+	protected static void downloadFile(final Mod mod) {
 		val decodedFileName = URLHelper.decodeSpaces(mod.getFileName());
 
 		if (!FileSystemHelper.isInLocalRepo(mod.getName(), decodedFileName) || Reference.forceDownload) {

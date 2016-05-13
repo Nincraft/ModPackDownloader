@@ -46,16 +46,16 @@ public class ModPackDownloader {
 
 	private static void processArgument(final String arg) {
 		log.trace("Processing given arguments...");
-		if (arg.equals("-forceDownload")) {
+		if ("-forceDownload".equals(arg)) {
 			Reference.forceDownload = true;
 			log.debug("Downloads are now being forced.");
-		} else if (arg.equals("-updateMods")) {
+		} else if ("-updateMods".equals(arg)) {
 			Reference.updateMods = true;
 			log.debug("mods will be updated instead of downloaded.");
 		} else if (arg.startsWith("-releaseType")) {
-			Reference.releaseType = arg.substring(arg.lastIndexOf("=") + 1);
+			Reference.releaseType = arg.substring(arg.lastIndexOf('=') + 1);
 			log.debug(String.format("Checking against mod release type: %s", Reference.releaseType));
-		} else if (arg.equals("-generateUrlTxt")) {
+		} else if ("-generateUrlTxt".equals(arg)) {
 			Reference.generateUrlTxt = true;
 			log.debug("Mod URL Text files will now be generated.");
 		}

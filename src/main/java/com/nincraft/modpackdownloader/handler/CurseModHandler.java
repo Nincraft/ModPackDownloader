@@ -51,7 +51,7 @@ public class CurseModHandler extends ModHandler {
 					: getCurseForgeDownloadLocation(mod.getDownloadUrl(), modName, modName);
 			mod.setFileName(fileName);
 
-			downloadFile(mod, false);
+			downloadFile(mod);
 		} catch (final IOException e) {
 			log.error(e.getMessage());
 		}
@@ -61,7 +61,7 @@ public class CurseModHandler extends ModHandler {
 			final String downloadLocation) throws IOException, MalformedURLException {
 		String encodedDownloadLocation = URLHelper.encodeSpaces(downloadLocation);
 
-		if (encodedDownloadLocation.indexOf(Reference.JAR_FILE_EXT) == -1) {
+		if (!encodedDownloadLocation.contains(Reference.JAR_FILE_EXT)) {
 			val newUrl = url + Reference.COOKIE_TEST_1;
 
 			HttpURLConnection conn = (HttpURLConnection) new URL(newUrl).openConnection();
@@ -71,7 +71,7 @@ public class CurseModHandler extends ModHandler {
 			String actualURL = conn.getURL().toString();
 			int retryCount = 0;
 
-			while (conn.getResponseCode() != 200 || actualURL.indexOf(Reference.JAR_FILE_EXT) == -1) {
+			while (conn.getResponseCode() != 200 || !actualURL.contains(Reference.JAR_FILE_EXT)) {
 				val headerLocation = conn.getHeaderField("Location");
 				if (headerLocation != null) {
 					actualURL = headerLocation;
@@ -87,8 +87,7 @@ public class CurseModHandler extends ModHandler {
 				retryCount++;
 			}
 
-			if (actualURL.substring(actualURL.lastIndexOf(Reference.URL_DELIMITER) + 1)
-					.indexOf(Reference.JAR_FILE_EXT) != -1) {
+			if (actualURL.substring(actualURL.lastIndexOf(Reference.URL_DELIMITER) + 1).contains(Reference.JAR_FILE_EXT)) {
 				encodedDownloadLocation = actualURL.substring(actualURL.lastIndexOf(Reference.URL_DELIMITER) + 1);
 			} else {
 				encodedDownloadLocation = projectName + Reference.JAR_FILE_EXT;
@@ -99,7 +98,7 @@ public class CurseModHandler extends ModHandler {
 	}
 
 	private static void updateCurseMod(final CurseFile mod) {
-		if (mod.getSkipUpdate() != null && mod.getSkipUpdate()) {
+		if (BooleanUtils.isTrue(mod.getSkipUpdate())) {
 			log.info("Skipped updating " + mod.getName());
 			return;
 		}
