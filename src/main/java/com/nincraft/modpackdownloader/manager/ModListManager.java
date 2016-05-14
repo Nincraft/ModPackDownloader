@@ -167,7 +167,7 @@ public class ModListManager {
 			if (projectId != null && projectName != null) {
 				curseFile = new CurseFile(projectId, projectName);
 				curseFile.init();
-				log.info(String.format("Adding %s from batch add", projectName));
+				log.info(String.format("Adding %s from batch add", curseFile.getName()));
 				MOD_LIST.add(curseFile);
 				manifestFile.getCurseFiles().add(curseFile);
 			} else {
