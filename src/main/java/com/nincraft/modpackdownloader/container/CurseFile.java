@@ -38,6 +38,13 @@ public class CurseFile extends Mod {
 
 	}
 
+	public CurseFile(String projectId, String projectName) {
+		if (projectId != null) {
+			setProjectID(Integer.parseInt(projectId));
+		}
+		setProjectName(projectName);
+	}
+
 	@Override
 	public void init() {
 		setProjectUrl(buildProjectUrl());

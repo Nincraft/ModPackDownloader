@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.nincraft.modpackdownloader.container.*;
 import com.nincraft.modpackdownloader.handler.ForgeHandler;
@@ -96,7 +98,7 @@ public class ModListManager {
 	}
 
 	public static final void downloadMods() {
-		executorService = Executors.newFixedThreadPool(MOD_LIST.size()+1);
+		executorService = Executors.newFixedThreadPool(MOD_LIST.size() + 1);
 		Runnable forgeThread = new Thread(() -> {
 			ForgeHandler.downloadForge(manifestFile.getMinecraftVersion(), manifestFile.getMinecraft().getModLoaders());
 		});
@@ -121,6 +123,11 @@ public class ModListManager {
 	}
 
 	public static final void updateMods() {
+		if (!manifestFile.getBatchAddCurse().isEmpty()) {
+			log.info("Found batch add for Curse");
+			addBatch();
+			Reference.updateTotal = MOD_LIST.size();
+		}
 		log.trace(String.format("Updating %s mods...", Reference.updateTotal));
 		executorService = Executors.newFixedThreadPool(MOD_LIST.size());
 		int updateCount = 1;
@@ -137,20 +144,45 @@ public class ModListManager {
 		log.trace(String.format("Finished updating %s mods.", Reference.updateTotal));
 	}
 
+	private static void addBatch() {
+		CurseFile curseFile;
+		String projectIdPattern = "(\\d)+";
+		String projectNamePattern = "(((?:[a-z][a-z]+))(-)?)+";
+		for (String projectUrl : manifestFile.getBatchAddCurse()) {
+			Pattern pId = Pattern.compile(projectIdPattern);
+			Matcher m = pId.matcher(projectUrl);
+			String projectId = null;
+			if (m.find()) {
+				projectId = m.group();
+			}
+
+			String projectName = null;
+
+			pId = Pattern.compile(projectNamePattern);
+			m = pId.matcher(projectUrl);
+			if (m.find()) {
+				projectName = m.group();
+			}
+
+			if (projectId != null && projectName != null) {
+				curseFile = new CurseFile(projectId, projectName);
+				curseFile.init();
+				log.info(String.format("Adding %s from batch add", projectName));
+				MOD_LIST.add(curseFile);
+				manifestFile.getCurseFiles().add(curseFile);
+			} else {
+				log.warn(String.format("Unable to add %s from batch add", projectUrl));
+			}
+		}
+	}
+
 	public static void updateManifest() {
 		log.info("Updating Manifest File...");
 		try {
 			manifestFile.getCurseFiles().sort(compareMods);
 			manifestFile.getThirdParty().sort(compareMods);
-			if (manifestFile.getCurseFiles().isEmpty()) {
-				manifestFile.setCurseFiles(null);
-			}
-			if (manifestFile.getThirdParty().isEmpty()) {
-				manifestFile.setThirdParty(null);
-			}
-			if (manifestFile.getMinecraft().getModLoaders().isEmpty()) {
-				manifestFile.getMinecraft().setModLoaders(null);
-			}
+			nullEmptyLists();
+			removeBatchAdd();
 			Gson prettyGson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
 					.disableHtmlEscaping().create();
 			val file = new FileWriter(Reference.manifestFile);
@@ -159,6 +191,25 @@ public class ModListManager {
 			file.close();
 		} catch (final IOException e) {
 			log.error(e.getMessage());
+		}
+	}
+
+	private static void removeBatchAdd() {
+		manifestFile.setBatchAddCurse(null);
+	}
+
+	private static void nullEmptyLists() {
+		if (manifestFile.getCurseFiles().isEmpty()) {
+			manifestFile.setCurseFiles(null);
+		}
+		if (manifestFile.getThirdParty().isEmpty()) {
+			manifestFile.setThirdParty(null);
+		}
+		if (manifestFile.getMinecraft().getModLoaders().isEmpty()) {
+			manifestFile.getMinecraft().setModLoaders(null);
+		}
+		if (manifestFile.getBatchAddCurse().isEmpty()) {
+			manifestFile.setBatchAddCurse(null);
 		}
 	}
 }

@@ -25,6 +25,9 @@ public class Manifest {
 	@SerializedName("thirdParty")
 	@Expose
 	public List<ThirdParty> thirdParty = new ArrayList<ThirdParty>();
+	@SerializedName("batchAddCurse")
+	@Expose
+	public List<String> batchAddCurse = new ArrayList<String>();
 
 	public String getMinecraftVersion() {
 		if (minecraft != null) {

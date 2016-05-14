@@ -39,7 +39,7 @@ public class CurseModHandler extends ModHandler {
 	}
 
 	private static void downloadCurseMod(final CurseFile mod) {
-		if(BooleanUtils.isTrue(mod.getSkipDownload())){
+		if (BooleanUtils.isTrue(mod.getSkipDownload())) {
 			log.info(String.format("Skipped downloading %s", mod.getName()));
 			return;
 		}
@@ -58,7 +58,7 @@ public class CurseModHandler extends ModHandler {
 	}
 
 	private static String getCurseForgeDownloadLocation(final String url, final String projectName,
-			final String downloadLocation) throws IOException, MalformedURLException {
+			final String downloadLocation) throws IOException {
 		String encodedDownloadLocation = URLHelper.encodeSpaces(downloadLocation);
 
 		if (!encodedDownloadLocation.contains(Reference.JAR_FILE_EXT)) {
@@ -131,7 +131,7 @@ public class CurseModHandler extends ModHandler {
 	}
 
 	private static CurseFile getLatestVersion(final String mcVersion, final String releaseType,
-			final CurseFile curseMod, final JSONObject fileListJson) {
+			CurseFile curseMod, final JSONObject fileListJson) {
 		log.trace("Getting most recent available file...");
 		CurseFile newMod = null;
 		try {
@@ -140,6 +140,8 @@ public class CurseModHandler extends ModHandler {
 			log.warn("Couldn't clone existing mod reference, creating new one instead.");
 			newMod = new CurseFile();
 		}
+
+		curseMod = checkFileId(curseMod);
 
 		List<JSONObject> fileList = new ArrayList<JSONObject>(fileListJson.values());
 		List<Long> fileIds = new ArrayList<Long>();
@@ -165,6 +167,13 @@ public class CurseModHandler extends ModHandler {
 
 		log.trace("Finished getting most recent available file.");
 		return newMod;
+	}
+
+	private static CurseFile checkFileId(CurseFile curseMod) {
+		if (curseMod.getFileID() == null) {
+			curseMod.setFileID(0);
+		}
+		return curseMod;
 	}
 
 	private static boolean equalOrLessThan(final String modRelease, final String releaseType) {
