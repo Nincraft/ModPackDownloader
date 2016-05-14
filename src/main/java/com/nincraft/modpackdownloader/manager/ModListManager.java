@@ -149,8 +149,9 @@ public class ModListManager {
 		String projectIdPattern = "(\\d)+";
 		String projectNamePattern = "(((?:[a-z][a-z]+))(-)?)+";
 		for (String projectUrl : manifestFile.getBatchAddCurse()) {
+			String projectIdName = projectUrl.substring(projectUrl.lastIndexOf('/')+1);
 			Pattern pId = Pattern.compile(projectIdPattern);
-			Matcher m = pId.matcher(projectUrl);
+			Matcher m = pId.matcher(projectIdName);
 			String projectId = null;
 			if (m.find()) {
 				projectId = m.group();
@@ -159,7 +160,7 @@ public class ModListManager {
 			String projectName = null;
 
 			pId = Pattern.compile(projectNamePattern);
-			m = pId.matcher(projectUrl);
+			m = pId.matcher(projectIdName);
 			if (m.find()) {
 				projectName = m.group();
 			}
