@@ -41,7 +41,7 @@ public class ForgeHandler {
 	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, String folder, String forgeId, boolean downloadInstaller) {
 		String forgeFileName = "forge-" + minecraftVersion + "-" + forgeId;
 		String forgeURL = Reference.forgeURL + minecraftVersion + "-" + forgeId;
-		if (!minecraftVersion.startsWith("1.8")) {
+		if (!minecraftVersion.startsWith("1.8") && !minecraftVersion.startsWith("1.9")) {
 			forgeFileName += "-" + minecraftVersion;
 			forgeURL += "-" + minecraftVersion;
 		}
