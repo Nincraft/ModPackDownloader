@@ -6,9 +6,11 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Generated("org.jsonschema2pojo")
 @Getter
+@Setter
 public class ModLoader {
 
 	@SerializedName("id")
@@ -32,6 +34,9 @@ public class ModLoader {
 	@SerializedName("renameUniversal")
 	@Expose
 	private String renameUniversal;
+	@SerializedName("release")
+	@Expose
+	private String release;
 
 	public String getRename(boolean downloadInstaller) {
 		return downloadInstaller ? getRenameInstaller() : getRenameUniversal();

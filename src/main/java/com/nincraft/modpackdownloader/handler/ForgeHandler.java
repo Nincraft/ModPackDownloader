@@ -8,9 +8,14 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 
@@ -68,5 +73,54 @@ public class ForgeHandler {
 			FileSystemHelper.copyFromLocalRepo("forge", forgeFileName, folder, modLoader.getRename(downloadInstaller));
 		}
 		log.info(String.format("Completed downloading Forge version %s", forgeFileName));
+	}
+
+	public static List<ModLoader> updateForge(String minecraftVersion, List<ModLoader> modLoaders) {
+		if (!Reference.updateForge) {
+			log.trace("Updating Forge disabled");
+			return modLoaders;
+		}
+
+		for (ModLoader modLoader : modLoaders) {
+
+			JSONObject fileListJson = null;
+			if (modLoader.getRelease() == null) {
+				log.warn("No Forge release type set for update, defaulting to recommended");
+				modLoader.setRelease("recommended");
+			}
+			try {
+				fileListJson = (JSONObject) ((JSONObject) new JSONParser().parse(new BufferedReader(new InputStreamReader(new URL(Reference.forgeUpdateURL).openStream())))).get("promos");
+				String updatedForgeVersion = (String) fileListJson.get(minecraftVersion + "-" + modLoader.getRelease());
+				String manifestForgeVersion = modLoader.getId().substring(modLoader.getId().indexOf('-') + 1);
+
+				if (compareVersions(manifestForgeVersion, updatedForgeVersion) < 0) {
+					log.info(String.format("Newer version of Forge found, updating to %s", updatedForgeVersion));
+					modLoader.setId("forge-" + updatedForgeVersion);
+				}
+
+			} catch (IOException | ParseException e) {
+				log.error("Failed to update Forge", e);
+			}
+		}
+
+		return modLoaders;
+	}
+
+	private static int compareVersions(String manifestForgeVersion, String updatedForgeVersion) {
+		String[] manArr = manifestForgeVersion.split("\\.");
+		String[] updateArr = updatedForgeVersion.split("\\.");
+
+		int i = 0;
+
+		while (i < manArr.length || i < updateArr.length) {
+			if (Integer.parseInt(manArr[i]) < Integer.parseInt(updateArr[i])) {
+				return -1;
+			} else if (Integer.parseInt(manArr[i]) > Integer.parseInt(updateArr[i])) {
+				return 1;
+			}
+			i++;
+		}
+
+		return 0;
 	}
 }

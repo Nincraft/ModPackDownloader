@@ -128,8 +128,17 @@ public class ModListManager {
 			addBatch();
 			Reference.updateTotal = MOD_LIST.size();
 		}
+
+		Runnable forgeThread = new Thread(() -> {
+			manifestFile.getMinecraft().setModLoaders(ForgeHandler.updateForge(manifestFile.getMinecraftVersion(), manifestFile.getMinecraft().getModLoaders()));
+		});
+
+		executorService = Executors.newFixedThreadPool(Reference.updateTotal + 1);
+
+		executorService.execute(forgeThread);
+
 		log.trace(String.format("Updating %s mods...", Reference.updateTotal));
-		executorService = Executors.newFixedThreadPool(MOD_LIST.size());
+
 		int updateCount = 1;
 		for (val mod : MOD_LIST) {
 			log.info(String.format(Reference.UPDATING_MOD_X_OF_Y, mod.getName(), updateCount++, Reference.updateTotal));
@@ -149,7 +158,7 @@ public class ModListManager {
 		String projectIdPattern = "(\\d)+";
 		String projectNamePattern = "(((?:[a-z][a-z]+))(-)?)+";
 		for (String projectUrl : manifestFile.getBatchAddCurse()) {
-			String projectIdName = projectUrl.substring(projectUrl.lastIndexOf('/')+1);
+			String projectIdName = projectUrl.substring(projectUrl.lastIndexOf('/') + 1);
 			Pattern pId = Pattern.compile(projectIdPattern);
 			Matcher m = pId.matcher(projectIdName);
 			String projectId = null;
