@@ -33,4 +33,6 @@ public class Reference {
 	public static String forgeURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/";
 	public static String forgeInstaller = "-installer.jar";
 	public static String forgeUniversal = "-universal.jar";
+	public static boolean updateForge;
+	public static String forgeUpdateURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json";
 }

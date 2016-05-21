@@ -52,6 +52,13 @@ public class ModPackDownloader {
 		} else if ("-updateMods".equals(arg)) {
 			Reference.updateMods = true;
 			log.debug("mods will be updated instead of downloaded.");
+		} else if ("-updateForge".equals(arg)) {
+			Reference.updateForge = true;
+			log.debug("Forge will be updated instead of downloaded.");
+		} else if ("-updateAll".equals(arg)) {
+			Reference.updateMods = true;
+			Reference.updateForge = true;
+			log.debug("mods and Forge will be updated instead of downloaded.");
 		} else if (arg.startsWith("-releaseType")) {
 			Reference.releaseType = arg.substring(arg.lastIndexOf('=') + 1);
 			log.debug(String.format("Checking against mod release type: %s", Reference.releaseType));
