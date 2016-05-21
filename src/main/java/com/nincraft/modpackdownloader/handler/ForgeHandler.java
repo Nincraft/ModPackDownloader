@@ -44,9 +44,13 @@ public class ForgeHandler {
 	}
 
 	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, String folder, String forgeId, boolean downloadInstaller) {
+		downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, downloadInstaller, false);
+	}
+
+	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, String folder, String forgeId, boolean downloadInstaller, boolean alternateDownloadUrl) {
 		String forgeFileName = "forge-" + minecraftVersion + "-" + forgeId;
 		String forgeURL = Reference.forgeURL + minecraftVersion + "-" + forgeId;
-		if (!minecraftVersion.startsWith("1.8") && !minecraftVersion.startsWith("1.9")) {
+		if (alternateDownloadUrl) {
 			forgeFileName += "-" + minecraftVersion;
 			forgeURL += "-" + minecraftVersion;
 		}
@@ -66,6 +70,10 @@ public class ForgeHandler {
 				FileUtils.copyURLToFile(new URL(forgeURL), downloadedFile);
 			} catch (final IOException e) {
 				log.error(String.format("Could not download %s.", forgeFileName), e.getMessage());
+				if (!alternateDownloadUrl) {
+					log.warn("Attempting alternate Forge download URL");
+					downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, downloadInstaller, true);
+				}
 				return;
 			}
 			FileSystemHelper.copyToLocalRepo("forge", downloadedFile, forgeFileName);
