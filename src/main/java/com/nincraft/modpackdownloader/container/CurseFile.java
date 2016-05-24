@@ -31,6 +31,9 @@ public class CurseFile extends Mod {
 	@SerializedName("release")
 	@Expose
 	public String releaseType;
+	@SerializedName("skipUpdate")
+	@Expose
+	private Boolean skipUpdate;
 	private String projectUrl;
 	private String projectName;
 

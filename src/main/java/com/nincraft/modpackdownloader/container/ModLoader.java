@@ -11,7 +11,7 @@ import lombok.Setter;
 @Generated("org.jsonschema2pojo")
 @Getter
 @Setter
-public class ModLoader {
+public class ModLoader extends DownloadableFile {
 
 	@SerializedName("id")
 	@Expose
@@ -19,9 +19,6 @@ public class ModLoader {
 	@SerializedName("primary")
 	@Expose
 	private Boolean primary;
-	@SerializedName("folder")
-	@Expose
-	private String folder;
 	@SerializedName("downloadInstaller")
 	@Expose
 	private Boolean downloadInstaller;

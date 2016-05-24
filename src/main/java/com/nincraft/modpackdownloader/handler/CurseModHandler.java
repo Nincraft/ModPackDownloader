@@ -51,7 +51,7 @@ public class CurseModHandler extends ModHandler {
 					: getCurseForgeDownloadLocation(mod.getDownloadUrl(), modName, modName);
 			mod.setFileName(fileName);
 
-			downloadFile(mod);
+			DownloadHelper.downloadFile(mod);
 		} catch (final IOException e) {
 			log.error(e.getMessage());
 		}
