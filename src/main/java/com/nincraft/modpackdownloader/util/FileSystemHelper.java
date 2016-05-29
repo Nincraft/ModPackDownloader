@@ -55,7 +55,7 @@ public final class FileSystemHelper {
 		}
 		try {
 			FileUtils.copyFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder));
-			File downloadedFile = getDownloadedFile(fileName);
+			File downloadedFile = getDownloadedFile(fileName, folder);
 			if (rename != null) {
 				downloadedFile.renameTo(new File(downloadedFile.getParent() + File.separator + rename));
 			}
