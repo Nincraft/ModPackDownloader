@@ -27,9 +27,7 @@ public class DownloadHelper {
 				return;
 			}
 
-			FileSystemHelper.copyToLocalRepo(downloadableFile.getName(), downloadedFile);
-		} else {
-			FileSystemHelper.copyFromLocalRepo(downloadableFile.getName(), decodedFileName, downloadableFile.getFolder());
 		}
+		FileSystemHelper.copyFromLocalRepo(downloadableFile, decodedFileName);
 	}
 }

@@ -44,22 +44,18 @@ public class CurseModHandler extends ModHandler {
 			return;
 		}
 
-		val modName = mod.getName();
-
 		try {
-			val fileName = !Strings.isNullOrEmpty(mod.getRename()) ? mod.getRename()
-					: getCurseForgeDownloadLocation(mod.getDownloadUrl(), modName, modName);
-			mod.setFileName(fileName);
-
+			mod.setFileName(getCurseForgeDownloadLocation(mod));
 			DownloadHelper.downloadFile(mod);
 		} catch (final IOException e) {
 			log.error(e.getMessage());
 		}
 	}
 
-	private static String getCurseForgeDownloadLocation(final String url, final String projectName,
-			final String downloadLocation) throws IOException {
-		String encodedDownloadLocation = URLHelper.encodeSpaces(downloadLocation);
+	private static String getCurseForgeDownloadLocation(final CurseFile mod) throws IOException {
+		String url = mod.getDownloadUrl();
+		String projectName = mod.getName();
+		String encodedDownloadLocation = URLHelper.encodeSpaces(projectName);
 
 		if (!encodedDownloadLocation.contains(Reference.JAR_FILE_EXT)) {
 			val newUrl = url + Reference.COOKIE_TEST_1;

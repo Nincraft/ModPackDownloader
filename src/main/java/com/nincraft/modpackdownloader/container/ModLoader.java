@@ -38,4 +38,8 @@ public class ModLoader extends DownloadableFile {
 	public String getRename(boolean downloadInstaller) {
 		return downloadInstaller ? getRenameInstaller() : getRenameUniversal();
 	}
+
+	public String getForgeId(){
+		return getId().substring(getId().indexOf("-") + 1);
+	}
 }

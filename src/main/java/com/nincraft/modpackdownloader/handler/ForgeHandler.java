@@ -28,28 +28,25 @@ public class ForgeHandler {
 		}
 
 		for (ModLoader modLoader : modLoaders) {
-			String forgeVersion = modLoader.getId();
-			String folder = modLoader.getFolder();
-			String forgeId = forgeVersion.substring(forgeVersion.indexOf("-") + 1);
 
-			log.info(String.format("Downloading Forge version %s", forgeVersion));
+			log.info(String.format("Downloading Forge version %s", modLoader.getId()));
 
 			if (BooleanUtils.isTrue(modLoader.getDownloadInstaller())) {
-				downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, true);
+				downloadForgeFile(minecraftVersion, modLoader, true);
 			}
 			if (BooleanUtils.isTrue(modLoader.getDownloadUniversal())) {
-				downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, false);
+				downloadForgeFile(minecraftVersion, modLoader, false);
 			}
 		}
 	}
 
-	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, String folder, String forgeId, boolean downloadInstaller) {
-		downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, downloadInstaller, false);
+	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, boolean downloadInstaller) {
+		downloadForgeFile(minecraftVersion, modLoader, downloadInstaller, true);
 	}
 
-	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, String folder, String forgeId, boolean downloadInstaller, boolean alternateDownloadUrl) {
-		String forgeFileName = "forge-" + minecraftVersion + "-" + forgeId;
-		String forgeURL = Reference.forgeURL + minecraftVersion + "-" + forgeId;
+	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, boolean downloadInstaller, boolean alternateDownloadUrl) {
+		String forgeFileName = "forge-" + minecraftVersion + "-" + modLoader.getForgeId();
+		String forgeURL = Reference.forgeURL + minecraftVersion + "-" + modLoader.getForgeId();
 		if (alternateDownloadUrl) {
 			forgeFileName += "-" + minecraftVersion;
 			forgeURL += "-" + minecraftVersion;
@@ -61,24 +58,24 @@ public class ForgeHandler {
 		if (!FileSystemHelper.isInLocalRepo("forge", forgeFileName) || Reference.forceDownload) {
 			File downloadedFile;
 			if (modLoader.getRename(downloadInstaller) != null) {
-				downloadedFile = FileSystemHelper.getDownloadedFile(modLoader.getRename(downloadInstaller), folder);
+				downloadedFile = FileSystemHelper.getDownloadedFile(modLoader.getRename(downloadInstaller), modLoader.getFolder());
 			} else {
-				downloadedFile = FileSystemHelper.getDownloadedFile(forgeFileName, folder);
+				downloadedFile = FileSystemHelper.getDownloadedFile(forgeFileName, modLoader.getFolder());
 			}
 
 			try {
 				FileUtils.copyURLToFile(new URL(forgeURL), downloadedFile);
 			} catch (final IOException e) {
 				log.error(String.format("Could not download %s.", forgeFileName), e.getMessage());
-				if (!alternateDownloadUrl) {
+				if (alternateDownloadUrl) {
 					log.warn("Attempting alternate Forge download URL");
-					downloadForgeFile(minecraftVersion, modLoader, folder, forgeId, downloadInstaller, true);
+					downloadForgeFile(minecraftVersion, modLoader, downloadInstaller, false);
 				}
 				return;
 			}
-			FileSystemHelper.copyToLocalRepo("forge", downloadedFile, forgeFileName);
+			//FileSystemHelper.copyToLocalRepo("forge", downloadedFile, forgeFileName);
 		} else {
-			FileSystemHelper.copyFromLocalRepo("forge", forgeFileName, folder, modLoader.getRename(downloadInstaller));
+			FileSystemHelper.copyFromLocalRepo("forge", forgeFileName, modLoader.getFolder(), modLoader.getRename(downloadInstaller));
 		}
 		log.info(String.format("Completed downloading Forge version %s", forgeFileName));
 	}

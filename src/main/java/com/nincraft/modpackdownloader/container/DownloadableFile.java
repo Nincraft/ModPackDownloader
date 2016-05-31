@@ -1,5 +1,6 @@
 package com.nincraft.modpackdownloader.container;
 
+import com.google.common.base.Strings;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
@@ -20,4 +21,11 @@ public abstract class DownloadableFile {
 	private String folder;
 	private String fileName;
 	private String downloadUrl;
+
+	public String getFileName(){
+		if(!Strings.isNullOrEmpty(getRename())){
+			return getRename();
+		}
+		return this.fileName;
+	}
 }
