@@ -1,12 +1,11 @@
 package com.nincraft.modpackdownloader.container;
 
-import javax.annotation.Generated;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
 @Getter
@@ -35,11 +34,15 @@ public class ModLoader extends DownloadableFile {
 	@Expose
 	private String release;
 
+	public ModLoader() {
+		setName("forge");
+	}
+
 	public String getRename(boolean downloadInstaller) {
 		return downloadInstaller ? getRenameInstaller() : getRenameUniversal();
 	}
 
-	public String getForgeId(){
+	public String getForgeId() {
 		return getId().substring(getId().indexOf("-") + 1);
 	}
 }

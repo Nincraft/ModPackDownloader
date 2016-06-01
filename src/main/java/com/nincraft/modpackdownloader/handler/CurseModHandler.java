@@ -1,54 +1,35 @@
 package com.nincraft.modpackdownloader.handler;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import com.nincraft.modpackdownloader.container.CurseFile;
+import com.nincraft.modpackdownloader.container.Mod;
+import com.nincraft.modpackdownloader.util.Reference;
+import com.nincraft.modpackdownloader.util.URLHelper;
+import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.apache.commons.lang3.BooleanUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.google.common.base.Strings;
-import com.nincraft.modpackdownloader.container.CurseFile;
-import com.nincraft.modpackdownloader.container.Mod;
-import com.nincraft.modpackdownloader.util.Reference;
-import com.nincraft.modpackdownloader.util.URLHelper;
-
-import lombok.val;
-import lombok.extern.log4j.Log4j2;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Log4j2
 public class CurseModHandler extends ModHandler {
 
-	@Override
-	public void downloadMod(final Mod mod) {
-		downloadCurseMod((CurseFile) mod);
-	}
-
-	@Override
-	public void updateMod(final Mod mod) {
-		updateCurseMod((CurseFile) mod);
-	}
-
 	private static void downloadCurseMod(final CurseFile mod) {
-		if (BooleanUtils.isTrue(mod.getSkipDownload())) {
-			log.info(String.format("Skipped downloading %s", mod.getName()));
-			return;
-		}
-
 		try {
 			mod.setFileName(getCurseForgeDownloadLocation(mod));
 			DownloadHelper.downloadFile(mod);
-		} catch (final IOException e) {
-			log.error(e.getMessage());
+		} catch (IOException e) {
+			log.error(e);
 		}
 	}
 
@@ -193,5 +174,15 @@ public class CurseModHandler extends ModHandler {
 		} finally {
 			log.trace("Finished Getting CurseForge Widget JSON.");
 		}
+	}
+
+	@Override
+	public void downloadMod(final Mod mod) {
+		downloadCurseMod((CurseFile) mod);
+	}
+
+	@Override
+	public void updateMod(final Mod mod) {
+		updateCurseMod((CurseFile) mod);
 	}
 }

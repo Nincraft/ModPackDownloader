@@ -2,18 +2,16 @@ package com.nincraft.modpackdownloader.handler;
 
 import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.container.ModLoader;
-import com.nincraft.modpackdownloader.util.FileSystemHelper;
+import com.nincraft.modpackdownloader.status.DownloadStatus;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -55,29 +53,14 @@ public class ForgeHandler {
 		forgeFileName += downloadInstaller ? Reference.forgeInstaller : Reference.forgeUniversal;
 		forgeURL += "/" + forgeFileName;
 
-		if (!FileSystemHelper.isInLocalRepo("forge", forgeFileName) || Reference.forceDownload) {
-			File downloadedFile;
-			if (modLoader.getRename(downloadInstaller) != null) {
-				downloadedFile = FileSystemHelper.getDownloadedFile(modLoader.getRename(downloadInstaller), modLoader.getFolder());
-			} else {
-				downloadedFile = FileSystemHelper.getDownloadedFile(forgeFileName, modLoader.getFolder());
+		modLoader.setDownloadUrl(forgeURL);
+		modLoader.setFileName(forgeFileName);
+		if (DownloadStatus.FAILURE.equals(DownloadHelper.downloadFile(modLoader))) {
+			if (alternateDownloadUrl) {
+				log.warn("Attempting alternate Forge download URL");
+				downloadForgeFile(minecraftVersion, modLoader, downloadInstaller, false);
 			}
-
-			try {
-				FileUtils.copyURLToFile(new URL(forgeURL), downloadedFile);
-			} catch (final IOException e) {
-				log.error(String.format("Could not download %s.", forgeFileName), e.getMessage());
-				if (alternateDownloadUrl) {
-					log.warn("Attempting alternate Forge download URL");
-					downloadForgeFile(minecraftVersion, modLoader, downloadInstaller, false);
-				}
-				return;
-			}
-			//FileSystemHelper.copyToLocalRepo("forge", downloadedFile, forgeFileName);
-		} else {
-			FileSystemHelper.copyFromLocalRepo("forge", forgeFileName, modLoader.getFolder(), modLoader.getRename(downloadInstaller));
 		}
-		log.info(String.format("Completed downloading Forge version %s", forgeFileName));
 	}
 
 	public static List<ModLoader> updateForge(String minecraftVersion, List<ModLoader> modLoaders) {
