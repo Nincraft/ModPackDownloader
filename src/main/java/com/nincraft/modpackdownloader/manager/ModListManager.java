@@ -1,5 +1,26 @@
 package com.nincraft.modpackdownloader.manager;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.nincraft.modpackdownloader.container.CurseFile;
+import com.nincraft.modpackdownloader.container.Manifest;
+import com.nincraft.modpackdownloader.container.Mod;
+import com.nincraft.modpackdownloader.container.ThirdParty;
+import com.nincraft.modpackdownloader.handler.CurseModHandler;
+import com.nincraft.modpackdownloader.handler.ForgeHandler;
+import com.nincraft.modpackdownloader.handler.ModHandler;
+import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
+import com.nincraft.modpackdownloader.util.Reference;
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
+import lombok.val;
+import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -13,32 +34,10 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.nincraft.modpackdownloader.container.*;
-import com.nincraft.modpackdownloader.handler.ForgeHandler;
-import lombok.Getter;
-import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.nincraft.modpackdownloader.handler.CurseModHandler;
-import com.nincraft.modpackdownloader.handler.ModHandler;
-import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
-import com.nincraft.modpackdownloader.util.Reference;
-
-import lombok.val;
-import lombok.extern.log4j.Log4j2;
-
 @Log4j2
 public class ModListManager {
-	private static final List<Mod> MOD_LIST = Lists.newArrayList();
-
 	public static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
-
+	private static final List<Mod> MOD_LIST = Lists.newArrayList();
 	@Getter
 	public static ExecutorService executorService;
 
@@ -114,7 +113,7 @@ public class ModListManager {
 			Runnable modDownload = new Thread(() -> {
 				MOD_HANDLERS.get(mod.getClass()).downloadMod(mod);
 				Reference.downloadCount++;
-				log.info(String.format("Finished downloading %s", mod.getName()));
+				log.trace(String.format("Finished downloading %s", mod.getName()));
 			});
 			executorService.execute(modDownload);
 		}

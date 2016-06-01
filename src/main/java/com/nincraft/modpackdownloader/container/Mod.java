@@ -6,25 +6,9 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
 @Data
-public abstract class Mod implements Cloneable {
-	@SerializedName("rename")
-	@Expose
-	private String rename;
-	private String fileName;
-	private String downloadUrl;
+public abstract class Mod extends DownloadableFile implements Cloneable {
 	private String version;
-	@SerializedName("name")
-	@Expose
-	public String name;
-	@SerializedName("skipUpdate")
-	@Expose
-	private Boolean skipUpdate;
-	@SerializedName("skipDownload")
-	@Expose
-	private Boolean skipDownload;
-	@SerializedName("folder")
-	@Expose
-	private String folder;
+
 
 	public Mod() {
 	}
