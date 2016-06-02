@@ -110,9 +110,7 @@ public class ModPackDownloader {
 					Reference.mcVersion, Reference.releaseType));
 			ModListManager.updateMods();
 
-			while (!ModListManager.getExecutorService().isTerminated()) {
-				Thread.sleep(1);
-			}
+			waitFinishProcessingMods();
 
 			ModListManager.updateManifest();
 			log.info("Finished updating mods.");
@@ -121,11 +119,15 @@ public class ModPackDownloader {
 					Reference.modFolder));
 			ModListManager.downloadMods();
 
-			while (!ModListManager.getExecutorService().isTerminated()) {
-				Thread.sleep(1);
-			}
+			waitFinishProcessingMods();
 			log.info("Finished downloading mods.");
 		}
 		log.trace("Finished Processing Mods.");
+	}
+
+	private static void waitFinishProcessingMods() throws InterruptedException {
+		while (!ModListManager.getExecutorService().isTerminated()) {
+			Thread.sleep(1);
+		}
 	}
 }
