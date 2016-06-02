@@ -25,8 +25,8 @@ public final class FileSystemHelper {
 
 	public static void copyFromLocalRepo(final DownloadableFile downloadableFile, final String fileName) {
 		val newProjectName = getProjectNameOrDefault(downloadableFile.getName());
-		String folder = "";
-		if (Strings.isNullOrEmpty(downloadableFile.getFolder())) {
+		String folder = downloadableFile.getFolder();
+		if (Strings.isNullOrEmpty(folder)) {
 			folder = Reference.modFolder;
 		}
 		try {
