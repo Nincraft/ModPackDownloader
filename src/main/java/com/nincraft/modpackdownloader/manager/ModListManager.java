@@ -64,7 +64,7 @@ public class ModListManager {
 		try {
 			jsonLists = (JSONObject) new JSONParser().parse(new FileReader(Reference.manifestFile));
 		} catch (IOException | ParseException e) {
-			log.error(e.getMessage());
+			log.error(e);
 			return -1;
 		}
 

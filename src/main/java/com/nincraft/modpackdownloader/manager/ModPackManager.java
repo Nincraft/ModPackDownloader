@@ -22,7 +22,8 @@ public class ModPackManager {
 			modPackIdName = FileUtils.readFileToString(new File("modpackid"));
 			log.info(String.format("Found modpackid file with id %s", modPackIdName));
 		} catch (IOException e) {
-			log.error(e);
+			log.error("Could not find modpackid file", e);
+			return false;
 		}
 		String modPackId = modPackIdName.substring(0, modPackIdName.indexOf('-'));
 		String modPackName = modPackIdName.substring(modPackIdName.indexOf('-') + 1);
@@ -43,7 +44,8 @@ public class ModPackManager {
 			ZipFile modPackZip = new ZipFile(modPack.getFileName());
 			modPackZip.extractAll(".");
 		} catch (ZipException e) {
-			log.error(e);
+			log.error("Could not unzip modpack", e);
+			return false;
 		}
 
 		return true;
