@@ -52,6 +52,10 @@ public final class FileSystemHelper {
 		return projectName != null ? projectName : "thirdParty";
 	}
 
+	public static File getLocalFile(DownloadableFile downloadableFile){
+		return getLocalFile(downloadableFile.getFileName(), downloadableFile.getName());
+	}
+
 	public static File getLocalFile(final String fileName, final String newProjectName) {
 		return new File(Reference.userhome + newProjectName + File.separator + fileName);
 	}

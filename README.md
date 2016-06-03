@@ -7,6 +7,8 @@ Example: java -jar modpackdownloader.jar mods.json mods
 
 This will read the mods.json and download all mods to the mods folder.
 
+It can also be ran without any arguments and default to manifest.json for the manifest and mods for the download folder.
+
 For additional examples check out some of our modpacks that implement this:
 - [NEB3 Modpack Repository](https://github.com/Nincraft/NincraftElectricBoogaloo3TheLightAmongTheLongForgottenDarkness/tree/develop)
 - [TWBB Modpack Repository](https://github.com/UndeadZeratul/ThereWillBeBlood/tree/develop)

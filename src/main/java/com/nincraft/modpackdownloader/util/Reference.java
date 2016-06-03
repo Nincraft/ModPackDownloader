@@ -16,6 +16,7 @@ public class Reference {
 			"MM/dd/yyyy'T'HH:mm:ss.SSS", "MM/dd/yyyy'T'HH:mm:ssZ", "MM/dd/yyyy'T'HH:mm:ss", "yyyy:MM:dd HH:mm:ss",};
 	public static final int RETRY_COUNTER = 5;
 	public static final char URL_DELIMITER = '/';
+	public static final String DEFAULT_MANIFEST_FILE = "manifest.json";
 	public static String userhome;
 	public static String os;
 	public static String manifestFile;

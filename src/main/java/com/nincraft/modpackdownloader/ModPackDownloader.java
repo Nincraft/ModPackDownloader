@@ -5,42 +5,42 @@ import com.nincraft.modpackdownloader.handler.ApplicationUpdateHandeler;
 import com.nincraft.modpackdownloader.manager.ModListManager;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
-
-import lombok.val;
 import lombok.extern.log4j.Log4j2;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Log4j2
 public class ModPackDownloader {
 	public static void main(final String[] args) throws InterruptedException {
-		if (args.length < 1) {
-			log.error("Arguments required: manifest file location");
-			return;
-		}else if ("-updateApp".equals(args[0])) {
+		List<String> arguments = new ArrayList(Arrays.asList(args));
+		if (arguments.isEmpty()) {
+			log.info("No arguments supplied, using defaults");
+			arguments.add(0, Reference.DEFAULT_MANIFEST_FILE);
+		} else if ("-updateApp".equals(arguments.get(0))) {
 			ApplicationUpdateHandeler.update();
 			return;
-		}  else {
-			processArguments(args);
 		}
+		processArguments(arguments);
 
 		setupRepo();
 
 		processMods();
 	}
 
-	private static void processArguments(final String[] args) {
-		Reference.manifestFile = args[0];
+	private static void processArguments(List<String> args) {
+		Reference.manifestFile = args.get(0);
 
-		if (args.length < 2) {
+		if (args.size() < 2) {
 			log.info("No mod folder specified, defaulting to \"mods\"");
 			Reference.modFolder = "mods";
 		} else {
-			Reference.modFolder = args[1];
+			Reference.modFolder = args.get(1);
 		}
 
-		if (args.length > 2) {
-			for (val arg : args) {
-				processArgument(arg);
-			}
+		if (args.size() > 2) {
+			args.forEach(ModPackDownloader::processArgument);
 		}
 	}
 

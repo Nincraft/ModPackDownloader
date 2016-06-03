@@ -2,6 +2,7 @@ package com.nincraft.modpackdownloader.handler;
 
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Mod;
+import com.nincraft.modpackdownloader.util.DownloadHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import com.nincraft.modpackdownloader.util.URLHelper;
 import lombok.extern.log4j.Log4j2;
