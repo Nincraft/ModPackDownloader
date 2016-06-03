@@ -14,18 +14,36 @@ import java.net.URL;
 public class DownloadHelper {
 
 	/**
-	 * Downloads a file to the local cache and moves it to the correct folder. Returns a DownloadStatus
+	 * Downloads a {@link DownloadableFile} moves it to the correct folder. Downloads to the local cache and then
+	 * copies to the download folder. Returns a {@link DownloadStatus}
 	 *
 	 * @param downloadableFile
-	 * @return DownloadStatus
+	 * @return {@link DownloadStatus}
 	 */
 	public static DownloadStatus downloadFile(final DownloadableFile downloadableFile) {
+		return downloadFile(downloadableFile, true);
+	}
+
+	/**
+	 * Downloads a {@link DownloadableFile} moves it to the correct folder. Downloads to the local cache if
+	 * downloadToLocalRepo is set to true and then copies to the download folder. Returns a {@link DownloadStatus}
+	 *
+	 * @param downloadableFile
+	 * @param downloadToLocalRepo
+	 * @return {@link DownloadStatus}
+	 */
+	public static DownloadStatus downloadFile(final DownloadableFile downloadableFile, boolean downloadToLocalRepo) {
 		DownloadStatus status = DownloadStatus.FAILURE;
 		if (BooleanUtils.isTrue(downloadableFile.getSkipDownload())) {
 			log.trace(String.format("Skipped downloading %s", downloadableFile.getName()));
 			return DownloadStatus.SKIPPED;
 		}
 		val decodedFileName = URLHelper.decodeSpaces(downloadableFile.getFileName());
+
+		if (FileSystemHelper.getDownloadedFile(decodedFileName, downloadableFile.getFolder()).exists()) {
+			log.info(String.format("Found %s already downloaded, skipping", decodedFileName));
+			return DownloadStatus.SKIPPED;
+		}
 
 		if (!FileSystemHelper.isInLocalRepo(downloadableFile.getName(), decodedFileName) || Reference.forceDownload) {
 			val downloadedFile = FileSystemHelper.getLocalFile(downloadableFile);
@@ -40,7 +58,7 @@ public class DownloadHelper {
 		} else {
 			status = DownloadStatus.SUCCESS_CACHE;
 		}
-		FileSystemHelper.copyFromLocalRepo(downloadableFile, decodedFileName);
+		FileSystemHelper.moveFromLocalRepo(downloadableFile, decodedFileName, downloadToLocalRepo);
 		log.info(String.format("Successfully %s %s", status, downloadableFile.getFileName()));
 		return status;
 	}

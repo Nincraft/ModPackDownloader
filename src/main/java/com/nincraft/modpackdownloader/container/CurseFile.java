@@ -1,20 +1,18 @@
 package com.nincraft.modpackdownloader.container;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import javax.annotation.Generated;
-
 import com.google.common.base.Strings;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.nincraft.modpackdownloader.util.Reference;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.val;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
+
+import javax.annotation.Generated;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 @Generated("org.jsonschema2pojo")
 @Log4j2
@@ -36,6 +34,7 @@ public class CurseFile extends Mod {
 	private Boolean skipUpdate;
 	private String projectUrl;
 	private String projectName;
+	private boolean isModpack;
 
 	public CurseFile() {
 
@@ -79,4 +78,9 @@ public class CurseFile extends Mod {
 				getFileID());
 	}
 
+	public void initModpack() {
+		init();
+		setFileID(0);
+		setModpack(true);
+	}
 }

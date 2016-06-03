@@ -23,15 +23,19 @@ public final class FileSystemHelper {
 		}
 	}
 
-	public static void copyFromLocalRepo(final DownloadableFile downloadableFile, final String fileName) {
+	public static void moveFromLocalRepo(final DownloadableFile downloadableFile, final String fileName, boolean downloadToLocalRepo) {
 		val newProjectName = getProjectNameOrDefault(downloadableFile.getName());
 		String folder = downloadableFile.getFolder();
 		if (Strings.isNullOrEmpty(folder)) {
 			folder = Reference.modFolder;
 		}
 		try {
-			FileUtils.copyFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder));
 			File downloadedFile = getDownloadedFile(fileName, folder);
+			if (downloadToLocalRepo) {
+				FileUtils.copyFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder));
+			} else if (!downloadedFile.exists()){
+				FileUtils.moveFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder), true);
+			}
 			if (!Strings.isNullOrEmpty(downloadableFile.getRename())) {
 				downloadedFile.renameTo(new File(downloadedFile.getParent() + File.separator + downloadableFile.getRename()));
 			}
@@ -52,7 +56,7 @@ public final class FileSystemHelper {
 		return projectName != null ? projectName : "thirdParty";
 	}
 
-	public static File getLocalFile(DownloadableFile downloadableFile){
+	public static File getLocalFile(DownloadableFile downloadableFile) {
 		return getLocalFile(downloadableFile.getFileName(), downloadableFile.getName());
 	}
 

@@ -8,7 +8,7 @@ import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
 import com.nincraft.modpackdownloader.container.Mod;
 import com.nincraft.modpackdownloader.container.ThirdParty;
-import com.nincraft.modpackdownloader.handler.CurseModHandler;
+import com.nincraft.modpackdownloader.handler.CurseFileHandler;
 import com.nincraft.modpackdownloader.handler.ForgeHandler;
 import com.nincraft.modpackdownloader.handler.ModHandler;
 import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
@@ -53,7 +53,7 @@ public class ModListManager {
 
 	static {
 		log.trace("Registering various mod type handlers...");
-		MOD_HANDLERS.put(CurseFile.class, new CurseModHandler());
+		MOD_HANDLERS.put(CurseFile.class, new CurseFileHandler());
 		MOD_HANDLERS.put(ThirdParty.class, new ThirdPartyModHandler());
 		log.trace("Finished registering various mod type handlers.");
 	}
@@ -69,7 +69,7 @@ public class ModListManager {
 		}
 
 		manifestFile = gson.fromJson(jsonLists.toString(), Manifest.class);
-		if (!manifestFile.getCurseFiles().isEmpty()) {
+		if (!manifestFile.getCurseFiles().isEmpty() && !Reference.updateCurseModPack) {
 			backupCurseManifest();
 		}
 		Reference.mcVersion = manifestFile.getMinecraftVersion();
