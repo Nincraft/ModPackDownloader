@@ -27,7 +27,6 @@ public class ModPackDownloader {
 
 		setupRepo();
 
-		int processStatus = 1;
 		if (Reference.updateCurseModPack) {
 			Reference.manifestFile = Reference.DEFAULT_MANIFEST_FILE;
 			if (ModPackManager.updateModPack()) {
