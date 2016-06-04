@@ -1,7 +1,7 @@
 package com.nincraft.modpackdownloader;
 
 import com.google.common.base.Strings;
-import com.nincraft.modpackdownloader.handler.ApplicationUpdateHandeler;
+import com.nincraft.modpackdownloader.handler.ApplicationUpdateHandler;
 import com.nincraft.modpackdownloader.manager.ModListManager;
 import com.nincraft.modpackdownloader.manager.ModPackManager;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
@@ -20,7 +20,7 @@ public class ModPackDownloader {
 			log.info("No arguments supplied, using defaults");
 			arguments.add(0, Reference.DEFAULT_MANIFEST_FILE);
 		} else if ("-updateApp".equals(arguments.get(0))) {
-			ApplicationUpdateHandeler.update();
+			ApplicationUpdateHandler.update();
 			return;
 		}
 		processArguments(arguments);
@@ -31,7 +31,7 @@ public class ModPackDownloader {
 			Reference.manifestFile = Reference.DEFAULT_MANIFEST_FILE;
 			if (ModPackManager.updateModPack()) {
 				processMods();
-				ModPackManager.handleOverrides();
+				ModPackManager.handlePostDownload();
 			}
 			return;
 		}

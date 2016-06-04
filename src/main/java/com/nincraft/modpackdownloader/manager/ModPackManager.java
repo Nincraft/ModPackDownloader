@@ -56,7 +56,7 @@ public class ModPackManager {
 		return true;
 	}
 
-	public static void handleOverrides() {
+	public static void handlePostDownload() {
 		try {
 			File overrides = new File("overrides");
 			FileUtils.copyDirectory(overrides, new File("."), true);

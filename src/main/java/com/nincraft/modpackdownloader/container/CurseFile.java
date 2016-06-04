@@ -64,7 +64,7 @@ public class CurseFile extends Mod {
 				setName(getProjectName());
 			}
 		} catch (final IOException e) {
-			log.error(e.getMessage());
+			log.error(e);
 		}
 		setDownloadUrl(getDownloadUrl());
 
