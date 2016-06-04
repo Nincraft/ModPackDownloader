@@ -3,6 +3,7 @@ package com.nincraft.modpackdownloader.handler;
 import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.container.ModLoader;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
+import com.nincraft.modpackdownloader.util.DownloadHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,12 +28,14 @@ public class ForgeHandler {
 
 		for (ModLoader modLoader : modLoaders) {
 
-			log.info(String.format("Downloading Forge version %s", modLoader.getId()));
+
 
 			if (BooleanUtils.isTrue(modLoader.getDownloadInstaller())) {
+				log.info(String.format("Downloading Forge installer version %s", modLoader.getId()));
 				downloadForgeFile(minecraftVersion, modLoader, true);
 			}
 			if (BooleanUtils.isTrue(modLoader.getDownloadUniversal())) {
+				log.info(String.format("Downloading Forge universal version %s", modLoader.getId()));
 				downloadForgeFile(minecraftVersion, modLoader, false);
 			}
 		}

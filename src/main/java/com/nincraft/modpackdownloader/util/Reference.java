@@ -2,7 +2,9 @@ package com.nincraft.modpackdownloader.util;
 
 public class Reference {
 	public static final String CURSEFORGE_BASE_URL = "http://minecraft.curseforge.com/projects/";
-	public static final String CURSEFORGE_WIDGET_JSON_URL = "http://widget.mcf.li/mc-mods/minecraft/%s.json";
+	public static final String CURSEFORGE_WIDGET_JSON_MOD = "mc-mods";
+	public static final String CURSEFORGE_WIDGET_JSON_MODPACK = "modpacks";
+	public static final String CURSEFORGE_WIDGET_JSON_URL = "http://widget.mcf.li/%s/minecraft/%s.json";
 	public static final String COOKIE_TEST_1 = "?cookieTest=1";
 	public static final String DOWNLOADING_MOD_X_OF_Y = "Downloading %s. Mod %s of %s.";
 	public static final String UPDATING_MOD_X_OF_Y = "Updating %s. Mod %s of %s.";
@@ -16,6 +18,7 @@ public class Reference {
 			"MM/dd/yyyy'T'HH:mm:ss.SSS", "MM/dd/yyyy'T'HH:mm:ssZ", "MM/dd/yyyy'T'HH:mm:ss", "yyyy:MM:dd HH:mm:ss",};
 	public static final int RETRY_COUNTER = 5;
 	public static final char URL_DELIMITER = '/';
+	public static final String DEFAULT_MANIFEST_FILE = "manifest.json";
 	public static String userhome;
 	public static String os;
 	public static String manifestFile;
@@ -36,4 +39,5 @@ public class Reference {
 	public static boolean updateForge;
 	public static String forgeUpdateURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json";
 	public static String javaContentType = "application/java-archive";
+	public static boolean updateCurseModPack;
 }

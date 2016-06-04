@@ -1,70 +1,81 @@
 package com.nincraft.modpackdownloader;
 
 import com.google.common.base.Strings;
-import com.nincraft.modpackdownloader.handler.ApplicationUpdateHandeler;
+import com.nincraft.modpackdownloader.handler.ApplicationUpdateHandler;
 import com.nincraft.modpackdownloader.manager.ModListManager;
+import com.nincraft.modpackdownloader.manager.ModPackManager;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
-
-import lombok.val;
 import lombok.extern.log4j.Log4j2;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Log4j2
 public class ModPackDownloader {
 	public static void main(final String[] args) throws InterruptedException {
-		if (args.length < 1) {
-			log.error("Arguments required: manifest file location");
+		List<String> arguments = new ArrayList(Arrays.asList(args));
+		if (arguments.isEmpty()) {
+			log.info("No arguments supplied, using defaults");
+			arguments.add(0, Reference.DEFAULT_MANIFEST_FILE);
+		} else if ("-updateApp".equals(arguments.get(0))) {
+			ApplicationUpdateHandler.update();
 			return;
-		}else if ("-updateApp".equals(args[0])) {
-			ApplicationUpdateHandeler.update();
-			return;
-		}  else {
-			processArguments(args);
 		}
+		processArguments(arguments);
 
 		setupRepo();
+
+		if (Reference.updateCurseModPack) {
+			Reference.manifestFile = Reference.DEFAULT_MANIFEST_FILE;
+			if (ModPackManager.updateModPack()) {
+				processMods();
+				ModPackManager.handlePostDownload();
+			}
+			return;
+		}
 
 		processMods();
 	}
 
-	private static void processArguments(final String[] args) {
-		Reference.manifestFile = args[0];
+	private static void processArguments(List<String> args) {
+		Reference.manifestFile = args.get(0);
 
-		if (args.length < 2) {
+		if (args.size() < 2) {
 			log.info("No mod folder specified, defaulting to \"mods\"");
 			Reference.modFolder = "mods";
 		} else {
-			Reference.modFolder = args[1];
+			Reference.modFolder = args.get(1);
 		}
 
-		if (args.length > 2) {
-			for (val arg : args) {
-				processArgument(arg);
-			}
-		}
+		args.forEach(ModPackDownloader::processArgument);
 	}
 
 	private static void processArgument(final String arg) {
 		log.trace("Processing given arguments...");
-		if ("-forceDownload".equals(arg)) {
+		if ("-forceDownload".equalsIgnoreCase(arg)) {
 			Reference.forceDownload = true;
 			log.debug("Downloads are now being forced.");
-		} else if ("-updateMods".equals(arg)) {
+		} else if ("-updateMods".equalsIgnoreCase(arg)) {
 			Reference.updateMods = true;
 			log.debug("mods will be updated instead of downloaded.");
-		} else if ("-updateForge".equals(arg)) {
+		} else if ("-updateForge".equalsIgnoreCase(arg)) {
 			Reference.updateForge = true;
 			log.debug("Forge will be updated instead of downloaded.");
-		} else if ("-updateAll".equals(arg)) {
+		} else if ("-updateAll".equalsIgnoreCase(arg)) {
 			Reference.updateMods = true;
 			Reference.updateForge = true;
 			log.debug("mods and Forge will be updated instead of downloaded.");
 		} else if (arg.startsWith("-releaseType")) {
 			Reference.releaseType = arg.substring(arg.lastIndexOf('=') + 1);
 			log.debug(String.format("Checking against mod release type: %s", Reference.releaseType));
-		} else if ("-generateUrlTxt".equals(arg)) {
+		} else if ("-generateUrlTxt".equalsIgnoreCase(arg)) {
 			Reference.generateUrlTxt = true;
 			log.debug("Mod URL Text files will now be generated.");
+		} else if ("-updateCurseModPack".equalsIgnoreCase(arg)) {
+			Reference.updateCurseModPack = true;
+			log.debug("Updating Curse modpack");
 		}
 		log.trace("Finished processing given arguments.");
 	}
