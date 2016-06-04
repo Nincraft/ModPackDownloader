@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +27,10 @@ public class ModPackManager {
 			return false;
 		}
 		String modPackId = modPackIdName.substring(0, modPackIdName.indexOf('-'));
+		if(!NumberUtils.isNumber(modPackId)){
+			log.error(String.format("Unable to find a valid project ID, found %s", modPackId));
+			return false;
+		}
 		String modPackName = modPackIdName.substring(modPackIdName.indexOf('-') + 1);
 		CurseFile modPack = new CurseFile(modPackId, modPackName);
 		modPack.initModpack();

@@ -56,7 +56,9 @@ public class CurseFile extends Mod {
 			conn.setInstanceFollowRedirects(false);
 			conn.connect();
 
-			setProjectName(conn.getHeaderField("Location").split("/")[2]);
+			if (Strings.isNullOrEmpty(getProjectName())) {
+				setProjectName(conn.getHeaderField("Location").split("/")[2]);
+			}
 
 			if (Strings.isNullOrEmpty(getName())) {
 				setName(getProjectName());
