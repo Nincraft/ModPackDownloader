@@ -1,6 +1,8 @@
 package com.nincraft.modpackdownloader.manager;
 
+import com.google.gson.Gson;
 import com.nincraft.modpackdownloader.container.CurseFile;
+import com.nincraft.modpackdownloader.container.Manifest;
 import com.nincraft.modpackdownloader.handler.CurseFileHandler;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
 import com.nincraft.modpackdownloader.util.DownloadHelper;
@@ -10,12 +12,19 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 @Log4j2
 public class ModPackManager {
+
+	private static Gson gson = new Gson();
+
 	public static boolean updateModPack() {
 		log.trace("Updating Curse modpack");
 		String modPackIdName = "";
@@ -83,5 +92,26 @@ public class ModPackManager {
 			log.error(e);
 		}
 
+	}
+
+	public static void checkPastForgeVersion() {
+		if (new File(".").getAbsolutePath().contains("MultiMC")) {
+			JSONObject currentJson = null;
+			JSONObject multiMCJson = null;
+			try {
+				currentJson = (JSONObject) new JSONParser().parse(new FileReader(Reference.manifestFile));
+				multiMCJson = (JSONObject) new JSONParser().parse(new FileReader("../patches/net.minecraftforge.json"));
+			} catch (IOException | ParseException e) {
+				log.error(e);
+				return;
+			}
+			Manifest currentManifestFile = gson.fromJson(currentJson.toString(), Manifest.class);
+			String manifestForge = currentManifestFile.getForgeVersion();
+			String multiMCForge = (String) multiMCJson.get("version");
+			if (!manifestForge.contains(multiMCForge)) {
+				log.error(String.format("Current MultiMC Forge version is not the same as the current downloaded pack, please update this instance's Forge to %s", manifestForge));
+				System.exit(1);
+			}
+		}
 	}
 }

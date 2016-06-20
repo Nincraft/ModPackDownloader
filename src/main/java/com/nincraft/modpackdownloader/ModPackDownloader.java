@@ -30,6 +30,7 @@ public class ModPackDownloader {
 		if (Reference.updateCurseModPack) {
 			Reference.manifestFile = Reference.DEFAULT_MANIFEST_FILE;
 			if (ModPackManager.updateModPack()) {
+				ModPackManager.checkPastForgeVersion();
 				processMods();
 				ModPackManager.handlePostDownload();
 			}

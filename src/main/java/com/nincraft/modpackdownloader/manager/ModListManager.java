@@ -92,7 +92,7 @@ public class ModListManager {
 		try {
 			FileUtils.copyFile(new File(Reference.manifestFile), new File(Reference.manifestFile + ".bak"), true);
 		} catch (IOException e) {
-			log.error("Could not backup Curse manifest file", e.getMessage());
+			log.error("Could not backup Curse manifest file", e);
 		}
 	}
 
