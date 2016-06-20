@@ -27,7 +27,7 @@ public class ModPackManager {
 			return false;
 		}
 		String modPackId = modPackIdName.substring(0, modPackIdName.indexOf('-'));
-		if(!NumberUtils.isNumber(modPackId)){
+		if (!NumberUtils.isNumber(modPackId)) {
 			log.error(String.format("Unable to find a valid project ID, found %s", modPackId));
 			return false;
 		}
@@ -45,14 +45,32 @@ public class ModPackManager {
 			return false;
 		}
 		Reference.modFolder = "mods";
+		File modsFolder = new File(Reference.modFolder);
+		File backupModsFolder = new File("backupmods");
+		try {
+			FileUtils.moveDirectory(modsFolder, backupModsFolder);
+		} catch (IOException e) {
+			log.error("Could not backup mod folder", e);
+			return false;
+		}
 		try {
 			ZipFile modPackZip = new ZipFile(modPack.getFileName());
 			modPackZip.extractAll(".");
 		} catch (ZipException e) {
 			log.error("Could not unzip modpack", e);
+			try {
+				FileUtils.moveDirectory(backupModsFolder, modsFolder);
+			} catch (IOException e1) {
+				log.error("Could not restore backup mods folder", e1);
+				return false;
+			}
 			return false;
 		}
-
+		try {
+			FileUtils.deleteDirectory(backupModsFolder);
+		} catch (IOException e) {
+			log.error("Unable to delete backup mods folder", e);
+		}
 		return true;
 	}
 
@@ -64,5 +82,6 @@ public class ModPackManager {
 		} catch (IOException e) {
 			log.error(e);
 		}
+
 	}
 }
