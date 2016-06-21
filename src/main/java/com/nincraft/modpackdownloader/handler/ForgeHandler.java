@@ -46,6 +46,7 @@ public class ForgeHandler {
 	}
 
 	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, boolean downloadInstaller, boolean alternateDownloadUrl) {
+		modLoader.setRename(modLoader.getRename(downloadInstaller));
 		String forgeFileName = "forge-" + minecraftVersion + "-" + modLoader.getForgeId();
 		String forgeURL = Reference.forgeURL + minecraftVersion + "-" + modLoader.getForgeId();
 		if (alternateDownloadUrl) {
