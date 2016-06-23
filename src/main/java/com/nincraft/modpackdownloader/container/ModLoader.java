@@ -1,15 +1,16 @@
 package com.nincraft.modpackdownloader.container;
 
-import javax.annotation.Generated;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
 import lombok.Getter;
+import lombok.Setter;
+
+import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
 @Getter
-public class ModLoader {
+@Setter
+public class ModLoader extends DownloadableFile {
 
 	@SerializedName("id")
 	@Expose
@@ -17,9 +18,6 @@ public class ModLoader {
 	@SerializedName("primary")
 	@Expose
 	private Boolean primary;
-	@SerializedName("folder")
-	@Expose
-	private String folder;
 	@SerializedName("downloadInstaller")
 	@Expose
 	private Boolean downloadInstaller;
@@ -32,8 +30,19 @@ public class ModLoader {
 	@SerializedName("renameUniversal")
 	@Expose
 	private String renameUniversal;
+	@SerializedName("release")
+	@Expose
+	private String release;
+
+	public ModLoader() {
+		setName("forge");
+	}
 
 	public String getRename(boolean downloadInstaller) {
 		return downloadInstaller ? getRenameInstaller() : getRenameUniversal();
+	}
+
+	public String getForgeId() {
+		return getId().substring(getId().indexOf("-") + 1);
 	}
 }

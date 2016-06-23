@@ -18,7 +18,7 @@ import com.nincraft.modpackdownloader.util.URLHelper;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class ApplicationUpdateHandeler {
+public class ApplicationUpdateHandler {
 
 	public static void update() {
 		JSONParser parser = new JSONParser();

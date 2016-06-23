@@ -1,13 +1,14 @@
 package com.nincraft.modpackdownloader.util;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
-
-import lombok.val;
+import com.google.common.base.Strings;
+import com.nincraft.modpackdownloader.container.DownloadableFile;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 @Log4j2
 @UtilityClass
@@ -22,42 +23,21 @@ public final class FileSystemHelper {
 		}
 	}
 
-	public static void copyToLocalRepo(final String projectName, final File downloadedFile) {
-		val newProjectName = getProjectNameOrDefault(projectName);
-
-		try {
-			FileUtils.copyFileToDirectory(downloadedFile, new File(Reference.userhome + newProjectName));
-		} catch (final IOException e) {
-			log.error(String.format("Could not copy %s to local repo.", newProjectName), e);
-		}
-	}
-
-	public static void copyToLocalRepo(final String projectName, File downloadedFile, String originalName) {
-		val newProjectName = getProjectNameOrDefault(projectName);
-
-		try {
-			File copyFile = getLocalFile(downloadedFile.getName(), newProjectName);
-			FileUtils.copyFileToDirectory(downloadedFile, new File(Reference.userhome + newProjectName));
-			copyFile.renameTo(new File(copyFile.getParent() + File.separator + originalName));
-		} catch (final IOException e) {
-			log.error(String.format("Could not copy %s to local repo.", newProjectName), e);
-		}
-	}
-
-	public static void copyFromLocalRepo(final String projectName, final String fileName, String folder) {
-		copyFromLocalRepo(projectName, fileName, folder, null);
-	}
-
-	public static void copyFromLocalRepo(final String projectName, final String fileName, String folder, String rename) {
-		val newProjectName = getProjectNameOrDefault(projectName);
-		if (folder == null) {
+	public static void moveFromLocalRepo(final DownloadableFile downloadableFile, final String fileName, boolean downloadToLocalRepo) {
+		val newProjectName = getProjectNameOrDefault(downloadableFile.getName());
+		String folder = downloadableFile.getFolder();
+		if (Strings.isNullOrEmpty(folder)) {
 			folder = Reference.modFolder;
 		}
 		try {
-			FileUtils.copyFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder));
-			File downloadedFile = getDownloadedFile(fileName);
-			if (rename != null) {
-				downloadedFile.renameTo(new File(downloadedFile.getParent() + File.separator + rename));
+			File downloadedFile = getDownloadedFile(fileName, folder);
+			if (downloadToLocalRepo) {
+				FileUtils.copyFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder));
+			} else if (!downloadedFile.exists()){
+				FileUtils.moveFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder), true);
+			}
+			if (!Strings.isNullOrEmpty(downloadableFile.getRename())) {
+				downloadedFile.renameTo(new File(downloadedFile.getParent() + File.separator + downloadableFile.getRename()));
 			}
 		} catch (final IOException e) {
 			log.error(String.format("Could not copy %s from local repo.", newProjectName), e);
@@ -74,6 +54,10 @@ public final class FileSystemHelper {
 
 	public static String getProjectNameOrDefault(final String projectName) {
 		return projectName != null ? projectName : "thirdParty";
+	}
+
+	public static File getLocalFile(DownloadableFile downloadableFile) {
+		return getLocalFile(downloadableFile.getFileName(), downloadableFile.getName());
 	}
 
 	public static File getLocalFile(final String fileName, final String newProjectName) {

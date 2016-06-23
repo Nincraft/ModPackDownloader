@@ -1,20 +1,18 @@
 package com.nincraft.modpackdownloader.container;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import javax.annotation.Generated;
-
 import com.google.common.base.Strings;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.nincraft.modpackdownloader.util.Reference;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.val;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
+
+import javax.annotation.Generated;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 @Generated("org.jsonschema2pojo")
 @Log4j2
@@ -31,11 +29,22 @@ public class CurseFile extends Mod {
 	@SerializedName("release")
 	@Expose
 	public String releaseType;
+	@SerializedName("skipUpdate")
+	@Expose
+	private Boolean skipUpdate;
 	private String projectUrl;
 	private String projectName;
+	private boolean isModpack;
 
 	public CurseFile() {
 
+	}
+
+	public CurseFile(String projectId, String projectName) {
+		if (projectId != null) {
+			setProjectID(Integer.parseInt(projectId));
+		}
+		setProjectName(projectName);
 	}
 
 	@Override
@@ -47,13 +56,15 @@ public class CurseFile extends Mod {
 			conn.setInstanceFollowRedirects(false);
 			conn.connect();
 
-			setProjectName(conn.getHeaderField("Location").split("/")[2]);
+			if (Strings.isNullOrEmpty(getProjectName())) {
+				setProjectName(conn.getHeaderField("Location").split("/")[2]);
+			}
 
 			if (Strings.isNullOrEmpty(getName())) {
 				setName(getProjectName());
 			}
 		} catch (final IOException e) {
-			log.error(e.getMessage());
+			log.error(e);
 		}
 		setDownloadUrl(getDownloadUrl());
 
@@ -69,4 +80,9 @@ public class CurseFile extends Mod {
 				getFileID());
 	}
 
+	public void initModpack() {
+		init();
+		setFileID(0);
+		setModpack(true);
+	}
 }
