@@ -26,6 +26,7 @@ public class ModPackManager {
 	private static Gson gson = new Gson();
 
 	public static boolean updateModPack() {
+		boolean returnStatus = true;
 		log.trace("Updating Curse modpack");
 		String modPackIdName = "";
 		try {
@@ -51,7 +52,7 @@ public class ModPackManager {
 		Reference.modFolder = ".";
 		if (DownloadStatus.SKIPPED.equals(DownloadHelper.downloadFile(modPack, false))) {
 			log.info(String.format("No new updates found for %s", modPack.getName()));
-			return false;
+			returnStatus = false;
 		}
 		Reference.modFolder = "mods";
 		File modsFolder = new File(Reference.modFolder);
@@ -80,7 +81,7 @@ public class ModPackManager {
 		} catch (IOException e) {
 			log.error("Unable to delete backup mods folder", e);
 		}
-		return true;
+		return returnStatus;
 	}
 
 	public static void handlePostDownload() {
