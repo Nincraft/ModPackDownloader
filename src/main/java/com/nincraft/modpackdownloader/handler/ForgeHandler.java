@@ -3,6 +3,7 @@ package com.nincraft.modpackdownloader.handler;
 import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.container.ModLoader;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
+import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.DownloadHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.extern.log4j.Log4j2;
@@ -68,7 +69,7 @@ public class ForgeHandler {
 	}
 
 	public static List<ModLoader> updateForge(String minecraftVersion, List<ModLoader> modLoaders) {
-		if (!Reference.updateForge) {
+		if (!Arguments.updateForge) {
 			log.trace("Updating Forge disabled");
 			return modLoaders;
 		}

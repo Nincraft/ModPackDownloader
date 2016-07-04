@@ -3,6 +3,7 @@ package com.nincraft.modpackdownloader.handler;
 import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Mod;
+import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.DownloadHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import com.nincraft.modpackdownloader.util.URLHelper;
@@ -99,7 +100,7 @@ public class CurseFileHandler extends ModHandler {
 			return;
 		}
 
-		val newMod = getLatestVersion(curseFile.getReleaseType() != null ? curseFile.getReleaseType() : Reference.releaseType, curseFile, fileListJson);
+		val newMod = getLatestVersion(curseFile.getReleaseType() != null ? curseFile.getReleaseType() : Arguments.releaseType, curseFile, fileListJson);
 		if (curseFile.getFileID().compareTo(newMod.getFileID()) < 0) {
 			log.info(String.format("Update found for %s.  Most recent version is %s.", curseFile.getName(),
 					newMod.getVersion()));
@@ -158,10 +159,10 @@ public class CurseFileHandler extends ModHandler {
 	}
 
 	private static boolean isMcVersion(String version) {
-		if ("*".equals(Reference.mcVersion)) {
+		if ("*".equals(Arguments.mcVersion)) {
 			return true;
 		} else {
-			return Reference.mcVersion.equals(version);
+			return Arguments.mcVersion.equals(version);
 		}
 	}
 
