@@ -27,7 +27,7 @@ public final class FileSystemHelper {
 		val newProjectName = getProjectNameOrDefault(downloadableFile.getName());
 		String folder = downloadableFile.getFolder();
 		if (Strings.isNullOrEmpty(folder)) {
-			folder = Reference.modFolder;
+			folder = Arguments.modFolder;
 		}
 		try {
 			File downloadedFile = getDownloadedFile(fileName, folder);
@@ -68,9 +68,9 @@ public final class FileSystemHelper {
 		if (folder != null) {
 			createFolder(folder);
 			return new File(folder + File.separator + fileName);
-		} else if (Reference.modFolder != null) {
-			createFolder(Reference.modFolder);
-			return new File(Reference.modFolder + File.separator + fileName);
+		} else if (Arguments.modFolder != null) {
+			createFolder(Arguments.modFolder);
+			return new File(Arguments.modFolder + File.separator + fileName);
 		} else {
 			return new File(fileName);
 		}

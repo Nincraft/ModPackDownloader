@@ -1,34 +1,30 @@
 package com.nincraft.modpackdownloader;
 
+import com.beust.jcommander.JCommander;
 import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.handler.ApplicationUpdateHandler;
 import com.nincraft.modpackdownloader.manager.ModListManager;
 import com.nincraft.modpackdownloader.manager.ModPackManager;
+import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 @Log4j2
 public class ModPackDownloader {
 	public static void main(final String[] args) throws InterruptedException {
-		List<String> arguments = new ArrayList(Arrays.asList(args));
-		if (arguments.isEmpty()) {
-			log.info("No arguments supplied, using defaults");
-			arguments.add(0, Reference.DEFAULT_MANIFEST_FILE);
-		} else if ("-updateApp".equals(arguments.get(0))) {
+		Arguments arguments = new Arguments();
+		new JCommander(arguments, args);
+		defaultArguments();
+		if (Arguments.updateApp) {
 			ApplicationUpdateHandler.update();
 			return;
 		}
-		processArguments(arguments);
 
 		setupRepo();
 
-		if (Reference.updateCurseModPack) {
-			Reference.manifestFile = Reference.DEFAULT_MANIFEST_FILE;
+		if (Arguments.updateCurseModPack) {
+			Arguments.manifestFile = Reference.DEFAULT_MANIFEST_FILE;
 			if (ModPackManager.updateModPack()) {
 				ModPackManager.checkPastForgeVersion();
 				processMods();
@@ -40,45 +36,15 @@ public class ModPackDownloader {
 		processMods();
 	}
 
-	private static void processArguments(List<String> args) {
-		Reference.manifestFile = args.get(0);
-
-		if (args.size() < 2) {
-			log.info("No mod folder specified, defaulting to \"mods\"");
-			Reference.modFolder = "mods";
-		} else {
-			Reference.modFolder = args.get(1);
+	private static void defaultArguments() {
+		if (Strings.isNullOrEmpty(Arguments.manifestFile)) {
+			log.info("No manifest supplied, using default " + Reference.DEFAULT_MANIFEST_FILE);
+			Arguments.manifestFile = Reference.DEFAULT_MANIFEST_FILE;
 		}
-
-		args.forEach(ModPackDownloader::processArgument);
-	}
-
-	private static void processArgument(final String arg) {
-		log.trace("Processing given arguments...");
-		if ("-forceDownload".equalsIgnoreCase(arg)) {
-			Reference.forceDownload = true;
-			log.debug("Downloads are now being forced.");
-		} else if ("-updateMods".equalsIgnoreCase(arg)) {
-			Reference.updateMods = true;
-			log.debug("mods will be updated instead of downloaded.");
-		} else if ("-updateForge".equalsIgnoreCase(arg)) {
-			Reference.updateForge = true;
-			log.debug("Forge will be updated instead of downloaded.");
-		} else if ("-updateAll".equalsIgnoreCase(arg)) {
-			Reference.updateMods = true;
-			Reference.updateForge = true;
-			log.debug("mods and Forge will be updated instead of downloaded.");
-		} else if (arg.startsWith("-releaseType")) {
-			Reference.releaseType = arg.substring(arg.lastIndexOf('=') + 1);
-			log.debug(String.format("Checking against mod release type: %s", Reference.releaseType));
-		} else if ("-generateUrlTxt".equalsIgnoreCase(arg)) {
-			Reference.generateUrlTxt = true;
-			log.debug("Mod URL Text files will now be generated.");
-		} else if ("-updateCurseModPack".equalsIgnoreCase(arg)) {
-			Reference.updateCurseModPack = true;
-			log.debug("Updating Curse modpack");
+		if (Strings.isNullOrEmpty(Arguments.modFolder)) {
+			log.info("No manifest supplied, using default \"mods\"");
+			Arguments.modFolder = "mods";
 		}
-		log.trace("Finished processing given arguments.");
 	}
 
 	private static void setupRepo() {
@@ -112,14 +78,14 @@ public class ModPackDownloader {
 		if (returnCode == -1) {
 			return;
 		}
-		if (Reference.updateMods) {
-			if (Strings.isNullOrEmpty(Reference.mcVersion)) {
+		if (Arguments.updateMods) {
+			if (Strings.isNullOrEmpty(Arguments.mcVersion)) {
 				log.error("No Minecraft version found in manifest file");
 				return;
 			}
 
-			log.info(String.format("Updating mods with parameters: %s, %s, %s", Reference.manifestFile,
-					Reference.mcVersion, Reference.releaseType));
+			log.info(String.format("Updating mods with parameters: %s, %s, %s", Arguments.manifestFile,
+					Arguments.mcVersion, Arguments.releaseType));
 			ModListManager.updateMods();
 
 			waitFinishProcessingMods();
@@ -127,8 +93,8 @@ public class ModPackDownloader {
 			ModListManager.updateManifest();
 			log.info("Finished updating mods.");
 		} else {
-			log.info(String.format("Downloading mods with parameters: %s, %s", Reference.manifestFile,
-					Reference.modFolder));
+			log.info(String.format("Downloading mods with parameters: %s, %s", Arguments.manifestFile,
+					Arguments.modFolder));
 			ModListManager.downloadMods();
 
 			waitFinishProcessingMods();

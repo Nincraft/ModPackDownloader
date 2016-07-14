@@ -21,13 +21,6 @@ public class Reference {
 	public static final String DEFAULT_MANIFEST_FILE = "manifest.json";
 	public static String userhome;
 	public static String os;
-	public static String manifestFile;
-	public static String modFolder;
-	public static boolean forceDownload = false;
-	public static boolean updateMods;
-	public static String mcVersion;
-	public static String releaseType;
-	public static boolean generateUrlTxt;
 	public static int downloadCount = 0;
 	public static int downloadTotal = 0;
 	public static int updateCount = 0;
@@ -36,8 +29,6 @@ public class Reference {
 	public static String forgeURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/";
 	public static String forgeInstaller = "-installer.jar";
 	public static String forgeUniversal = "-universal.jar";
-	public static boolean updateForge;
 	public static String forgeUpdateURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json";
 	public static String javaContentType = "application/java-archive";
-	public static boolean updateCurseModPack;
 }

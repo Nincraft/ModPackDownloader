@@ -45,7 +45,7 @@ public class DownloadHelper {
 			return DownloadStatus.SKIPPED;
 		}
 
-		if (!FileSystemHelper.isInLocalRepo(downloadableFile.getName(), decodedFileName) || Reference.forceDownload) {
+		if (!FileSystemHelper.isInLocalRepo(downloadableFile.getName(), decodedFileName) || Arguments.forceDownload) {
 			val downloadedFile = FileSystemHelper.getLocalFile(downloadableFile);
 			try {
 				FileUtils.copyURLToFile(new URL(downloadableFile.getDownloadUrl()), downloadedFile);
