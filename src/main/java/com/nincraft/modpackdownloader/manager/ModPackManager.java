@@ -7,7 +7,6 @@ import com.nincraft.modpackdownloader.handler.CurseFileHandler;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
 import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.DownloadHelper;
-import com.nincraft.modpackdownloader.util.Reference;
 import lombok.extern.log4j.Log4j2;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;

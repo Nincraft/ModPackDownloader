@@ -12,10 +12,6 @@ public class Reference {
 	public static final String MAC_FOLDER = "/Library/Application Support/modpackdownloader/";
 	public static final String OTHER_FOLDER = "/.modpackdownloader/";
 	public static final String JAR_FILE_EXT = ".jar";
-	public static final String[] DATE_FORMATS = {"yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss'Z'",
-			"yyyy-MM-dd'T'HH:mm:ssZ", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-			"yyyy-MM-dd HH:mm:ss", "MM/dd/yyyy HH:mm:ss", "MM/dd/yyyy'T'HH:mm:ss.SSS'Z'", "MM/dd/yyyy'T'HH:mm:ss.SSSZ",
-			"MM/dd/yyyy'T'HH:mm:ss.SSS", "MM/dd/yyyy'T'HH:mm:ssZ", "MM/dd/yyyy'T'HH:mm:ss", "yyyy:MM:dd HH:mm:ss",};
 	public static final int RETRY_COUNTER = 5;
 	public static final char URL_DELIMITER = '/';
 	public static final String DEFAULT_MANIFEST_FILE = "manifest.json";

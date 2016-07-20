@@ -1,16 +1,16 @@
 package com.nincraft.modpackdownloader.container;
 
-import javax.annotation.Generated;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
 public class ThirdParty extends Mod {
 
 	@SerializedName("url")
 	@Expose
-	public String url;
+	private String url;
 
 	public String buildFileName() {
 		if (getDownloadUrl().contains(".jar")) {

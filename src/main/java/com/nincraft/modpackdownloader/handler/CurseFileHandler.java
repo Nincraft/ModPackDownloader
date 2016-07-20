@@ -159,11 +159,7 @@ public class CurseFileHandler extends ModHandler {
 	}
 
 	private static boolean isMcVersion(String version) {
-		if ("*".equals(Arguments.mcVersion)) {
-			return true;
-		} else {
-			return Arguments.mcVersion.equals(version);
-		}
+		return "*".equals(Arguments.mcVersion) || Arguments.mcVersion.equals(version);
 	}
 
 	private static CurseFile checkFileId(CurseFile curseFile) {
