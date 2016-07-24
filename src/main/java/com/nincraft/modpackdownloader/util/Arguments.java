@@ -2,6 +2,8 @@ package com.nincraft.modpackdownloader.util;
 
 import com.beust.jcommander.Parameter;
 
+import java.util.List;
+
 public class Arguments {
 	@Parameter(names = {"-manifest"})
 	public static String manifestFile;
@@ -13,6 +15,8 @@ public class Arguments {
 	public static boolean updateMods;
 	@Parameter(names = {"-mcVersion"})
 	public static String mcVersion;
+	@Parameter(names = {"-backupVersions"})
+	public static List<String> backupVersions;
 	@Parameter(names = {"-releaseType"})
 	public static String releaseType;
 	@Parameter(names = {"-generateUrlTxt"})
