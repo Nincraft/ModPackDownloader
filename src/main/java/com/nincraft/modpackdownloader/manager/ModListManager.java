@@ -12,6 +12,7 @@ import com.nincraft.modpackdownloader.handler.CurseFileHandler;
 import com.nincraft.modpackdownloader.handler.ForgeHandler;
 import com.nincraft.modpackdownloader.handler.ModHandler;
 import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
+import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -62,23 +63,23 @@ public class ModListManager {
 		log.trace("Building Mod List...");
 		JSONObject jsonLists = null;
 		try {
-			jsonLists = (JSONObject) new JSONParser().parse(new FileReader(Reference.manifestFile));
+			jsonLists = (JSONObject) new JSONParser().parse(new FileReader(Arguments.manifestFile));
 		} catch (IOException | ParseException e) {
 			log.error(e);
 			return -1;
 		}
 
 		manifestFile = gson.fromJson(jsonLists.toString(), Manifest.class);
-		if (!manifestFile.getCurseFiles().isEmpty() && !Reference.updateCurseModPack) {
+		if (!manifestFile.getCurseFiles().isEmpty() && !Arguments.updateCurseModPack) {
 			backupCurseManifest();
 		}
-		Reference.mcVersion = manifestFile.getMinecraftVersion();
+		Arguments.mcVersion = manifestFile.getMinecraftVersion();
 
 		MOD_LIST.addAll(manifestFile.getCurseFiles());
 		MOD_LIST.addAll(manifestFile.getThirdParty());
 		Reference.updateTotal = Reference.downloadTotal = MOD_LIST.size();
 		log.debug(String.format("A total of %s mods will be %s.", Reference.downloadTotal,
-				Reference.updateMods ? "updated" : "downloaded"));
+				Arguments.updateMods ? "updated" : "downloaded"));
 
 		MOD_LIST.forEach(Mod::init);
 
@@ -90,7 +91,7 @@ public class ModListManager {
 
 	private static void backupCurseManifest() {
 		try {
-			FileUtils.copyFile(new File(Reference.manifestFile), new File(Reference.manifestFile + ".bak"), true);
+			FileUtils.copyFile(new File(Arguments.manifestFile), new File(Arguments.manifestFile + ".bak"), true);
 		} catch (IOException e) {
 			log.error("Could not backup Curse manifest file", e);
 		}
@@ -194,7 +195,7 @@ public class ModListManager {
 			removeBatchAdd();
 			Gson prettyGson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
 					.disableHtmlEscaping().create();
-			val file = new FileWriter(Reference.manifestFile);
+			val file = new FileWriter(Arguments.manifestFile);
 			file.write(prettyGson.toJson(manifestFile));
 			file.flush();
 			file.close();
