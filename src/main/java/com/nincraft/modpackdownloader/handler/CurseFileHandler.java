@@ -159,12 +159,15 @@ public class CurseFileHandler extends ModHandler {
 				for (String backupVersion : Arguments.backupVersions) {
 					log.info(String.format("No files found for Minecraft %s, checking backup version %s", mcVersion, backupVersion));
 					newMod = getLatestVersion(releaseType, curseFile, fileListJson, backupVersion);
-					if (newMod.getFileID() != 0) {
+					if (BooleanUtils.isFalse(newMod.getSkipDownload())) {
 						curseFile.setSkipDownload(null);
 						log.info(String.format("Found update for %s in Minecraft %s", curseFile.getName(), backupVersion));
 						break;
 					}
 				}
+			} else if (fileIds.isEmpty()) {
+				curseFile.setSkipDownload(true);
+				newMod.setSkipDownload(true);
 			}
 		}
 		if (BooleanUtils.isTrue(curseFile.getSkipUpdate()) && !fileIds.isEmpty()) {
