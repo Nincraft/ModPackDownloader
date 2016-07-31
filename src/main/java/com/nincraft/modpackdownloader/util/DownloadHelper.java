@@ -40,7 +40,7 @@ public class DownloadHelper {
 		}
 		val decodedFileName = URLHelper.decodeSpaces(downloadableFile.getFileName());
 
-		if (FileSystemHelper.getDownloadedFile(decodedFileName, downloadableFile.getFolder()).exists() && !Arguments.forceDownload) {
+		if (FileSystemHelper.getDownloadedFile(decodedFileName, downloadableFile.getFolder()).exists() && !Reference.forceDownload) {
 			log.info(String.format("Found %s already downloaded, skipping", decodedFileName));
 			return DownloadStatus.SKIPPED;
 		}
