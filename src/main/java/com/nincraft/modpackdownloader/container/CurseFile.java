@@ -74,8 +74,7 @@ public class CurseFile extends Mod {
 		return String.format(Reference.CURSEFORGE_BASE_URL + "%s" + Reference.COOKIE_TEST_1, getProjectID());
 	}
 
-	@Override
-	public String getDownloadUrl() {
+	public String getCurseForgeDownloadUrl() {
 		return String.format(Reference.CURSEFORGE_BASE_URL + "%s-%s/files/%s/download", getProjectID(), getProjectName(),
 				getFileID());
 	}

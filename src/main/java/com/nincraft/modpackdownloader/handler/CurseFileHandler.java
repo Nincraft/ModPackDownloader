@@ -26,17 +26,17 @@ import java.util.List;
 @Log4j2
 public class CurseFileHandler extends ModHandler {
 
-	private static void downloadCurseMod(final CurseFile curseFile) {
+	private static void downloadCurseMod(CurseFile curseFile) {
 		try {
-			curseFile.setFileName(getCurseForgeDownloadLocation(curseFile));
+			curseFile = getCurseForgeDownloadLocation(curseFile);
 			DownloadHelper.downloadFile(curseFile);
 		} catch (IOException e) {
 			log.error(e);
 		}
 	}
 
-	private static String getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
-		String url = curseFile.getDownloadUrl();
+	private static CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
+		String url = curseFile.getCurseForgeDownloadUrl();
 		String projectName = curseFile.getName();
 		String encodedDownloadLocation = URLHelper.encodeSpaces(projectName);
 
@@ -71,9 +71,11 @@ public class CurseFileHandler extends ModHandler {
 			} else {
 				encodedDownloadLocation = projectName + Reference.JAR_FILE_EXT;
 			}
+			curseFile.setDownloadUrl(actualURL);
 		}
+		curseFile.setFileName(URLHelper.decodeSpaces(encodedDownloadLocation));
 
-		return URLHelper.decodeSpaces(encodedDownloadLocation);
+		return curseFile;
 	}
 
 	public static void updateCurseFile(final CurseFile curseFile) {
