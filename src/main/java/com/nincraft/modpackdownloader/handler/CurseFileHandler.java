@@ -73,7 +73,7 @@ public class CurseFileHandler extends ModHandler {
 			} else {
 				encodedDownloadLocation = projectName + Reference.JAR_FILE_EXT;
 			}
-			curseFile.setDownloadUrl(actualURL);
+			curseFile.setDownloadUrl(actualURL.replace("http:", "https:"));
 		}
 		curseFile.setFileName(URLHelper.decodeSpaces(encodedDownloadLocation));
 
