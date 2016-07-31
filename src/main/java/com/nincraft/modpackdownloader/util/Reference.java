@@ -1,7 +1,7 @@
 package com.nincraft.modpackdownloader.util;
 
 public class Reference {
-	public static final String CURSEFORGE_BASE_URL = "http://minecraft.curseforge.com/projects/";
+	public static final String CURSEFORGE_BASE_URL = "https://minecraft.curseforge.com/projects/";
 	public static final String CURSEFORGE_WIDGET_JSON_MOD = "mc-mods";
 	public static final String CURSEFORGE_WIDGET_JSON_MODPACK = "modpacks";
 	public static final String CURSEFORGE_WIDGET_JSON_URL = "http://widget.mcf.li/%s/minecraft/%s.json";
