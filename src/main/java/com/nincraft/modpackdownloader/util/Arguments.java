@@ -27,4 +27,6 @@ public class Arguments {
 	public static boolean updateCurseModPack;
 	@Parameter(names = {"-updateApp"})
 	public static boolean updateApp;
+	@Parameter(names = {"-clearCache"})
+	public static boolean clearCache;
 }

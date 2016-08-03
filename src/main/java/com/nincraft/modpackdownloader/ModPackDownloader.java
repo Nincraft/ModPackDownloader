@@ -16,6 +16,10 @@ public class ModPackDownloader {
 		Arguments arguments = new Arguments();
 		new JCommander(arguments, args);
 		defaultArguments();
+		if (Arguments.clearCache) {
+			FileSystemHelper.clearCache();
+			return;
+		}
 		if (Arguments.updateApp) {
 			ApplicationUpdateHandler.update();
 			return;

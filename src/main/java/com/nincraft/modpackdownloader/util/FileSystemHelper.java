@@ -33,7 +33,7 @@ public final class FileSystemHelper {
 			File downloadedFile = getDownloadedFile(fileName, folder);
 			if (downloadToLocalRepo) {
 				FileUtils.copyFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder));
-			} else if (!downloadedFile.exists()){
+			} else if (!downloadedFile.exists()) {
 				FileUtils.moveFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder), true);
 			}
 			if (!Strings.isNullOrEmpty(downloadableFile.getRename())) {
@@ -73,6 +73,15 @@ public final class FileSystemHelper {
 			return new File(Arguments.modFolder + File.separator + fileName);
 		} else {
 			return new File(fileName);
+		}
+	}
+
+	public static void clearCache() {
+		File cache = new File(Reference.userhome);
+		try {
+			FileUtils.deleteDirectory(cache);
+		} catch (IOException e) {
+			log.error("Unable to clear cache", e);
 		}
 	}
 }
