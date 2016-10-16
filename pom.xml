@@ -76,27 +76,27 @@
 			</resource>
 		</resources>
 		<plugins>
-			 <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>regex-property</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>regex-property</goal>
-                        </goals>
-                        <configuration>
-                            <name>short.project.version</name>
-                            <value>${project.version}</value>
-                            <regex>^(\d\.\d(?>\.\d)?)(-SNAPSHOT)?</regex>
-                            <replacement>$1</replacement>
-                            <failIfNoMatch>true</failIfNoMatch>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>regex-property</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>regex-property</goal>
+						</goals>
+						<configuration>
+							<name>short.project.version</name>
+							<value>${project.version}</value>
+							<regex>^(\d\.\d(?>\.\d)?)(-SNAPSHOT)?</regex>
+							<replacement>$1</replacement>
+							<failIfNoMatch>true</failIfNoMatch>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5.1</version>
