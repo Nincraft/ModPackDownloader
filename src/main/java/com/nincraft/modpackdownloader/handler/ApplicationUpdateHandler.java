@@ -33,7 +33,7 @@ public class ApplicationUpdateHandler {
 		String downloadUrl = (String) appJson.get("url");
 		String appName = URLHelper
 				.decodeSpaces(downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1, downloadUrl.length()));
-		File updatedApp = FileSystemHelper.getDownloadedFile(appName);
+		File updatedApp = FileSystemHelper.getDownloadedFile(appName, ".");
 		if (updatedApp.exists()) {
 			log.info("No new updates found");
 			return;
