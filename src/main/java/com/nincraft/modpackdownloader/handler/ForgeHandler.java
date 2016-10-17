@@ -28,9 +28,6 @@ public class ForgeHandler {
 		}
 
 		for (ModLoader modLoader : modLoaders) {
-
-
-
 			if (BooleanUtils.isTrue(modLoader.getDownloadInstaller())) {
 				log.info(String.format("Downloading Forge installer version %s", modLoader.getId()));
 				downloadForgeFile(minecraftVersion, modLoader, true);
@@ -60,11 +57,9 @@ public class ForgeHandler {
 
 		modLoader.setDownloadUrl(forgeURL);
 		modLoader.setFileName(forgeFileName);
-		if (DownloadStatus.FAILURE.equals(DownloadHelper.downloadFile(modLoader))) {
-			if (alternateDownloadUrl) {
-				log.warn("Attempting alternate Forge download URL");
-				downloadForgeFile(minecraftVersion, modLoader, downloadInstaller, false);
-			}
+		if (DownloadStatus.FAILURE.equals(DownloadHelper.downloadFile(modLoader)) && alternateDownloadUrl) {
+			log.warn("Attempting alternate Forge download URL");
+			downloadForgeFile(minecraftVersion, modLoader, downloadInstaller, false);
 		}
 	}
 
@@ -75,7 +70,6 @@ public class ForgeHandler {
 		}
 
 		for (ModLoader modLoader : modLoaders) {
-
 			JSONObject fileListJson = null;
 			if (modLoader.getRelease() == null) {
 				log.warn("No Forge release type set for update, defaulting to recommended");

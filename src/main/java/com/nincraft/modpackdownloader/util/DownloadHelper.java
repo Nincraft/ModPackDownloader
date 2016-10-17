@@ -2,6 +2,7 @@ package com.nincraft.modpackdownloader.util;
 
 import com.nincraft.modpackdownloader.container.DownloadableFile;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
+import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.commons.io.FileUtils;
@@ -10,6 +11,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import java.io.IOException;
 import java.net.URL;
 
+@UtilityClass
 @Log4j2
 public class DownloadHelper {
 
