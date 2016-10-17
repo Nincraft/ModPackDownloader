@@ -22,8 +22,8 @@ public abstract class DownloadableFile {
 	private String fileName;
 	private String downloadUrl;
 
-	public String getFileName(){
-		if(!Strings.isNullOrEmpty(getRename())){
+	public String getFileName() {
+		if (!Strings.isNullOrEmpty(getRename())) {
 			return getRename();
 		}
 		return this.fileName;

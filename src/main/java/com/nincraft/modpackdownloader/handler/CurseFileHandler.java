@@ -30,8 +30,7 @@ public class CurseFileHandler extends ModHandler {
 
 	private static void downloadCurseMod(CurseFile curseFile) {
 		try {
-			curseFile = getCurseForgeDownloadLocation(curseFile);
-			DownloadHelper.downloadFile(curseFile);
+			DownloadHelper.downloadFile(getCurseForgeDownloadLocation(curseFile));
 		} catch (IOException e) {
 			log.error(e);
 		}
@@ -134,7 +133,7 @@ public class CurseFileHandler extends ModHandler {
 		try {
 			newMod = (CurseFile) curseFile.clone();
 		} catch (CloneNotSupportedException e) {
-			log.debug("Couldn't clone existing mod reference, creating new one instead.");
+			log.debug("Couldn't clone existing mod reference, creating new one instead.", e);
 			newMod = new CurseFile();
 		}
 

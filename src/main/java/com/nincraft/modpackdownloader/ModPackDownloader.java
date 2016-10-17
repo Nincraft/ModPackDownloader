@@ -8,8 +8,10 @@ import com.nincraft.modpackdownloader.manager.ModPackManager;
 import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
+import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 
+@UtilityClass
 @Log4j2
 public class ModPackDownloader {
 	public static void main(final String[] args) throws InterruptedException {

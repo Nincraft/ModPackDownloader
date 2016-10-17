@@ -13,8 +13,10 @@ import com.nincraft.modpackdownloader.handler.ForgeHandler;
 import com.nincraft.modpackdownloader.handler.ModHandler;
 import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
 import com.nincraft.modpackdownloader.util.Arguments;
+import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.Getter;
+import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.commons.io.FileUtils;
@@ -35,16 +37,16 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@UtilityClass
 @Log4j2
 public class ModListManager {
-	public static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
+
+	protected static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
 	private static final List<Mod> MOD_LIST = Lists.newArrayList();
 	@Getter
 	public static ExecutorService executorService;
-
 	private static Manifest manifestFile;
 	private static Gson gson = new Gson();
-
 	private static Comparator<Mod> compareMods = new Comparator<Mod>() {
 		@Override
 		public int compare(Mod mod1, Mod mod2) {
@@ -62,11 +64,15 @@ public class ModListManager {
 	public static int buildModList() {
 		log.trace("Building Mod List...");
 		JSONObject jsonLists = null;
+		FileReader reader = null;
 		try {
-			jsonLists = (JSONObject) new JSONParser().parse(new FileReader(Arguments.manifestFile));
+			reader = new FileReader(Arguments.manifestFile);
+			jsonLists = (JSONObject) new JSONParser().parse(reader);
 		} catch (IOException | ParseException e) {
 			log.error(e);
 			return -1;
+		} finally {
+			FileSystemHelper.closeClosable(reader);
 		}
 
 		manifestFile = gson.fromJson(jsonLists.toString(), Manifest.class);
@@ -188,6 +194,7 @@ public class ModListManager {
 
 	public static void updateManifest() {
 		log.info("Updating Manifest File...");
+		FileWriter file = null;
 		try {
 			manifestFile.getCurseFiles().sort(compareMods);
 			manifestFile.getThirdParty().sort(compareMods);
@@ -195,12 +202,14 @@ public class ModListManager {
 			removeBatchAdd();
 			Gson prettyGson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
 					.disableHtmlEscaping().create();
-			val file = new FileWriter(Arguments.manifestFile);
+			file = new FileWriter(Arguments.manifestFile);
 			file.write(prettyGson.toJson(manifestFile));
-			file.flush();
-			file.close();
+
 		} catch (final IOException e) {
-			log.error(e.getMessage());
+			log.error(e);
+		} finally {
+			FileSystemHelper.flushFileWriter(file);
+			FileSystemHelper.closeClosable(file);
 		}
 	}
 
