@@ -1,9 +1,5 @@
 package com.nincraft.modpackdownloader;
 
-import java.io.File;
-
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.beust.jcommander.JCommander;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -17,6 +13,9 @@ import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.io.File;
 
 @UtilityClass
 @Log4j2
@@ -119,41 +118,4 @@ public class ModPackDownloader {
 
 		log.trace("Finished setting up local repository.");
 	}
-
-	/*private static void processMods() throws InterruptedException {
-		log.trace("Processing Mods...");
-		int returnCode = ModListManager.buildModList();
-		if (returnCode == -1) {
-			return;
-		}
-		if (CollectionUtils.isNotEmpty(Arguments.manifestsToUpdate)) {
-			if (Strings.isNullOrEmpty(Arguments.mcVersion)) {
-				log.error("No Minecraft version found in manifest file");
-				return;
-			}
-
-			log.info(String.format("Updating mods with parameters: %s, %s, %s", Arguments.manifestsToDownload,
-					Arguments.mcVersion, Arguments.releaseType));
-			ModListManager.updateMods();
-
-			waitFinishProcessingMods();
-
-			ModListManager.updateManifest();
-			log.info("Finished updating mods.");
-		} else {
-			log.info(String.format("Downloading mods with parameters: %s, %s", Arguments.manifestsToDownload,
-					Arguments.modFolder));
-			ModListManager.downloadMods();
-
-			waitFinishProcessingMods();
-			log.info("Finished downloading mods.");
-		}
-		log.trace("Finished Processing Mods.");
-	}*/
-
-	/*private static void waitFinishProcessingMods() throws InterruptedException {
-		while (!ModListManager.getExecutorService().isTerminated()) {
-			Thread.sleep(1);
-		}
-	}*/
 }

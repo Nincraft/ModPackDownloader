@@ -6,10 +6,7 @@ package com.nincraft.modpackdownloader.processor;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 
@@ -26,7 +23,6 @@ import com.nincraft.modpackdownloader.container.ThirdParty;
 import com.nincraft.modpackdownloader.handler.CurseFileHandler;
 import com.nincraft.modpackdownloader.handler.ModHandler;
 import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
-import com.nincraft.modpackdownloader.manager.ModListManager;
 import com.nincraft.modpackdownloader.util.Arguments;
 
 import lombok.Getter;
@@ -35,6 +31,9 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public abstract class AbstractProcessor {
+
+	public static Comparator<Mod> compareMods = (mod1, mod2) -> mod1.getName().toLowerCase().compareTo(mod2.getName().toLowerCase());
+
 	@Getter
 	public static ExecutorService executorService;
 
@@ -106,7 +105,7 @@ public abstract class AbstractProcessor {
 
 		modList.forEach(Mod::init);
 
-		Collections.sort(modList, ModListManager.compareMods);
+		Collections.sort(modList, compareMods);
 
 		log.trace("Finished Building Mod List.");
 		return modList;

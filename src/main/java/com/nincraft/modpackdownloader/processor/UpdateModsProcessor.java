@@ -19,7 +19,6 @@ import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
 import com.nincraft.modpackdownloader.container.Mod;
 import com.nincraft.modpackdownloader.handler.ForgeHandler;
-import com.nincraft.modpackdownloader.manager.ModListManager;
 import com.nincraft.modpackdownloader.util.Reference;
 
 import lombok.val;
@@ -134,8 +133,8 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		log.info("Updating Manifest File...");
 		try {
 			// Sort Mod Lists
-			manifest.getCurseFiles().sort(ModListManager.compareMods);
-			manifest.getThirdParty().sort(ModListManager.compareMods);
+			manifest.getCurseFiles().sort(compareMods);
+			manifest.getThirdParty().sort(compareMods);
 
 			// Clean up Empty Lists
 			CleanupLists(manifest);
