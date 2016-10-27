@@ -1,12 +1,10 @@
 package com.nincraft.modpackdownloader.util;
 
-import java.io.File;
-import java.util.List;
-
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
+
+import java.io.File;
+import java.util.List;
 
 public class Arguments {
 	@Parameter(names = { "-modFolder", "-folder", "-mods" })
@@ -31,22 +29,12 @@ public class Arguments {
 	@Parameter(names = { "-clearCache" })
 	public static boolean clearCache;
 
-	@Parameter(names = { "-manifest", "-manifests", "-downloadMods" }, listConverter = FileConverter.class)
-	public static List<File> manifestsToDownload;
-	@Parameter(names = { "-updateMods" }, listConverter = FileConverter.class)
-	public static List<File> manifestsToUpdate;
-	@Parameter(names = { "-mergeManifests" }, listConverter = FileConverter.class)
-	public static List<File> manifestsToMerge;
-
-	public static boolean shouldDownloadManifests() {
-		return CollectionUtils.isNotEmpty(manifestsToDownload);
-	}
-
-	public static boolean shouldUpdateManifests() {
-		return CollectionUtils.isNotEmpty(manifestsToUpdate);
-	}
-
-	public static boolean shouldMergeManifests() {
-		return CollectionUtils.isNotEmpty(manifestsToMerge);
-	}
+	@Parameter(names = { "-manifest", "-manifests" }, listConverter = FileConverter.class)
+	public static List<File> manifests;
+	@Parameter(names = {"-downloadMods"})
+	public static boolean downloadMods;
+	@Parameter(names = { "-updateMods" })
+	public static boolean updateMods;
+	@Parameter(names = { "-mergeManifests" })
+	public static boolean mergeManifests;
 }

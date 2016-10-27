@@ -57,20 +57,20 @@ public class ModPackDownloader {
 	}
 
 	private static void updateMods() throws InterruptedException {
-		if (Arguments.shouldUpdateManifests()) {
-			new UpdateModsProcessor(Arguments.manifestsToUpdate).process();
+		if (Arguments.updateMods) {
+			new UpdateModsProcessor(Arguments.manifests).process();
 		}
 	}
 
 	private static void downloadMods() throws InterruptedException {
-		if (Arguments.shouldDownloadManifests()) {
-			new DownloadModsProcessor(Arguments.manifestsToDownload).process();
+		if (Arguments.downloadMods) {
+			new DownloadModsProcessor(Arguments.manifests).process();
 		}
 	}
 
 	private static void mergeManifests() throws InterruptedException {
-		if (Arguments.shouldMergeManifests()) {
-			new MergeManifestsProcessor(Arguments.manifestsToMerge).process();
+		if (Arguments.mergeManifests) {
+			new MergeManifestsProcessor(Arguments.manifests).process();
 		}
 	}
 
@@ -83,14 +83,17 @@ public class ModPackDownloader {
 	}
 
 	private static void defaultArguments() {
-		if (CollectionUtils.isEmpty(Arguments.manifestsToDownload)) {
+		if (CollectionUtils.isEmpty(Arguments.manifests)) {
 			log.info(String.format("No manifest supplied, using default %s", Reference.DEFAULT_MANIFEST_FILE));
 
-			Arguments.manifestsToDownload = Lists.newArrayList(new File(Reference.DEFAULT_MANIFEST_FILE));
+			Arguments.manifests = Lists.newArrayList(new File(Reference.DEFAULT_MANIFEST_FILE));
 		}
 		if (Strings.isNullOrEmpty(Arguments.modFolder)) {
 			log.info("No output folder supplied, using default \"mods\"");
 			Arguments.modFolder = "mods";
+		}
+		if (!Arguments.downloadMods && !Arguments.updateMods && !Arguments.mergeManifests) {
+			Arguments.downloadMods = true;
 		}
 	}
 

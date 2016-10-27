@@ -102,7 +102,7 @@ public class ModPackManager {
 			JSONObject currentJson = null;
 			JSONObject multiMCJson = null;
 			try {
-				currentJson = (JSONObject) new JSONParser().parse(new FileReader(Arguments.manifestsToDownload.get(0)));
+				currentJson = (JSONObject) new JSONParser().parse(new FileReader(Arguments.manifests.get(0)));
 				multiMCJson = (JSONObject) new JSONParser().parse(new FileReader("../patches/net.minecraftforge.json"));
 			} catch (IOException | ParseException e) {
 				log.error(e);
