@@ -67,8 +67,9 @@ public class CurseFileHandler extends ModHandler {
 				retryCount++;
 			}
 
-			if (actualURL.substring(actualURL.lastIndexOf(Reference.URL_DELIMITER) + 1).contains(Reference.JAR_FILE_EXT)) {
-				encodedDownloadLocation = actualURL.substring(actualURL.lastIndexOf(Reference.URL_DELIMITER) + 1);
+			int lastIndexUrl = actualURL.lastIndexOf(Reference.URL_DELIMITER) + 1;
+			if (actualURL.substring(lastIndexUrl).contains(Reference.JAR_FILE_EXT)) {
+				encodedDownloadLocation = actualURL.substring(lastIndexUrl);
 			} else {
 				encodedDownloadLocation = projectName + Reference.JAR_FILE_EXT;
 			}
@@ -206,8 +207,7 @@ public class CurseFileHandler extends ModHandler {
 		try {
 			urlStr = String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, modOrModPack, projectName);
 			log.debug(urlStr);
-			return (JSONObject) projectParser
-					.parse(new BufferedReader(new InputStreamReader(new URL(urlStr).openStream())));
+			return URLHelper.getJsonFromUrl(urlStr);
 		} catch (final FileNotFoundException e) {
 			urlStr = String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, modOrModPack, projectId + "-" + projectName);
 			log.debug(urlStr, e);

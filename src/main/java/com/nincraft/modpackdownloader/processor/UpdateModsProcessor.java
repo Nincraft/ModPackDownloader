@@ -1,5 +1,16 @@
 package com.nincraft.modpackdownloader.processor;
 
+import com.google.gson.GsonBuilder;
+import com.nincraft.modpackdownloader.container.CurseFile;
+import com.nincraft.modpackdownloader.container.Manifest;
+import com.nincraft.modpackdownloader.container.Mod;
+import com.nincraft.modpackdownloader.handler.ForgeHandler;
+import com.nincraft.modpackdownloader.util.Reference;
+import lombok.extern.log4j.Log4j2;
+import lombok.val;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,20 +20,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.nincraft.modpackdownloader.container.CurseFile;
-import com.nincraft.modpackdownloader.container.Manifest;
-import com.nincraft.modpackdownloader.container.Mod;
-import com.nincraft.modpackdownloader.handler.ForgeHandler;
-import com.nincraft.modpackdownloader.util.Reference;
-
-import lombok.val;
-import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class UpdateModsProcessor extends AbstractProcessor {
@@ -131,27 +128,24 @@ public class UpdateModsProcessor extends AbstractProcessor {
 
 	public static void updateManifest(final File file, final Manifest manifest) {
 		log.info("Updating Manifest File...");
-		try {
-			// Sort Mod Lists
-			manifest.getCurseFiles().sort(compareMods);
-			manifest.getThirdParty().sort(compareMods);
+		// Sort Mod Lists
+		manifest.getCurseFiles().sort(compareMods);
+		manifest.getThirdParty().sort(compareMods);
 
-			// Clean up Empty Lists
-			CleanupLists(manifest);
+		// Clean up Empty Lists
+		cleanupLists(manifest);
 
-			// Dump Manifest to file
-			Gson prettyGson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
-					.disableHtmlEscaping().create();
-			val writer = new FileWriter(file);
-			writer.write(prettyGson.toJson(manifest));
-			writer.flush();
-			writer.close();
+		// Dump Manifest to file
+		val prettyGson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
+				.disableHtmlEscaping().create();
+		try (val fileWriter = new FileWriter(file)) {
+			fileWriter.write(prettyGson.toJson(manifest));
 		} catch (final IOException e) {
-			log.error(e.getMessage());
+			log.error(e);
 		}
 	}
 
-	public static void CleanupLists(final Manifest manifest) {
+	public static void cleanupLists(final Manifest manifest) {
 
 		// Clean up Empty Lists
 		if (manifest.getCurseFiles().isEmpty()) {
