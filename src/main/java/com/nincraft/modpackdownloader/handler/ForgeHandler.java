@@ -6,17 +6,14 @@ import com.nincraft.modpackdownloader.status.DownloadStatus;
 import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.DownloadHelper;
 import com.nincraft.modpackdownloader.util.Reference;
+import com.nincraft.modpackdownloader.util.URLHelper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.List;
 
 @Log4j2
@@ -76,7 +73,7 @@ public class ForgeHandler {
 				modLoader.setRelease("recommended");
 			}
 			try {
-				fileListJson = (JSONObject) ((JSONObject) new JSONParser().parse(new BufferedReader(new InputStreamReader(new URL(Reference.forgeUpdateURL).openStream())))).get("promos");
+				fileListJson = (JSONObject) (URLHelper.getJsonFromUrl(Reference.forgeUpdateURL)).get("promos");
 				String updatedForgeVersion = (String) fileListJson.get(minecraftVersion + "-" + modLoader.getRelease());
 				String manifestForgeVersion = modLoader.getId().substring(modLoader.getId().indexOf('-') + 1);
 
