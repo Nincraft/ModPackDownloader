@@ -37,7 +37,7 @@ public class CurseFile extends Mod {
 	private boolean isModpack;
 
 	public CurseFile() {
-
+		//empty
 	}
 
 	public CurseFile(String projectId, String projectName) {

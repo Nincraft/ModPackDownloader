@@ -19,13 +19,13 @@ public class Manifest {
 	public Minecraft minecraft;
 	@SerializedName("files")
 	@Expose
-	public List<CurseFile> curseFiles = new ArrayList<CurseFile>();
+	public List<CurseFile> curseFiles = new ArrayList<>();
 	@SerializedName("thirdParty")
 	@Expose
-	public List<ThirdParty> thirdParty = new ArrayList<ThirdParty>();
+	public List<ThirdParty> thirdParty = new ArrayList<>();
 	@SerializedName("batchAddCurse")
 	@Expose
-	public List<String> batchAddCurse = new ArrayList<String>();
+	public List<String> batchAddCurse = new ArrayList<>();
 
 	public String getMinecraftVersion() {
 		if (minecraft != null) {

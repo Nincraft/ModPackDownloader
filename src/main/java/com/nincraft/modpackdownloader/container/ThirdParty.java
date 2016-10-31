@@ -14,12 +14,13 @@ public class ThirdParty extends Mod {
 
 	public String buildFileName() {
 		if (getDownloadUrl().contains(".jar")) {
-			return getDownloadUrl().substring(getDownloadUrl().lastIndexOf("/") + 1,
+			return getDownloadUrl().substring(getDownloadUrl().lastIndexOf('/') + 1,
 					getDownloadUrl().lastIndexOf(".jar") + 4);
 		}
 		return getRename();
 	}
 
+	@Override
 	public void init() {
 		setDownloadUrl(url);
 		setFileName(buildFileName());

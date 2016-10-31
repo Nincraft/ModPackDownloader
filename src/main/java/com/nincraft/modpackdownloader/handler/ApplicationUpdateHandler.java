@@ -5,11 +5,11 @@ import com.nincraft.modpackdownloader.util.Reference;
 import com.nincraft.modpackdownloader.util.URLHelper;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -25,10 +25,10 @@ public class ApplicationUpdateHandler {
 			log.error("Failed to get latest download link, Nincraft server down?", e);
 			return;
 		}
-		String downloadUrl = (String) appJson.get("url");
-		String appName = URLHelper
+		val downloadUrl = (String) appJson.get("url");
+		val appName = URLHelper
 				.decodeSpaces(downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1, downloadUrl.length()));
-		File updatedApp = FileSystemHelper.getDownloadedFile(appName, ".");
+		val updatedApp = FileSystemHelper.getDownloadedFile(appName, ".");
 		if (updatedApp.exists()) {
 			log.info("No new updates found");
 			return;
