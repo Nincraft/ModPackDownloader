@@ -1,0 +1,28 @@
+{
+  "minecraft": {
+    "version": "1.8.9",
+    "modLoaders": [
+      {
+        "id": "forge-11.15.1.1890",
+        "primary": true,
+        "downloadInstaller": true,
+        "release": "latest",
+        "name": "forge",
+        "folder": "mods"
+      }
+    ]
+  },
+  "files": [
+    {
+      "fileID": 0,
+      "projectID": 223628,
+      "name": "Thaumcraft"
+    }
+  ],
+  "thirdParty": [
+    {
+      "url": "https://github.com/CannibalVox/DimDoors/releases/download/2.2.5-test9/DimensionalDoors-2.2.5-test9.jar",
+      "name": "Dimensional Doors"
+    }
+  ]
+}
