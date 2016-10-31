@@ -3,10 +3,7 @@ package com.nincraft.modpackdownloader.handler;
 import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.container.ModLoader;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
-import com.nincraft.modpackdownloader.util.Arguments;
-import com.nincraft.modpackdownloader.util.DownloadHelper;
-import com.nincraft.modpackdownloader.util.Reference;
-import com.nincraft.modpackdownloader.util.URLHelper;
+import com.nincraft.modpackdownloader.util.*;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -77,7 +74,7 @@ public class ForgeHandler {
 				String updatedForgeVersion = (String) fileListJson.get(minecraftVersion + "-" + modLoader.getRelease());
 				String manifestForgeVersion = modLoader.getId().substring(modLoader.getId().indexOf('-') + 1);
 
-				if (compareVersions(manifestForgeVersion, updatedForgeVersion) < 0) {
+				if (VersionHelper.compareVersions(manifestForgeVersion, updatedForgeVersion) < 0) {
 					log.info(String.format("Newer version of Forge found, updating to %s", updatedForgeVersion));
 					modLoader.setId("forge-" + updatedForgeVersion);
 				}
@@ -90,21 +87,4 @@ public class ForgeHandler {
 		return modLoaders;
 	}
 
-	private static int compareVersions(String manifestForgeVersion, String updatedForgeVersion) {
-		String[] manArr = manifestForgeVersion.split("\\.");
-		String[] updateArr = updatedForgeVersion.split("\\.");
-
-		int i = 0;
-
-		while (i < manArr.length || i < updateArr.length) {
-			if (Integer.parseInt(manArr[i]) < Integer.parseInt(updateArr[i])) {
-				return -1;
-			} else if (Integer.parseInt(manArr[i]) > Integer.parseInt(updateArr[i])) {
-				return 1;
-			}
-			i++;
-		}
-
-		return 0;
-	}
 }

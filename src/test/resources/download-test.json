@@ -1,6 +1,16 @@
 {
   "minecraft": {
-    "version": "1.8.9"
+    "version": "1.8.9",
+    "modLoaders": [
+      {
+        "id": "forge-11.15.1.1902",
+        "primary": true,
+        "downloadInstaller": true,
+        "release": "latest",
+        "name": "forge",
+        "folder": "mods"
+      }
+    ]
   },
   "files": [
     {
