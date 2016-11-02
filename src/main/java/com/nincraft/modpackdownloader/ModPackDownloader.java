@@ -23,7 +23,15 @@ import java.util.Arrays;
 public class ModPackDownloader {
 	public static void main(final String[] args) throws InterruptedException {
 		log.info("Starting ModPackDownloader with arguments: " + Arrays.toString(args));
-		initArguments(args);
+		JCommander jCommander = initArguments(args);
+
+		if (Arguments.helpEnabled) {
+			jCommander.usage();
+			return;
+		}
+
+		// Set default application arguments
+		defaultArguments();
 
 		if (Arguments.clearCache) {
 			FileSystemHelper.clearCache();
@@ -75,12 +83,9 @@ public class ModPackDownloader {
 		}
 	}
 
-	private static void initArguments(final String[] args) {
+	private static JCommander initArguments(final String[] args) {
 		// Initialize application arguments
-		new JCommander(new Arguments(), args);
-
-		// Set default application arguments
-		defaultArguments();
+		return new JCommander(new Arguments(), args);
 	}
 
 	private static void defaultArguments() {
