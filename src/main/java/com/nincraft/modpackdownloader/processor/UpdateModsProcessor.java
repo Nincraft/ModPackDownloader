@@ -65,8 +65,9 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		if (!manifest.getBatchAddCurse().isEmpty()) {
 			log.info("Found batch add for Curse");
 			addBatch(manifest, modList);
-			Reference.updateTotal = modList.size();
 		}
+
+		Reference.updateTotal = modList.size();
 
 		Runnable forgeThread = new Thread(() -> {
 			manifest.getMinecraft().setModLoaders(
