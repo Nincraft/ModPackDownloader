@@ -2,6 +2,8 @@ package com.nincraft.modpackdownloader.util;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
+import com.nincraft.modpackdownloader.validation.ExistingFile;
+import com.nincraft.modpackdownloader.validation.ReleaseType;
 
 import java.io.File;
 import java.util.List;
@@ -15,7 +17,7 @@ public class Arguments {
 			"when no version is found for the main Minecraft version, this version will be checked as well")
 	public static List<String> backupVersions;
 	@Parameter(names = {"-releaseType"}, description = "Release type for Curse updates. Acceptable parameters" +
-			"are release, beta, and alpha")
+			"are release, beta, and alpha", validateWith = ReleaseType.class)
 	public static String releaseType;
 
 	@Parameter(names = {"-forceDownload"}, description = "Forces downloading instead of pulling from the cache")
@@ -34,7 +36,7 @@ public class Arguments {
 	public static boolean clearCache;
 
 	@Parameter(names = {"-manifest", "-manifests"}, description = "List of manifests to use for downloading/updating",
-			listConverter = FileConverter.class)
+			listConverter = FileConverter.class, validateWith = ExistingFile.class)
 	public static List<File> manifests;
 	@Parameter(names = {"-downloadMods"}, description = "Downloads mods in the given manifests." +
 			"Enabled by default if update and merge are not")
