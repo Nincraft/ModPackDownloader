@@ -51,7 +51,7 @@ public class ForgeHandler {
 
 		modLoader.setDownloadUrl(forgeURL);
 		modLoader.setFileName(forgeFileName);
-		if (DownloadStatus.FAILURE.equals(DownloadHelper.downloadFile(modLoader)) && alternateDownloadUrl) {
+		if (DownloadStatus.FAILURE.equals(DownloadHelper.getInstance().downloadFile(modLoader)) && alternateDownloadUrl) {
 			log.warn("Attempting alternate Forge download URL");
 			downloadForgeFile(minecraftVersion, modLoader, downloadInstaller, false);
 		}

@@ -9,7 +9,7 @@ public class ThirdPartyModHandler extends ModHandler {
 
 	@Override
 	public void downloadMod(final Mod mod) {
-		DownloadHelper.downloadFile(mod);
+		DownloadHelper.getInstance().downloadFile(mod);
 	}
 
 	@Override

@@ -2,7 +2,8 @@ package com.nincraft.modpackdownloader.util;
 
 import com.nincraft.modpackdownloader.container.DownloadableFile;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
-import lombok.experimental.UtilityClass;
+import com.nincraft.modpackdownloader.summary.DownloadSummarizer;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.commons.io.FileUtils;
@@ -10,10 +11,23 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Observable;
 
-@UtilityClass
 @Log4j2
-public class DownloadHelper {
+public class DownloadHelper extends Observable {
+
+	@Getter
+	private static final DownloadHelper instance = new DownloadHelper();
+	@Getter
+	private static final DownloadSummarizer downloadSummarizer = new DownloadSummarizer();
+
+	static {
+		instance.addObserver(downloadSummarizer);
+	}
+
+	private DownloadHelper() {
+
+	}
 
 	/**
 	 * Downloads a {@link DownloadableFile} moves it to the correct folder. Downloads to the local cache and then
@@ -22,7 +36,7 @@ public class DownloadHelper {
 	 * @param downloadableFile
 	 * @return {@link DownloadStatus}
 	 */
-	public static DownloadStatus downloadFile(final DownloadableFile downloadableFile) {
+	public DownloadStatus downloadFile(final DownloadableFile downloadableFile) {
 		return downloadFile(downloadableFile, true);
 	}
 
@@ -34,17 +48,17 @@ public class DownloadHelper {
 	 * @param downloadToLocalRepo
 	 * @return {@link DownloadStatus}
 	 */
-	public static DownloadStatus downloadFile(final DownloadableFile downloadableFile, boolean downloadToLocalRepo) {
+	public DownloadStatus downloadFile(final DownloadableFile downloadableFile, boolean downloadToLocalRepo) {
 		DownloadStatus status = DownloadStatus.FAILURE;
 		if (BooleanUtils.isTrue(downloadableFile.getSkipDownload())) {
-			log.trace(String.format("Skipped downloading %s", downloadableFile.getName()));
-			return DownloadStatus.SKIPPED;
+			log.info(String.format("Skipped downloading %s", downloadableFile.getName()));
+			return notifyStatus(DownloadStatus.SKIPPED);
 		}
 		val decodedFileName = URLHelper.decodeSpaces(downloadableFile.getFileName());
 
 		if (FileSystemHelper.getDownloadedFile(decodedFileName, downloadableFile.getFolder()).exists() && !Arguments.forceDownload) {
 			log.info(String.format("Found %s already downloaded, skipping", decodedFileName));
-			return DownloadStatus.SKIPPED;
+			return notifyStatus(DownloadStatus.SKIPPED);
 		}
 
 		if (!FileSystemHelper.isInLocalRepo(downloadableFile.getName(), decodedFileName) || Arguments.forceDownload) {
@@ -54,7 +68,10 @@ public class DownloadHelper {
 			} catch (final IOException e) {
 				log.error(String.format("Could not download %s.", downloadableFile.getFileName()), e);
 				Reference.downloadCount++;
-				return status;
+				if ("forge".equals(downloadableFile.getName())) {
+					return status;
+				}
+				return notifyStatus(status);
 			}
 			status = DownloadStatus.SUCCESS_DOWNLOAD;
 		} else {
@@ -62,6 +79,12 @@ public class DownloadHelper {
 		}
 		FileSystemHelper.moveFromLocalRepo(downloadableFile, decodedFileName, downloadToLocalRepo);
 		log.info(String.format("Successfully %s %s", status, downloadableFile.getFileName()));
+		return notifyStatus(status);
+	}
+
+	private DownloadStatus notifyStatus(DownloadStatus status) {
+		setChanged();
+		notifyObservers(status);
 		return status;
 	}
 }
