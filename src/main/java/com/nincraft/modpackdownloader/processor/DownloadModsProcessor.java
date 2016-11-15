@@ -1,51 +1,26 @@
 package com.nincraft.modpackdownloader.processor;
 
+import com.google.common.collect.Lists;
+import com.nincraft.modpackdownloader.container.Manifest;
+import com.nincraft.modpackdownloader.container.Mod;
+import com.nincraft.modpackdownloader.handler.ForgeHandler;
+import com.nincraft.modpackdownloader.util.DownloadHelper;
+import com.nincraft.modpackdownloader.util.Reference;
+import lombok.extern.log4j.Log4j2;
+import lombok.val;
+
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 
-import com.google.common.collect.Lists;
-import com.nincraft.modpackdownloader.container.Manifest;
-import com.nincraft.modpackdownloader.container.Mod;
-import com.nincraft.modpackdownloader.handler.ForgeHandler;
-import com.nincraft.modpackdownloader.util.Reference;
-
-import lombok.val;
-import lombok.extern.log4j.Log4j2;
-
 @Log4j2
 public class DownloadModsProcessor extends AbstractProcessor {
-	public DownloadModsProcessor(final List<File> manifestFiles) {
-		super(manifestFiles);
-	}
-
 	private static final List<Mod> MOD_LIST = Lists.newArrayList();
 
-	@Override
-	protected void init(final Map<File, Manifest> manifestMap) {
-		for (val manifestEntry : manifestMap.entrySet()) {
-			MOD_LIST.addAll(buildModList(manifestEntry.getKey(), manifestEntry.getValue()));
-		}
-
-		Reference.downloadTotal = MOD_LIST.size();
-		log.debug("A total of %s mods will be downloaded.");
-	}
-
-	@Override
-	protected void preprocess(final Entry<File, Manifest> manifestEntry) {
-		// no-op
-	}
-
-	@Override
-	protected void process(final Entry<File, Manifest> manifestEntry) {
-		downloadMods(manifestEntry.getValue());
-	}
-
-	@Override
-	protected void postProcess(final Entry<File, Manifest> manifestEntry) {
-		// no-op
+	public DownloadModsProcessor(final List<File> manifestFiles) {
+		super(manifestFiles);
 	}
 
 	public static final void downloadMods(final Manifest manifest) {
@@ -71,5 +46,30 @@ public class DownloadModsProcessor extends AbstractProcessor {
 		}
 		executorService.shutdown();
 		log.trace(String.format("Finished downloading %s mods.", MOD_LIST.size()));
+	}
+
+	@Override
+	protected void init(final Map<File, Manifest> manifestMap) {
+		for (val manifestEntry : manifestMap.entrySet()) {
+			MOD_LIST.addAll(buildModList(manifestEntry.getKey(), manifestEntry.getValue()));
+		}
+
+		Reference.downloadTotal = MOD_LIST.size();
+		log.debug("A total of %s mods will be downloaded.");
+	}
+
+	@Override
+	protected void preprocess(final Entry<File, Manifest> manifestEntry) {
+		// no-op
+	}
+
+	@Override
+	protected void process(final Entry<File, Manifest> manifestEntry) {
+		downloadMods(manifestEntry.getValue());
+	}
+
+	@Override
+	protected void postProcess(final Entry<File, Manifest> manifestEntry) {
+		DownloadHelper.getDownloadSummarizer().summarize();
 	}
 }

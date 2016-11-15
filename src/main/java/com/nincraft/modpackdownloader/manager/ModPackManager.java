@@ -1,15 +1,5 @@
 package com.nincraft.modpackdownloader.manager;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.google.gson.Gson;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
@@ -17,10 +7,18 @@ import com.nincraft.modpackdownloader.handler.CurseFileHandler;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
 import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.DownloadHelper;
-
 import lombok.extern.log4j.Log4j2;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 @Log4j2
 public class ModPackManager {
@@ -52,7 +50,7 @@ public class ModPackManager {
 			modPack.setFileName(modPack.getFileName() + ".zip");
 		}
 		Arguments.modFolder = ".";
-		if (DownloadStatus.SKIPPED.equals(DownloadHelper.downloadFile(modPack, false))) {
+		if (DownloadStatus.SKIPPED.equals(DownloadHelper.getInstance().downloadFile(modPack, false))) {
 			log.info(String.format("No new updates found for %s", modPack.getName()));
 			returnStatus = false;
 		}

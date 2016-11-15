@@ -27,7 +27,7 @@ public class CurseFileHandler extends ModHandler {
 
 	private static void downloadCurseMod(CurseFile curseFile) {
 		try {
-			DownloadHelper.downloadFile(getCurseForgeDownloadLocation(curseFile));
+			DownloadHelper.getInstance().downloadFile(getCurseForgeDownloadLocation(curseFile));
 		} catch (IOException e) {
 			log.error(e);
 		}
