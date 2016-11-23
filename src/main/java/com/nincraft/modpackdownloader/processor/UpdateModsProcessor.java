@@ -74,9 +74,9 @@ public class UpdateModsProcessor extends AbstractProcessor {
 					ForgeHandler.updateForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders()));
 		});
 
-		executorService = Executors.newFixedThreadPool(Reference.updateTotal + 1);
+		setExecutorService(Executors.newFixedThreadPool(Reference.updateTotal + 1));
 
-		executorService.execute(forgeThread);
+		getExecutorService().execute(forgeThread);
 
 		log.trace(String.format("Updating %s mods...", Reference.updateTotal));
 
@@ -88,9 +88,9 @@ public class UpdateModsProcessor extends AbstractProcessor {
 				Reference.updateCount++;
 				log.info(String.format("Finished updating %s", mod.getName()));
 			});
-			executorService.execute(modUpdate);
+			getExecutorService().execute(modUpdate);
 		}
-		executorService.shutdown();
+		getExecutorService().shutdown();
 		log.trace(String.format("Finished updating %s mods.", Reference.updateTotal));
 	}
 

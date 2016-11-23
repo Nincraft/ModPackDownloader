@@ -24,12 +24,12 @@ public class DownloadModsProcessor extends AbstractProcessor {
 	}
 
 	public static final void downloadMods(final Manifest manifest) {
-		executorService = Executors.newFixedThreadPool(MOD_LIST.size() + 1);
+		setExecutorService(Executors.newFixedThreadPool(MOD_LIST.size() + 1));
 		Runnable forgeThread = new Thread(() -> {
 			ForgeHandler.downloadForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders());
 		});
 
-		executorService.execute(forgeThread);
+		getExecutorService().execute(forgeThread);
 
 		log.trace(String.format("Downloading %s mods...", MOD_LIST.size()));
 		int downloadCount = 1;
@@ -42,9 +42,9 @@ public class DownloadModsProcessor extends AbstractProcessor {
 				Reference.downloadCount++;
 				log.trace(String.format("Finished downloading %s", mod.getName()));
 			});
-			executorService.execute(modDownload);
+			getExecutorService().execute(modDownload);
 		}
-		executorService.shutdown();
+		getExecutorService().shutdown();
 		log.trace(String.format("Finished downloading %s mods.", MOD_LIST.size()));
 	}
 

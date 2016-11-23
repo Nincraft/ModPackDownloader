@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.nincraft.modpackdownloader.processor;
 
 import java.io.File;
@@ -10,6 +7,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 
+import lombok.Setter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -35,7 +33,8 @@ public abstract class AbstractProcessor {
 	public static Comparator<Mod> compareMods = (mod1, mod2) -> mod1.getName().toLowerCase().compareTo(mod2.getName().toLowerCase());
 
 	@Getter
-	public static ExecutorService executorService;
+	@Setter
+	private static ExecutorService executorService;
 
 	protected static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
 
