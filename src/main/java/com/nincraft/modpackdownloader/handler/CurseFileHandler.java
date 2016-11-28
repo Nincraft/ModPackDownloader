@@ -3,20 +3,19 @@ package com.nincraft.modpackdownloader.handler;
 import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Mod;
+import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.DownloadHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import com.nincraft.modpackdownloader.util.URLHelper;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,16 +27,15 @@ public class CurseFileHandler extends ModHandler {
 
 	private static void downloadCurseMod(CurseFile curseFile) {
 		try {
-			curseFile = getCurseForgeDownloadLocation(curseFile);
-			DownloadHelper.downloadFile(curseFile);
+			DownloadHelper.getInstance().downloadFile(getCurseForgeDownloadLocation(curseFile));
 		} catch (IOException e) {
 			log.error(e);
 		}
 	}
 
 	private static CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
-		String url = curseFile.getCurseForgeDownloadUrl();
-		String projectName = curseFile.getName();
+		val url = curseFile.getCurseForgeDownloadUrl();
+		val projectName = curseFile.getName();
 		String encodedDownloadLocation = URLHelper.encodeSpaces(projectName);
 
 		if (!encodedDownloadLocation.contains(Reference.JAR_FILE_EXT)) {
@@ -66,8 +64,9 @@ public class CurseFileHandler extends ModHandler {
 				retryCount++;
 			}
 
-			if (actualURL.substring(actualURL.lastIndexOf(Reference.URL_DELIMITER) + 1).contains(Reference.JAR_FILE_EXT)) {
-				encodedDownloadLocation = actualURL.substring(actualURL.lastIndexOf(Reference.URL_DELIMITER) + 1);
+			int lastIndexUrl = actualURL.lastIndexOf(Reference.URL_DELIMITER) + 1;
+			if (actualURL.substring(lastIndexUrl).contains(Reference.JAR_FILE_EXT)) {
+				encodedDownloadLocation = actualURL.substring(lastIndexUrl);
 			} else {
 				encodedDownloadLocation = projectName + Reference.JAR_FILE_EXT;
 			}
@@ -89,8 +88,7 @@ public class CurseFileHandler extends ModHandler {
 			conn.setInstanceFollowRedirects(false);
 			conn.connect();
 
-			fileListJson = (JSONObject) getCurseProjectJson(curseFile, new JSONParser())
-					.get("files");
+			fileListJson = (JSONObject) getCurseProjectJson(curseFile).get("files");
 
 			if (fileListJson == null) {
 				log.error(String.format("No file list found for %s, and will be skipped.", curseFile.getName()));
@@ -101,7 +99,7 @@ public class CurseFileHandler extends ModHandler {
 			return;
 		}
 
-		val newMod = getLatestVersion(curseFile.getReleaseType() != null ? curseFile.getReleaseType() : Reference.releaseType, curseFile, fileListJson);
+		val newMod = getLatestVersion(curseFile.getReleaseType() != null ? curseFile.getReleaseType() : Arguments.releaseType, curseFile, fileListJson, null);
 		if (curseFile.getFileID().compareTo(newMod.getFileID()) < 0) {
 			log.info(String.format("Update found for %s.  Most recent version is %s.", curseFile.getName(),
 					newMod.getVersion()));
@@ -118,8 +116,13 @@ public class CurseFileHandler extends ModHandler {
 	}
 
 	private static CurseFile getLatestVersion(String releaseType,
-											  CurseFile curseFile, final JSONObject fileListJson) {
+											  CurseFile curseFile, final JSONObject fileListJson, String mcVersion) {
 		log.trace("Getting most recent available file...");
+		boolean backup = true;
+		if (Strings.isNullOrEmpty(mcVersion)) {
+			mcVersion = Arguments.mcVersion;
+			backup = false;
+		}
 		if (Strings.isNullOrEmpty(releaseType)) {
 			releaseType = "release";
 		}
@@ -127,16 +130,16 @@ public class CurseFileHandler extends ModHandler {
 		try {
 			newMod = (CurseFile) curseFile.clone();
 		} catch (CloneNotSupportedException e) {
-			log.warn("Couldn't clone existing mod reference, creating new one instead.");
+			log.debug("Couldn't clone existing mod reference, creating new one instead.", e);
 			newMod = new CurseFile();
 		}
 
 		curseFile = checkFileId(curseFile);
 
-		List<JSONObject> fileList = new ArrayList<JSONObject>(fileListJson.values());
-		List<Long> fileIds = new ArrayList<Long>();
+		List<JSONObject> fileList = new ArrayList<>(fileListJson.values());
+		List<Long> fileIds = new ArrayList<>();
 		for (JSONObject file : fileList) {
-			if (equalOrLessThan((String) file.get("type"), releaseType) && isMcVersion((String) file.get("version"))) {
+			if (equalOrLessThan((String) file.get("type"), releaseType) && isMcVersion((String) file.get("version"), mcVersion)) {
 				fileIds.add((Long) file.get("id"));
 			}
 		}
@@ -147,11 +150,26 @@ public class CurseFileHandler extends ModHandler {
 			newMod.setVersion((String) ((JSONObject) fileListJson.get(newMod.getFileID().toString())).get("name"));
 		}
 		if (!"alpha".equals(releaseType) && fileIds.isEmpty()) {
-			log.info(String.format("No files found for this Minecraft version, disabling download of %s", curseFile.getName()));
-			curseFile.setSkipDownload(true);
+			if (CollectionUtils.isEmpty(Arguments.backupVersions)) {
+				log.info(String.format("No files found for Minecraft %s, disabling download of %s", mcVersion, curseFile.getName()));
+				curseFile.setSkipDownload(true);
+			} else if (!backup) {
+				for (String backupVersion : Arguments.backupVersions) {
+					log.info(String.format("No files found for Minecraft %s, checking backup version %s", mcVersion, backupVersion));
+					newMod = getLatestVersion(releaseType, curseFile, fileListJson, backupVersion);
+					if (BooleanUtils.isFalse(newMod.getSkipDownload())) {
+						curseFile.setSkipDownload(null);
+						log.info(String.format("Found update for %s in Minecraft %s", curseFile.getName(), backupVersion));
+						break;
+					}
+				}
+			} else if (fileIds.isEmpty()) {
+				curseFile.setSkipDownload(true);
+				newMod.setSkipDownload(true);
+			}
 		}
 		if (BooleanUtils.isTrue(curseFile.getSkipUpdate()) && !fileIds.isEmpty()) {
-			log.info(String.format("Found files for this Minecraft version, enabling download of %s", curseFile.getName()));
+			log.info(String.format("Found files for Minecraft %s, enabling download of %s", mcVersion, curseFile.getName()));
 			curseFile.setSkipDownload(null);
 		}
 
@@ -159,12 +177,8 @@ public class CurseFileHandler extends ModHandler {
 		return newMod;
 	}
 
-	private static boolean isMcVersion(String version) {
-		if ("*".equals(Reference.mcVersion)) {
-			return true;
-		} else {
-			return Reference.mcVersion.equals(version);
-		}
+	private static boolean isMcVersion(String modVersion, String argVersion) {
+		return "*".equals(argVersion) || argVersion.equals(modVersion);
 	}
 
 	private static CurseFile checkFileId(CurseFile curseFile) {
@@ -179,25 +193,19 @@ public class CurseFileHandler extends ModHandler {
 				|| "beta".equals(releaseType) && "release".equals(modRelease);
 	}
 
-	private static JSONObject getCurseProjectJson(final CurseFile curseFile,
-												  final JSONParser projectParser) throws ParseException, IOException {
+	private static JSONObject getCurseProjectJson(final CurseFile curseFile) throws ParseException, IOException {
 		log.trace("Getting CurseForge Widget JSON...");
-		Integer projectId = curseFile.getProjectID();
-		String projectName = curseFile.getProjectName();
-		String modOrModPack = curseFile.isModpack() ? Reference.CURSEFORGE_WIDGET_JSON_MODPACK : Reference.CURSEFORGE_WIDGET_JSON_MOD;
-		String urlStr;
+		val projectId = curseFile.getProjectID();
+		val projectName = curseFile.getProjectName();
+		val modOrModPack = curseFile.isModpack() ? Reference.CURSEFORGE_WIDGET_JSON_MODPACK : Reference.CURSEFORGE_WIDGET_JSON_MOD;
+		String urlStr = String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, modOrModPack, projectName);
+		log.debug(urlStr);
 		try {
-			urlStr = String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, modOrModPack, projectName);
-			log.debug(urlStr);
-			return (JSONObject) projectParser
-					.parse(new BufferedReader(new InputStreamReader(new URL(urlStr).openStream())));
+			return URLHelper.getJsonFromUrl(urlStr);
 		} catch (final FileNotFoundException e) {
 			urlStr = String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, modOrModPack, projectId + "-" + projectName);
 			log.debug(urlStr, e);
-			return (JSONObject) projectParser
-					.parse(new BufferedReader(new InputStreamReader(new URL(urlStr).openStream())));
-		} finally {
-			log.trace("Finished Getting CurseForge Widget JSON.");
+			return URLHelper.getJsonFromUrl(urlStr);
 		}
 	}
 

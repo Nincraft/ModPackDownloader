@@ -12,22 +12,11 @@ public class Reference {
 	public static final String MAC_FOLDER = "/Library/Application Support/modpackdownloader/";
 	public static final String OTHER_FOLDER = "/.modpackdownloader/";
 	public static final String JAR_FILE_EXT = ".jar";
-	public static final String[] DATE_FORMATS = {"yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss'Z'",
-			"yyyy-MM-dd'T'HH:mm:ssZ", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-			"yyyy-MM-dd HH:mm:ss", "MM/dd/yyyy HH:mm:ss", "MM/dd/yyyy'T'HH:mm:ss.SSS'Z'", "MM/dd/yyyy'T'HH:mm:ss.SSSZ",
-			"MM/dd/yyyy'T'HH:mm:ss.SSS", "MM/dd/yyyy'T'HH:mm:ssZ", "MM/dd/yyyy'T'HH:mm:ss", "yyyy:MM:dd HH:mm:ss",};
 	public static final int RETRY_COUNTER = 5;
 	public static final char URL_DELIMITER = '/';
 	public static final String DEFAULT_MANIFEST_FILE = "manifest.json";
 	public static String userhome;
 	public static String os;
-	public static String manifestFile;
-	public static String modFolder;
-	public static boolean forceDownload = false;
-	public static boolean updateMods;
-	public static String mcVersion;
-	public static String releaseType;
-	public static boolean generateUrlTxt;
 	public static int downloadCount = 0;
 	public static int downloadTotal = 0;
 	public static int updateCount = 0;
@@ -36,8 +25,6 @@ public class Reference {
 	public static String forgeURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/";
 	public static String forgeInstaller = "-installer.jar";
 	public static String forgeUniversal = "-universal.jar";
-	public static boolean updateForge;
 	public static String forgeUpdateURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json";
 	public static String javaContentType = "application/java-archive";
-	public static boolean updateCurseModPack;
 }

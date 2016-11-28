@@ -1,8 +1,5 @@
 package com.nincraft.modpackdownloader.container;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import lombok.Data;
 
 @Data

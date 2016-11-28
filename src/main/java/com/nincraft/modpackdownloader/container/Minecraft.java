@@ -19,6 +19,6 @@ public class Minecraft {
 	public String version;
 	@SerializedName("modLoaders")
 	@Expose
-	public List<ModLoader> modLoaders = new ArrayList<ModLoader>();
+	public List<ModLoader> modLoaders = new ArrayList<>();
 
 }

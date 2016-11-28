@@ -3,19 +3,14 @@ package com.nincraft.modpackdownloader.handler;
 import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.container.ModLoader;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
-import com.nincraft.modpackdownloader.util.DownloadHelper;
-import com.nincraft.modpackdownloader.util.Reference;
+import com.nincraft.modpackdownloader.util.*;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.List;
 
 @Log4j2
@@ -27,9 +22,6 @@ public class ForgeHandler {
 		}
 
 		for (ModLoader modLoader : modLoaders) {
-
-
-
 			if (BooleanUtils.isTrue(modLoader.getDownloadInstaller())) {
 				log.info(String.format("Downloading Forge installer version %s", modLoader.getId()));
 				downloadForgeFile(minecraftVersion, modLoader, true);
@@ -59,33 +51,30 @@ public class ForgeHandler {
 
 		modLoader.setDownloadUrl(forgeURL);
 		modLoader.setFileName(forgeFileName);
-		if (DownloadStatus.FAILURE.equals(DownloadHelper.downloadFile(modLoader))) {
-			if (alternateDownloadUrl) {
-				log.warn("Attempting alternate Forge download URL");
-				downloadForgeFile(minecraftVersion, modLoader, downloadInstaller, false);
-			}
+		if (DownloadStatus.FAILURE.equals(DownloadHelper.getInstance().downloadFile(modLoader)) && alternateDownloadUrl) {
+			log.warn("Attempting alternate Forge download URL");
+			downloadForgeFile(minecraftVersion, modLoader, downloadInstaller, false);
 		}
 	}
 
 	public static List<ModLoader> updateForge(String minecraftVersion, List<ModLoader> modLoaders) {
-		if (!Reference.updateForge) {
+		if (!Arguments.updateForge) {
 			log.trace("Updating Forge disabled");
 			return modLoaders;
 		}
 
 		for (ModLoader modLoader : modLoaders) {
-
 			JSONObject fileListJson = null;
 			if (modLoader.getRelease() == null) {
 				log.warn("No Forge release type set for update, defaulting to recommended");
 				modLoader.setRelease("recommended");
 			}
 			try {
-				fileListJson = (JSONObject) ((JSONObject) new JSONParser().parse(new BufferedReader(new InputStreamReader(new URL(Reference.forgeUpdateURL).openStream())))).get("promos");
+				fileListJson = (JSONObject) (URLHelper.getJsonFromUrl(Reference.forgeUpdateURL)).get("promos");
 				String updatedForgeVersion = (String) fileListJson.get(minecraftVersion + "-" + modLoader.getRelease());
 				String manifestForgeVersion = modLoader.getId().substring(modLoader.getId().indexOf('-') + 1);
 
-				if (compareVersions(manifestForgeVersion, updatedForgeVersion) < 0) {
+				if (VersionHelper.compareVersions(manifestForgeVersion, updatedForgeVersion) < 0) {
 					log.info(String.format("Newer version of Forge found, updating to %s", updatedForgeVersion));
 					modLoader.setId("forge-" + updatedForgeVersion);
 				}
@@ -98,21 +87,4 @@ public class ForgeHandler {
 		return modLoaders;
 	}
 
-	private static int compareVersions(String manifestForgeVersion, String updatedForgeVersion) {
-		String[] manArr = manifestForgeVersion.split("\\.");
-		String[] updateArr = updatedForgeVersion.split("\\.");
-
-		int i = 0;
-
-		while (i < manArr.length || i < updateArr.length) {
-			if (Integer.parseInt(manArr[i]) < Integer.parseInt(updateArr[i])) {
-				return -1;
-			} else if (Integer.parseInt(manArr[i]) > Integer.parseInt(updateArr[i])) {
-				return 1;
-			}
-			i++;
-		}
-
-		return 0;
-	}
 }

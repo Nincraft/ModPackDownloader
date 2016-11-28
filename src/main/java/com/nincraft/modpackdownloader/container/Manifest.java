@@ -1,15 +1,13 @@
 package com.nincraft.modpackdownloader.container;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Generated;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.annotation.Generated;
+import java.util.ArrayList;
+import java.util.List;
 
 @Generated("org.jsonschema2pojo")
 @Getter
@@ -21,13 +19,13 @@ public class Manifest {
 	public Minecraft minecraft;
 	@SerializedName("files")
 	@Expose
-	public List<CurseFile> curseFiles = new ArrayList<CurseFile>();
+	public List<CurseFile> curseFiles = new ArrayList<>();
 	@SerializedName("thirdParty")
 	@Expose
-	public List<ThirdParty> thirdParty = new ArrayList<ThirdParty>();
+	public List<ThirdParty> thirdParty = new ArrayList<>();
 	@SerializedName("batchAddCurse")
 	@Expose
-	public List<String> batchAddCurse = new ArrayList<String>();
+	public List<String> batchAddCurse = new ArrayList<>();
 
 	public String getMinecraftVersion() {
 		if (minecraft != null) {

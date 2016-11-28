@@ -5,8 +5,8 @@ import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
 import com.nincraft.modpackdownloader.handler.CurseFileHandler;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
+import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.DownloadHelper;
-import com.nincraft.modpackdownloader.util.Reference;
 import lombok.extern.log4j.Log4j2;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -44,18 +44,18 @@ public class ModPackManager {
 		String modPackName = modPackIdName.substring(modPackIdName.indexOf('-') + 1);
 		CurseFile modPack = new CurseFile(modPackId, modPackName);
 		modPack.initModpack();
-		Reference.mcVersion = "*";
+		Arguments.mcVersion = "*";
 		CurseFileHandler.updateCurseFile(modPack);
 		if (!modPack.getFileName().contains(".zip")) {
 			modPack.setFileName(modPack.getFileName() + ".zip");
 		}
-		Reference.modFolder = ".";
-		if (DownloadStatus.SKIPPED.equals(DownloadHelper.downloadFile(modPack, false))) {
+		Arguments.modFolder = ".";
+		if (DownloadStatus.SKIPPED.equals(DownloadHelper.getInstance().downloadFile(modPack, false))) {
 			log.info(String.format("No new updates found for %s", modPack.getName()));
 			returnStatus = false;
 		}
-		Reference.modFolder = "mods";
-		File modsFolder = new File(Reference.modFolder);
+		Arguments.modFolder = "mods";
+		File modsFolder = new File(Arguments.modFolder);
 		File backupModsFolder = new File("backupmods");
 		try {
 			FileUtils.moveDirectory(modsFolder, backupModsFolder);
@@ -100,7 +100,7 @@ public class ModPackManager {
 			JSONObject currentJson = null;
 			JSONObject multiMCJson = null;
 			try {
-				currentJson = (JSONObject) new JSONParser().parse(new FileReader(Reference.manifestFile));
+				currentJson = (JSONObject) new JSONParser().parse(new FileReader(Arguments.manifests.get(0)));
 				multiMCJson = (JSONObject) new JSONParser().parse(new FileReader("../patches/net.minecraftforge.json"));
 			} catch (IOException | ParseException e) {
 				log.error(e);
@@ -110,7 +110,9 @@ public class ModPackManager {
 			String manifestForge = currentManifestFile.getForgeVersion();
 			String multiMCForge = (String) multiMCJson.get("version");
 			if (!manifestForge.contains(multiMCForge)) {
-				log.error(String.format("Current MultiMC Forge version is not the same as the current downloaded pack, please update this instance's Forge to %s", manifestForge));
+				log.error(String.format(
+						"Current MultiMC Forge version is not the same as the current downloaded pack, please update this instance's Forge to %s",
+						manifestForge));
 				System.exit(1);
 			}
 		}

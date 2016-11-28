@@ -7,7 +7,9 @@ import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.commons.io.FileUtils;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 @Log4j2
@@ -27,13 +29,13 @@ public final class FileSystemHelper {
 		val newProjectName = getProjectNameOrDefault(downloadableFile.getName());
 		String folder = downloadableFile.getFolder();
 		if (Strings.isNullOrEmpty(folder)) {
-			folder = Reference.modFolder;
+			folder = Arguments.modFolder;
 		}
 		try {
 			File downloadedFile = getDownloadedFile(fileName, folder);
 			if (downloadToLocalRepo) {
 				FileUtils.copyFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder));
-			} else if (!downloadedFile.exists()){
+			} else if (!downloadedFile.exists()) {
 				FileUtils.moveFileToDirectory(getLocalFile(fileName, newProjectName), new File(folder), true);
 			}
 			if (!Strings.isNullOrEmpty(downloadableFile.getRename())) {
@@ -68,11 +70,40 @@ public final class FileSystemHelper {
 		if (folder != null) {
 			createFolder(folder);
 			return new File(folder + File.separator + fileName);
-		} else if (Reference.modFolder != null) {
-			createFolder(Reference.modFolder);
-			return new File(Reference.modFolder + File.separator + fileName);
+		} else if (Arguments.modFolder != null) {
+			createFolder(Arguments.modFolder);
+			return new File(Arguments.modFolder + File.separator + fileName);
 		} else {
 			return new File(fileName);
+		}
+	}
+
+	public static void clearCache() {
+		File cache = new File(Reference.userhome);
+		try {
+			FileUtils.deleteDirectory(cache);
+		} catch (IOException e) {
+			log.error("Unable to clear cache", e);
+		}
+	}
+
+	public static void flushFileWriter(FileWriter file) {
+		if (file != null) {
+			try {
+				file.flush();
+			} catch (IOException e) {
+				log.error("Unable to flush FileWriter", e);
+			}
+		}
+	}
+
+	public static void closeClosable(Closeable closeable) {
+		if (closeable != null) {
+			try {
+				closeable.close();
+			} catch (IOException e) {
+				log.error("Unable to close", e);
+			}
 		}
 	}
 }

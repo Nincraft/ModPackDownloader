@@ -37,7 +37,7 @@ public class CurseFile extends Mod {
 	private boolean isModpack;
 
 	public CurseFile() {
-
+		//empty
 	}
 
 	public CurseFile(String projectId, String projectName) {
@@ -52,16 +52,18 @@ public class CurseFile extends Mod {
 		setProjectUrl(buildProjectUrl());
 
 		try {
-			val conn = (HttpURLConnection) new URL(getProjectUrl()).openConnection();
-			conn.setInstanceFollowRedirects(false);
-			conn.connect();
+			if (Strings.isNullOrEmpty(getProjectName()) || Strings.isNullOrEmpty(getName())) {
+				val conn = (HttpURLConnection) new URL(getProjectUrl()).openConnection();
+				conn.setInstanceFollowRedirects(false);
+				conn.connect();
 
-			if (Strings.isNullOrEmpty(getProjectName())) {
-				setProjectName(conn.getHeaderField("Location").split("/")[2]);
-			}
+				if (Strings.isNullOrEmpty(getProjectName())) {
+					setProjectName(conn.getHeaderField("Location").split("/")[2]);
+				}
 
-			if (Strings.isNullOrEmpty(getName())) {
-				setName(getProjectName());
+				if (Strings.isNullOrEmpty(getName())) {
+					setName(getProjectName());
+				}
 			}
 		} catch (final IOException e) {
 			log.error(e);

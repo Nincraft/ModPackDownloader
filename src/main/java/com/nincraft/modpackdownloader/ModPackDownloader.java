@@ -1,84 +1,106 @@
 package com.nincraft.modpackdownloader;
 
+import com.beust.jcommander.JCommander;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.nincraft.modpackdownloader.handler.ApplicationUpdateHandler;
-import com.nincraft.modpackdownloader.manager.ModListManager;
 import com.nincraft.modpackdownloader.manager.ModPackManager;
+import com.nincraft.modpackdownloader.processor.DownloadModsProcessor;
+import com.nincraft.modpackdownloader.processor.MergeManifestsProcessor;
+import com.nincraft.modpackdownloader.processor.UpdateModsProcessor;
+import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
+import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 
+@UtilityClass
 @Log4j2
 public class ModPackDownloader {
 	public static void main(final String[] args) throws InterruptedException {
-		List<String> arguments = new ArrayList(Arrays.asList(args));
-		if (arguments.isEmpty()) {
-			log.info("No arguments supplied, using defaults");
-			arguments.add(0, Reference.DEFAULT_MANIFEST_FILE);
-		} else if ("-updateApp".equals(arguments.get(0))) {
+		log.info("Starting ModPackDownloader with arguments: " + Arrays.toString(args));
+		JCommander jCommander = initArguments(args);
+
+		if (Arguments.helpEnabled) {
+			jCommander.usage();
+			return;
+		}
+
+		// Set default application arguments
+		defaultArguments();
+
+		if (Arguments.clearCache) {
+			FileSystemHelper.clearCache();
+			return;
+		}
+		if (Arguments.updateApp) {
 			ApplicationUpdateHandler.update();
 			return;
 		}
-		processArguments(arguments);
 
 		setupRepo();
 
-		if (Reference.updateCurseModPack) {
-			Reference.manifestFile = Reference.DEFAULT_MANIFEST_FILE;
+		if (Arguments.updateCurseModPack) {
 			if (ModPackManager.updateModPack()) {
 				ModPackManager.checkPastForgeVersion();
-				processMods();
 				ModPackManager.handlePostDownload();
 			}
 			return;
 		}
 
-		processMods();
+		processManifests();
 	}
 
-	private static void processArguments(List<String> args) {
-		Reference.manifestFile = args.get(0);
+	private static void processManifests() throws InterruptedException {
+		log.trace("Processing Manifests...");
 
-		if (args.size() < 2) {
-			log.info("No mod folder specified, defaulting to \"mods\"");
-			Reference.modFolder = "mods";
-		} else {
-			Reference.modFolder = args.get(1);
-		}
+		updateMods();
+		downloadMods();
+		mergeManifests();
 
-		args.forEach(ModPackDownloader::processArgument);
+		log.trace("Finished Processing Manifests.");
 	}
 
-	private static void processArgument(final String arg) {
-		log.trace("Processing given arguments...");
-		if ("-forceDownload".equalsIgnoreCase(arg)) {
-			Reference.forceDownload = true;
-			log.debug("Downloads are now being forced.");
-		} else if ("-updateMods".equalsIgnoreCase(arg)) {
-			Reference.updateMods = true;
-			log.debug("mods will be updated instead of downloaded.");
-		} else if ("-updateForge".equalsIgnoreCase(arg)) {
-			Reference.updateForge = true;
-			log.debug("Forge will be updated instead of downloaded.");
-		} else if ("-updateAll".equalsIgnoreCase(arg)) {
-			Reference.updateMods = true;
-			Reference.updateForge = true;
-			log.debug("mods and Forge will be updated instead of downloaded.");
-		} else if (arg.startsWith("-releaseType")) {
-			Reference.releaseType = arg.substring(arg.lastIndexOf('=') + 1);
-			log.debug(String.format("Checking against mod release type: %s", Reference.releaseType));
-		} else if ("-generateUrlTxt".equalsIgnoreCase(arg)) {
-			Reference.generateUrlTxt = true;
-			log.debug("Mod URL Text files will now be generated.");
-		} else if ("-updateCurseModPack".equalsIgnoreCase(arg)) {
-			Reference.updateCurseModPack = true;
-			log.debug("Updating Curse modpack");
+	private static void updateMods() throws InterruptedException {
+		if (Arguments.updateMods) {
+			new UpdateModsProcessor(Arguments.manifests).process();
 		}
-		log.trace("Finished processing given arguments.");
+	}
+
+	private static void downloadMods() throws InterruptedException {
+		if (Arguments.downloadMods) {
+			new DownloadModsProcessor(Arguments.manifests).process();
+		}
+	}
+
+	private static void mergeManifests() throws InterruptedException {
+		if (Arguments.mergeManifests) {
+			new MergeManifestsProcessor(Arguments.manifests).process();
+		}
+	}
+
+	private static JCommander initArguments(final String[] args) {
+		// Initialize application arguments
+		return new JCommander(new Arguments(), args);
+	}
+
+	private static void defaultArguments() {
+		if (CollectionUtils.isEmpty(Arguments.manifests)) {
+			log.info(String.format("No manifest supplied, using default %s", Reference.DEFAULT_MANIFEST_FILE));
+
+			Arguments.manifests = Lists.newArrayList(new File(Reference.DEFAULT_MANIFEST_FILE));
+		}
+		if (Strings.isNullOrEmpty(Arguments.modFolder)) {
+			log.info("No output folder supplied, using default \"mods\"");
+			Arguments.modFolder = "mods";
+		}
+		if (!Arguments.downloadMods && !Arguments.updateMods && !Arguments.mergeManifests) {
+			Arguments.downloadMods = true;
+		}
 	}
 
 	private static void setupRepo() {
@@ -104,42 +126,5 @@ public class ModPackDownloader {
 		System.setProperty("http.agent", "Mozilla/4.0");
 
 		log.trace("Finished setting up local repository.");
-	}
-
-	private static void processMods() throws InterruptedException {
-		log.trace("Processing Mods...");
-		int returnCode = ModListManager.buildModList();
-		if (returnCode == -1) {
-			return;
-		}
-		if (Reference.updateMods) {
-			if (Strings.isNullOrEmpty(Reference.mcVersion)) {
-				log.error("No Minecraft version found in manifest file");
-				return;
-			}
-
-			log.info(String.format("Updating mods with parameters: %s, %s, %s", Reference.manifestFile,
-					Reference.mcVersion, Reference.releaseType));
-			ModListManager.updateMods();
-
-			waitFinishProcessingMods();
-
-			ModListManager.updateManifest();
-			log.info("Finished updating mods.");
-		} else {
-			log.info(String.format("Downloading mods with parameters: %s, %s", Reference.manifestFile,
-					Reference.modFolder));
-			ModListManager.downloadMods();
-
-			waitFinishProcessingMods();
-			log.info("Finished downloading mods.");
-		}
-		log.trace("Finished Processing Mods.");
-	}
-
-	private static void waitFinishProcessingMods() throws InterruptedException {
-		while (!ModListManager.getExecutorService().isTerminated()) {
-			Thread.sleep(1);
-		}
 	}
 }
