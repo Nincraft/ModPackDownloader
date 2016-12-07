@@ -8,8 +8,11 @@ import com.nincraft.modpackdownloader.util.DownloadHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -70,6 +73,17 @@ public class DownloadModsProcessor extends AbstractProcessor {
 
 	@Override
 	protected void postProcess(final Entry<File, Manifest> manifestEntry) {
+		moveOverrides(manifestEntry.getValue());
 		DownloadHelper.getDownloadSummarizer().summarize();
+	}
+
+	private void moveOverrides(Manifest manifest) {
+		if (!StringUtils.isBlank(manifest.getOverrides())) {
+			try {
+				FileUtils.moveDirectory(new File(manifest.getOverrides()), new File("."));
+			} catch (IOException e) {
+				log.error(String.format("Unable to move %s folder", manifest.getOverrides()), e);
+			}
+		}
 	}
 }

@@ -26,6 +26,9 @@ public class Manifest {
 	@SerializedName("batchAddCurse")
 	@Expose
 	public List<String> batchAddCurse = new ArrayList<>();
+	@SerializedName("overrides")
+	@Expose
+	public String overrides;
 
 	public String getMinecraftVersion() {
 		if (minecraft != null) {
