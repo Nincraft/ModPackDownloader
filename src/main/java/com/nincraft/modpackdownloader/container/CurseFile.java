@@ -40,6 +40,17 @@ public class CurseFile extends Mod {
 		//empty
 	}
 
+	public CurseFile(CurseFile curseFile) {
+		super(curseFile);
+		fileID = curseFile.fileID;
+		projectID = curseFile.projectID;
+		releaseType = curseFile.releaseType;
+		skipUpdate = curseFile.skipUpdate;
+		projectUrl = curseFile.projectUrl;
+		projectName = curseFile.projectName;
+		isModpack = curseFile.isModpack;
+	}
+
 	public CurseFile(String projectId, String projectName) {
 		if (projectId != null) {
 			setProjectID(Integer.parseInt(projectId));

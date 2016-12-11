@@ -10,9 +10,9 @@ public abstract class Mod extends DownloadableFile implements Cloneable {
 	public Mod() {
 	}
 
-	@Override
-	public Mod clone() throws CloneNotSupportedException {
-		return (Mod) super.clone();
+	public Mod(Mod mod) {
+		super(mod);
+		version = mod.version;
 	}
 
 	public abstract void init();

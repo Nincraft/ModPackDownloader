@@ -123,57 +123,69 @@ public class CurseFileHandler extends ModHandler {
 			mcVersion = Arguments.mcVersion;
 			backup = false;
 		}
-		if (Strings.isNullOrEmpty(releaseType)) {
-			releaseType = "release";
-		}
-		CurseFile newMod = null;
-		try {
-			newMod = (CurseFile) curseFile.clone();
-		} catch (CloneNotSupportedException e) {
-			log.debug("Couldn't clone existing mod reference, creating new one instead.", e);
-			newMod = new CurseFile();
-		}
-
+		releaseType = defaultReleaseType(releaseType);
+		CurseFile newMod = new CurseFile(curseFile);
 		curseFile = checkFileId(curseFile);
 
 		List<JSONObject> fileList = new ArrayList<>(fileListJson.values());
 		List<Long> fileIds = new ArrayList<>();
-		for (JSONObject file : fileList) {
-			if (equalOrLessThan((String) file.get("type"), releaseType) && isMcVersion((String) file.get("version"), mcVersion)) {
-				fileIds.add((Long) file.get("id"));
-			}
-		}
+		checkFileIds(releaseType, mcVersion, fileList, fileIds);
 		Collections.sort(fileIds);
 		Collections.reverse(fileIds);
-		if (!fileIds.isEmpty() && fileIds.get(0).intValue() != curseFile.getFileID()) {
-			newMod.setFileID(fileIds.get(0).intValue());
-			newMod.setVersion((String) ((JSONObject) fileListJson.get(newMod.getFileID().toString())).get("name"));
-		}
+		setUpdatedFileId(curseFile, fileListJson, newMod, fileIds);
+
 		if (!"alpha".equals(releaseType) && fileIds.isEmpty()) {
 			if (CollectionUtils.isEmpty(Arguments.backupVersions)) {
 				log.info(String.format("No files found for Minecraft %s, disabling download of %s", mcVersion, curseFile.getName()));
 				curseFile.setSkipDownload(true);
 			} else if (!backup) {
-				for (String backupVersion : Arguments.backupVersions) {
-					log.info(String.format("No files found for Minecraft %s, checking backup version %s", mcVersion, backupVersion));
-					newMod = getLatestVersion(releaseType, curseFile, fileListJson, backupVersion);
-					if (BooleanUtils.isFalse(newMod.getSkipDownload())) {
-						curseFile.setSkipDownload(null);
-						log.info(String.format("Found update for %s in Minecraft %s", curseFile.getName(), backupVersion));
-						break;
-					}
-				}
+				newMod = checkBackupVersions(releaseType, curseFile, fileListJson, mcVersion, newMod);
 			} else if (fileIds.isEmpty()) {
 				curseFile.setSkipDownload(true);
 				newMod.setSkipDownload(true);
 			}
 		}
-		if (BooleanUtils.isTrue(curseFile.getSkipUpdate()) && !fileIds.isEmpty()) {
+		if (BooleanUtils.isTrue(curseFile.getSkipDownload()) && !fileIds.isEmpty()) {
 			log.info(String.format("Found files for Minecraft %s, enabling download of %s", mcVersion, curseFile.getName()));
-			curseFile.setSkipDownload(null);
+			newMod.setSkipDownload(null);
 		}
 
 		log.trace("Finished getting most recent available file.");
+		return newMod;
+	}
+
+	private static void setUpdatedFileId(CurseFile curseFile, JSONObject fileListJson, CurseFile newMod, List<Long> fileIds) {
+		if (!fileIds.isEmpty() && fileIds.get(0).intValue() != curseFile.getFileID()) {
+			newMod.setFileID(fileIds.get(0).intValue());
+			newMod.setVersion((String) ((JSONObject) fileListJson.get(newMod.getFileID().toString())).get("name"));
+		}
+	}
+
+	private static void checkFileIds(String releaseType, String mcVersion, List<JSONObject> fileList, List<Long> fileIds) {
+		for (JSONObject file : fileList) {
+			if (equalOrLessThan((String) file.get("type"), releaseType) && isMcVersion((String) file.get("version"), mcVersion)) {
+				fileIds.add((Long) file.get("id"));
+			}
+		}
+	}
+
+	private static String defaultReleaseType(String releaseType) {
+		if (Strings.isNullOrEmpty(releaseType)) {
+			releaseType = "release";
+		}
+		return releaseType;
+	}
+
+	private static CurseFile checkBackupVersions(String releaseType, CurseFile curseFile, JSONObject fileListJson, String mcVersion, CurseFile newMod) {
+		for (String backupVersion : Arguments.backupVersions) {
+			log.info(String.format("No files found for Minecraft %s, checking backup version %s", mcVersion, backupVersion));
+			newMod = getLatestVersion(releaseType, curseFile, fileListJson, backupVersion);
+			if (BooleanUtils.isFalse(newMod.getSkipDownload())) {
+				curseFile.setSkipDownload(null);
+				log.info(String.format("Found update for %s in Minecraft %s", curseFile.getName(), backupVersion));
+				break;
+			}
+		}
 		return newMod;
 	}
 
