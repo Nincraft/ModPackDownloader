@@ -23,6 +23,12 @@
       "projectID": 223628,
       "name": "Thaumcraft",
       "rename": "pants.jar"
+    },
+    {
+      "fileID": 2287496,
+      "projectID": 223628,
+      "name": "Thaumcraft",
+      "release": "beta"
     }
   ],
   "thirdParty": [

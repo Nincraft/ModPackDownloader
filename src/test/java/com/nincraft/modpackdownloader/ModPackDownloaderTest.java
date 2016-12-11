@@ -48,7 +48,7 @@ public class ModPackDownloaderTest {
 
 	@Test
 	public void testDownload() throws InterruptedException {
-		String[] args = {"-manifest", "src/test/resources/download-test.json"};
+		String[] args = {"-manifest", "src/test/resources/download-test.json", "-releaseType", "release"};
 		ModPackDownloader.main(args);
 		File mod = null;
 		List<String> mods = new ArrayList<>(Arrays.asList("Thaumcraft-1.8.9-5.2.4.jar", "DimensionalDoors-2.2.5-test9.jar", "pants.jar", "forge-1.8.9-11.15.1.1902-1.8.9-installer.jar"));
@@ -66,7 +66,7 @@ public class ModPackDownloaderTest {
 	public void testUpdate() throws InterruptedException, IOException, ParseException {
 		String manifestName = "src/test/resources/update-test.json";
 		File manifestFile = new File(manifestName);
-		String[] args = {"-manifest", manifestName, "-updateMods", "-updateForge"};
+		String[] args = {"-manifest", manifestName, "-updateMods", "-updateForge", "-backupVersion", "1.8.9"};
 
 		Gson gson = new Gson();
 		JSONObject jsonLists = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));

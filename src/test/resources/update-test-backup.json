@@ -1,9 +1,9 @@
 {
   "minecraft": {
-    "version": "1.8.9",
+    "version": "1.9.4",
     "modLoaders": [
       {
-        "id": "forge-11.15.1.1890",
+        "id": "forge-12.17.0.1990",
         "primary": true,
         "downloadInstaller": true,
         "release": "latest",
