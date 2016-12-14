@@ -80,7 +80,12 @@ public class DownloadModsProcessor extends AbstractProcessor {
 	private void moveOverrides(Manifest manifest) {
 		if (!StringUtils.isBlank(manifest.getOverrides())) {
 			try {
-				FileUtils.moveDirectory(new File(manifest.getOverrides()), new File("."));
+				File overridesDirectory = new File(manifest.getOverrides());
+				if (overridesDirectory.exists()) {
+					FileUtils.copyDirectory(overridesDirectory, new File("."));
+					FileUtils.deleteDirectory(overridesDirectory);
+					log.info(String.format("Successfully moved overrides: %s", manifest.getOverrides()));
+				}
 			} catch (IOException e) {
 				log.error(String.format("Unable to move %s folder", manifest.getOverrides()), e);
 			}
