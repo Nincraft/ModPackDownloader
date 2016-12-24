@@ -88,7 +88,7 @@ public class CurseFile extends Mod {
 	}
 
 	public String getCurseForgeDownloadUrl() {
-		return String.format(Reference.CURSEFORGE_BASE_URL + "%s-%s/files/%s/download", getProjectID(), getProjectName(),
+		return String.format(Reference.CURSEFORGE_BASE_URL + "%s/files/%s/download", getProjectName(),
 				getFileID());
 	}
 
