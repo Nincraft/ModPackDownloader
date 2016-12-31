@@ -7,9 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.commons.io.FileUtils;
 
-import java.io.Closeable;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 @Log4j2
@@ -84,26 +82,6 @@ public final class FileSystemHelper {
 			FileUtils.deleteDirectory(cache);
 		} catch (IOException e) {
 			log.error("Unable to clear cache", e);
-		}
-	}
-
-	public static void flushFileWriter(FileWriter file) {
-		if (file != null) {
-			try {
-				file.flush();
-			} catch (IOException e) {
-				log.error("Unable to flush FileWriter", e);
-			}
-		}
-	}
-
-	public static void closeClosable(Closeable closeable) {
-		if (closeable != null) {
-			try {
-				closeable.close();
-			} catch (IOException e) {
-				log.error("Unable to close", e);
-			}
 		}
 	}
 }

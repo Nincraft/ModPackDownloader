@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.container.ModLoader;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
 import com.nincraft.modpackdownloader.util.*;
+import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Log4j2
+@UtilityClass
 public class ForgeHandler {
 	public static void downloadForge(String minecraftVersion, List<ModLoader> modLoaders) {
 		if (CollectionUtils.isEmpty(modLoaders) || Strings.isNullOrEmpty(minecraftVersion)) {
@@ -64,7 +66,7 @@ public class ForgeHandler {
 		}
 
 		for (ModLoader modLoader : modLoaders) {
-			JSONObject fileListJson = null;
+			JSONObject fileListJson;
 			if (modLoader.getRelease() == null) {
 				log.warn("No Forge release type set for update, defaulting to recommended");
 				modLoader.setRelease("recommended");
