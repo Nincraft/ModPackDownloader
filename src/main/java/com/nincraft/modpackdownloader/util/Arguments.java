@@ -19,6 +19,8 @@ public class Arguments {
 	@Parameter(names = {"-releaseType"}, description = "Release type for Curse updates. Acceptable parameters" +
 			"are release, beta, and alpha", validateWith = ReleaseType.class)
 	public static String releaseType;
+	@Parameter(names = {"-maxDownloadThreads"}, description = "Max number of threads for downloading mods. The default is however many mods are in your manifest")
+	public static int maxDownloadThreads;
 
 	@Parameter(names = {"-forceDownload"}, description = "Forces downloading instead of pulling from the cache")
 	public static boolean forceDownload = false;
