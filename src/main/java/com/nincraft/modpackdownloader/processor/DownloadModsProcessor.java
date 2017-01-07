@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.nincraft.modpackdownloader.container.Manifest;
 import com.nincraft.modpackdownloader.container.Mod;
 import com.nincraft.modpackdownloader.handler.ForgeHandler;
+import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.DownloadHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.extern.log4j.Log4j2;
@@ -24,7 +25,7 @@ public class DownloadModsProcessor extends AbstractProcessor {
 	}
 
 	public static final void downloadMods(final Manifest manifest) {
-		setExecutorService(Executors.newFixedThreadPool(MOD_LIST.size() + 1));
+		setExecutorService(Executors.newFixedThreadPool(Arguments.maxDownloadThreads > 0 ? Arguments.maxDownloadThreads : MOD_LIST.size() + 1));
 		Runnable forgeThread = new Thread(() -> {
 			ForgeHandler.downloadForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders());
 		});
