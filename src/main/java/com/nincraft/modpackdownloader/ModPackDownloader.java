@@ -44,12 +44,10 @@ public class ModPackDownloader {
 
 		setupRepo();
 
-		if (Arguments.updateCurseModPack) {
-			if (ModPackManager.updateModPack()) {
-				ModPackManager.checkPastForgeVersion();
-				ModPackManager.handlePostDownload();
-			}
-			return;
+		if (Arguments.updateCurseModPack && ModPackManager.updateModPack()) {
+			ModPackManager.checkPastForgeVersion();
+			ModPackManager.handlePostDownload();
+			Arguments.downloadMods = true;
 		}
 
 		processManifests();
