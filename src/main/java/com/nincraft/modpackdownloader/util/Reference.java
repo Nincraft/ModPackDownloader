@@ -23,7 +23,7 @@ public class Reference {
 	public static int downloadTotal = 0;
 	public static int updateCount = 0;
 	public static int updateTotal = 0;
-	public static String updateAppURL = "http://play.nincraft.com:8080/job/Mod%20Pack%20Downloader/lastStableBuild/artifact/target/classes/latest.json";
+	public static String updateAppURL = "http://play.nincraft.com:8080/job/Mod%20Pack%20Downloader/lastSuccessfulBuild/artifact/target/classes/latest.json";
 	public static String forgeURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/";
 	public static String forgeInstaller = "-installer.jar";
 	public static String forgeUniversal = "-universal.jar";
