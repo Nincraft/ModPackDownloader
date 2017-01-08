@@ -33,12 +33,16 @@ public class CurseFileHandler extends ModHandler {
 		}
 	}
 
-	private static CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
-		val url = curseFile.getCurseForgeDownloadUrl();
+	public static CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
+		return getCurseForgeDownloadLocation(curseFile, true);
+	}
+
+	public static CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile, boolean isCurseForge) throws IOException {
+		val url = curseFile.getCurseForgeDownloadUrl(isCurseForge);
 		val projectName = curseFile.getName();
 		String encodedDownloadLocation = URLHelper.encodeSpaces(projectName);
 
-		if (!encodedDownloadLocation.contains(Reference.JAR_FILE_EXT)) {
+		if (!encodedDownloadLocation.contains(Reference.JAR_FILE_EXT) || !encodedDownloadLocation.contains(Reference.ZIP_FILE_EXT)) {
 			val newUrl = url + Reference.COOKIE_TEST_1;
 
 			HttpURLConnection conn = (HttpURLConnection) new URL(newUrl).openConnection();
@@ -48,7 +52,7 @@ public class CurseFileHandler extends ModHandler {
 			String actualURL = conn.getURL().toString();
 			int retryCount = 0;
 
-			while (conn.getResponseCode() != 200 || !actualURL.contains(Reference.JAR_FILE_EXT)) {
+			while (conn.getResponseCode() != 200 || !actualURL.contains(Reference.JAR_FILE_EXT) || !actualURL.contains(Reference.ZIP_FILE_EXT)) {
 				val headerLocation = conn.getHeaderField("Location");
 				if (headerLocation != null) {
 					actualURL = headerLocation;
@@ -65,7 +69,7 @@ public class CurseFileHandler extends ModHandler {
 			}
 
 			int lastIndexUrl = actualURL.lastIndexOf(Reference.URL_DELIMITER) + 1;
-			if (actualURL.substring(lastIndexUrl).contains(Reference.JAR_FILE_EXT)) {
+			if (actualURL.substring(lastIndexUrl).contains(Reference.JAR_FILE_EXT) || actualURL.substring(lastIndexUrl).contains(Reference.ZIP_FILE_EXT)) {
 				encodedDownloadLocation = actualURL.substring(lastIndexUrl);
 			} else {
 				encodedDownloadLocation = projectName + Reference.JAR_FILE_EXT;
