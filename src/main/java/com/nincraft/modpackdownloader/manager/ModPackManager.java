@@ -50,22 +50,32 @@ public class ModPackManager {
 			modPack.setFileName(modPack.getFileName() + ".zip");
 		}
 		Arguments.modFolder = ".";
-		if (DownloadStatus.SKIPPED.equals(DownloadHelper.getInstance().downloadFile(modPack, false))) {
-			log.info(String.format("No new updates found for %s", modPack.getName()));
-			returnStatus = false;
+		modPack.setDownloadUrl(modPack.getCurseForgeDownloadUrl());
+		getDownloadUrl(modPack, true);
+		DownloadStatus downloadStatus = DownloadHelper.getInstance().downloadFile(modPack, false);
+
+		if (DownloadStatus.FAILURE.equals(downloadStatus)) {
+			log.warn(String.format("Failed to download %s. Attempting redownload with FTB URL", modPack.getName()));
+			modPack.setDownloadUrl(modPack.getCurseForgeDownloadUrl(false));
+			getDownloadUrl(modPack, false);
+			downloadStatus = DownloadHelper.getInstance().downloadFile(modPack, false);
 		}
+
+		if (DownloadStatus.SKIPPED.equals(downloadStatus)) {
+			log.info(String.format("No new updates found for %s", modPack.getName()));
+		}
+
+		returnStatus = checkSuccessfulDownloadStatus(downloadStatus);
 		Arguments.modFolder = "mods";
 		File modsFolder = new File(Arguments.modFolder);
 		File backupModsFolder = new File("backupmods");
-		try {
-			FileUtils.moveDirectory(modsFolder, backupModsFolder);
-		} catch (IOException e) {
-			log.error("Could not backup mod folder", e);
+		if (backupModsFolder(modsFolder, backupModsFolder)) {
 			return false;
 		}
 		try {
 			ZipFile modPackZip = new ZipFile(modPack.getFileName());
 			modPackZip.extractAll(".");
+			log.info("Successfully unzipped modpack");
 		} catch (ZipException e) {
 			log.error("Could not unzip modpack", e);
 			try {
@@ -82,6 +92,30 @@ public class ModPackManager {
 			log.error("Unable to delete backup mods folder", e);
 		}
 		return returnStatus;
+	}
+
+	private static boolean backupModsFolder(File modsFolder, File backupModsFolder) {
+		if (modsFolder.exists()) {
+			try {
+				FileUtils.moveDirectory(modsFolder, backupModsFolder);
+			} catch (IOException e) {
+				log.error("Could not backup mod folder", e);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean checkSuccessfulDownloadStatus(DownloadStatus downloadStatus) {
+		return DownloadStatus.SUCCESS_DOWNLOAD.equals(downloadStatus) || DownloadStatus.SUCCESS_CACHE.equals(downloadStatus);
+	}
+
+	private static void getDownloadUrl(CurseFile modPack, boolean isCurseForge) {
+		try {
+			CurseFileHandler.getCurseForgeDownloadLocation(modPack, isCurseForge);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void handlePostDownload() {

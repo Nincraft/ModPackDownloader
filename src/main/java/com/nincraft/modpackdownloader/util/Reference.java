@@ -2,6 +2,7 @@ package com.nincraft.modpackdownloader.util;
 
 public class Reference {
 	public static final String CURSEFORGE_BASE_URL = "https://minecraft.curseforge.com/projects/";
+	public static final String FTB_BASE_URL = "https://www.feed-the-beast.com/projects/";
 	public static final String CURSEFORGE_WIDGET_JSON_MOD = "mc-mods";
 	public static final String CURSEFORGE_WIDGET_JSON_MODPACK = "modpacks";
 	public static final String CURSEFORGE_WIDGET_JSON_URL = "http://widget.mcf.li/%s/minecraft/%s.json";
@@ -12,6 +13,7 @@ public class Reference {
 	public static final String MAC_FOLDER = "/Library/Application Support/modpackdownloader/";
 	public static final String OTHER_FOLDER = "/.modpackdownloader/";
 	public static final String JAR_FILE_EXT = ".jar";
+	public static final String ZIP_FILE_EXT = ".zip";
 	public static final int RETRY_COUNTER = 5;
 	public static final char URL_DELIMITER = '/';
 	public static final String DEFAULT_MANIFEST_FILE = "manifest.json";
