@@ -26,7 +26,7 @@ public class ModPackManager {
 	private static Gson gson = new Gson();
 
 	public static boolean updateModPack() {
-		boolean returnStatus = true;
+		boolean returnStatus;
 		log.trace("Updating Curse modpack");
 		String modPackIdName = "";
 		try {
@@ -114,7 +114,7 @@ public class ModPackManager {
 		try {
 			CurseFileHandler.getCurseForgeDownloadLocation(modPack, isCurseForge);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error(String.format("Failed to get download location for %s", modPack.getName()), e);
 		}
 	}
 

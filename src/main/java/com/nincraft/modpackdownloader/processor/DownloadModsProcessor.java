@@ -29,9 +29,7 @@ public class DownloadModsProcessor extends AbstractProcessor {
 
 	public static final void downloadMods(final Manifest manifest) {
 		setExecutorService(Executors.newFixedThreadPool(Arguments.maxDownloadThreads > 0 ? Arguments.maxDownloadThreads : MOD_LIST.size() + 1));
-		Runnable forgeThread = new Thread(() -> {
-			ForgeHandler.downloadForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders());
-		});
+		Runnable forgeThread = new Thread(() -> ForgeHandler.downloadForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders()));
 
 		getExecutorService().execute(forgeThread);
 

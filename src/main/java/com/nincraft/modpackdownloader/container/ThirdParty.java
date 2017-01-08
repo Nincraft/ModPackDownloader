@@ -2,10 +2,12 @@ package com.nincraft.modpackdownloader.container;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import lombok.EqualsAndHashCode;
 
 import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
+@EqualsAndHashCode(callSuper = false)
 public class ThirdParty extends Mod {
 
 	@SerializedName("url")

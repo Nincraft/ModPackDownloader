@@ -69,10 +69,9 @@ public class UpdateModsProcessor extends AbstractProcessor {
 
 		Reference.updateTotal = modList.size();
 
-		Runnable forgeThread = new Thread(() -> {
+		Runnable forgeThread = new Thread(() ->
 			manifest.getMinecraft().setModLoaders(
-					ForgeHandler.updateForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders()));
-		});
+					ForgeHandler.updateForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders())));
 
 		setExecutorService(Executors.newFixedThreadPool(Reference.updateTotal + 1));
 
