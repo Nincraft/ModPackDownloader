@@ -15,11 +15,8 @@ public class ThirdParty extends Mod {
 	private String url;
 
 	public String buildFileName() {
-		if (getDownloadUrl().contains(".jar")) {
-			return getDownloadUrl().substring(getDownloadUrl().lastIndexOf('/') + 1,
-					getDownloadUrl().lastIndexOf(".jar") + 4);
-		}
-		return getRename();
+		return getDownloadUrl().contains(".jar") ? getDownloadUrl().substring(getDownloadUrl().lastIndexOf('/') + 1,
+				getDownloadUrl().lastIndexOf(".jar") + 4) : getRename();
 	}
 
 	@Override

@@ -30,7 +30,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public abstract class AbstractProcessor {
 
-	public static Comparator<Mod> compareMods = (mod1, mod2) -> mod1.getName().toLowerCase().compareTo(mod2.getName().toLowerCase());
+	public static final Comparator<Mod> MOD_COMPARATOR = Comparator.comparing(mod -> mod.getName().toLowerCase());
 
 	@Getter
 	@Setter
@@ -52,7 +52,7 @@ public abstract class AbstractProcessor {
 		buildManifestList(manifestFiles);
 	}
 
-	private final void buildManifestList(final List<File> manifestFiles) {
+	private void buildManifestList(final List<File> manifestFiles) {
 		for (val manifestFile : manifestFiles) {
 			manifestMap.put(manifestFile, buildManifest(manifestFile));
 		}
@@ -104,7 +104,7 @@ public abstract class AbstractProcessor {
 
 		modList.forEach(Mod::init);
 
-		Collections.sort(modList, compareMods);
+		modList.sort(MOD_COMPARATOR);
 
 		log.trace("Finished Building Mod List.");
 		return modList;

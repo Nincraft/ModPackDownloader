@@ -61,7 +61,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		}
 	}
 
-	public static final void updateMods(final Manifest manifest, final List<Mod> modList) {
+	public static void updateMods(final Manifest manifest, final List<Mod> modList) {
 		if (!manifest.getBatchAddCurse().isEmpty()) {
 			log.info("Found batch add for Curse");
 			addBatch(manifest, modList);
@@ -129,8 +129,8 @@ public class UpdateModsProcessor extends AbstractProcessor {
 	public static void updateManifest(final File file, final Manifest manifest) {
 		log.info("Updating Manifest File...");
 		// Sort Mod Lists
-		manifest.getCurseFiles().sort(compareMods);
-		manifest.getThirdParty().sort(compareMods);
+		manifest.getCurseFiles().sort(MOD_COMPARATOR);
+		manifest.getThirdParty().sort(MOD_COMPARATOR);
 
 		// Clean up Empty Lists
 		cleanupLists(manifest);

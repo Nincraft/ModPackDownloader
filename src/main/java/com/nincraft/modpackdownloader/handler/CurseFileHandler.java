@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Log4j2
-public class CurseFileHandler extends ModHandler {
+public class CurseFileHandler implements ModHandler {
 
 	private static void downloadCurseMod(CurseFile curseFile) {
 		try {
