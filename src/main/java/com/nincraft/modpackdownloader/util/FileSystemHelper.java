@@ -14,6 +14,8 @@ import java.io.IOException;
 @UtilityClass
 public final class FileSystemHelper {
 
+	private static Reference reference = Reference.getInstance();
+
 	public static void createFolder(final String folder) {
 		if (folder != null) {
 			final File dir = new File(folder);
@@ -61,7 +63,7 @@ public final class FileSystemHelper {
 	}
 
 	public static File getLocalFile(final String fileName, final String newProjectName) {
-		return new File(Reference.userhome + newProjectName + File.separator + fileName);
+		return new File(reference.getUserhome() + newProjectName + File.separator + fileName);
 	}
 
 	public static File getDownloadedFile(String fileName, String folder) {
@@ -77,7 +79,7 @@ public final class FileSystemHelper {
 	}
 
 	public static void clearCache() {
-		File cache = new File(Reference.userhome);
+		File cache = new File(reference.getUserhome());
 		try {
 			FileUtils.deleteDirectory(cache);
 		} catch (IOException e) {

@@ -21,6 +21,9 @@ import java.util.Arrays;
 @UtilityClass
 @Log4j2
 public class ModPackDownloader {
+
+	private static Reference reference = Reference.getInstance();
+
 	public static void main(final String[] args) throws InterruptedException {
 		log.info("Starting ModPackDownloader with arguments: " + Arrays.toString(args));
 		JCommander jCommander = initArguments(args);
@@ -88,9 +91,9 @@ public class ModPackDownloader {
 
 	private static void defaultArguments() {
 		if (CollectionUtils.isEmpty(Arguments.manifests)) {
-			log.info(String.format("No manifest supplied, using default %s", Reference.DEFAULT_MANIFEST_FILE));
+			log.info(String.format("No manifest supplied, using default %s", reference.getDefaultManifestFile()));
 
-			Arguments.manifests = Lists.newArrayList(new File(Reference.DEFAULT_MANIFEST_FILE));
+			Arguments.manifests = Lists.newArrayList(new File(reference.getDefaultManifestFile()));
 		}
 		if (Strings.isNullOrEmpty(Arguments.modFolder)) {
 			log.info("No output folder supplied, using default \"mods\"");
@@ -103,22 +106,26 @@ public class ModPackDownloader {
 
 	private static void setupRepo() {
 		log.trace("Setting up local repository...");
-		Reference.userhome = System.getProperty("user.home");
-		log.debug(String.format("User Home System Property detected as: %s", Reference.userhome));
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(System.getProperty("user.home"));
+		log.debug(String.format("User Home System Property detected as: %s", stringBuilder.toString()));
 
-		Reference.os = System.getProperty("os.name");
-		log.debug(String.format("Operating System detected as: %s", Reference.os));
+		reference.setOs(System.getProperty("os.name"));
+		log.debug(String.format("Operating System detected as: %s", reference.getOs()));
 
-		if (Reference.os.startsWith("Windows")) {
-			Reference.userhome += Reference.WINDOWS_FOLDER;
-		} else if (Reference.os.startsWith("Mac")) {
-			Reference.userhome += Reference.MAC_FOLDER;
+
+		if (reference.getOs().startsWith("Windows")) {
+			stringBuilder.append(reference.getWindowsFolder());
+		} else if (reference.getOs().startsWith("Mac")) {
+			stringBuilder.append(reference.getMacFolder());
 		} else {
-			Reference.userhome += Reference.OTHER_FOLDER;
+			stringBuilder.append(reference.getOtherFolder());
 		}
-		log.debug(String.format("User Home Folder set to: %s", Reference.userhome));
+		reference.setUserhome(stringBuilder.toString());
 
-		FileSystemHelper.createFolder(Reference.userhome);
+		log.debug(String.format("User Home Folder set to: %s", reference.getUserhome()));
+
+		FileSystemHelper.createFolder(reference.getUserhome());
 
 		log.debug("Setting User Agent...");
 		System.setProperty("http.agent", "Mozilla/4.0");

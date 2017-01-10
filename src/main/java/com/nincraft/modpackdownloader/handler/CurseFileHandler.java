@@ -25,6 +25,8 @@ import java.util.List;
 @Log4j2
 public class CurseFileHandler implements ModHandler {
 
+	private static Reference reference = Reference.getInstance();
+
 	private static void downloadCurseMod(CurseFile curseFile) {
 		try {
 			DownloadHelper.getInstance().downloadFile(getCurseForgeDownloadLocation(curseFile));
@@ -42,8 +44,8 @@ public class CurseFileHandler implements ModHandler {
 		val projectName = curseFile.getName();
 		String encodedDownloadLocation = URLHelper.encodeSpaces(projectName);
 
-		if (!encodedDownloadLocation.contains(Reference.JAR_FILE_EXT) || !encodedDownloadLocation.contains(Reference.ZIP_FILE_EXT)) {
-			val newUrl = url + Reference.COOKIE_TEST_1;
+		if (!encodedDownloadLocation.contains(reference.getJarFileExt()) || !encodedDownloadLocation.contains(reference.getZipFileExt())) {
+			val newUrl = url + reference.getCookieTest1();
 
 			HttpURLConnection conn = (HttpURLConnection) new URL(newUrl).openConnection();
 			conn.setInstanceFollowRedirects(false);
@@ -52,7 +54,7 @@ public class CurseFileHandler implements ModHandler {
 			String actualURL = conn.getURL().toString();
 			int retryCount = 0;
 
-			while (conn.getResponseCode() != 200 || !actualURL.contains(Reference.JAR_FILE_EXT) || !actualURL.contains(Reference.ZIP_FILE_EXT)) {
+			while (conn.getResponseCode() != 200 || !actualURL.contains(reference.getJarFileExt()) || !actualURL.contains(reference.getZipFileExt())) {
 				val headerLocation = conn.getHeaderField("Location");
 				if (headerLocation != null) {
 					actualURL = headerLocation;
@@ -60,7 +62,7 @@ public class CurseFileHandler implements ModHandler {
 					actualURL = conn.getURL().toString();
 				}
 
-				if (retryCount > Reference.RETRY_COUNTER) {
+				if (retryCount > reference.getRetryCounter()) {
 					break;
 				}
 
@@ -68,11 +70,11 @@ public class CurseFileHandler implements ModHandler {
 				retryCount++;
 			}
 
-			int lastIndexUrl = actualURL.lastIndexOf(Reference.URL_DELIMITER) + 1;
-			if (actualURL.substring(lastIndexUrl).contains(Reference.JAR_FILE_EXT) || actualURL.substring(lastIndexUrl).contains(Reference.ZIP_FILE_EXT)) {
+			int lastIndexUrl = actualURL.lastIndexOf(reference.getUrlDelimiter()) + 1;
+			if (actualURL.substring(lastIndexUrl).contains(reference.getJarFileExt()) || actualURL.substring(lastIndexUrl).contains(reference.getZipFileExt())) {
 				encodedDownloadLocation = actualURL.substring(lastIndexUrl);
 			} else {
-				encodedDownloadLocation = projectName + Reference.JAR_FILE_EXT;
+				encodedDownloadLocation = projectName + reference.getJarFileExt();
 			}
 			curseFile.setDownloadUrl(actualURL.replace("http:", "https:"));
 		}
@@ -213,13 +215,13 @@ public class CurseFileHandler implements ModHandler {
 		log.trace("Getting CurseForge Widget JSON...");
 		val projectId = curseFile.getProjectID();
 		val projectName = curseFile.getProjectName();
-		val modOrModPack = curseFile.isModpack() ? Reference.CURSEFORGE_WIDGET_JSON_MODPACK : Reference.CURSEFORGE_WIDGET_JSON_MOD;
-		String urlStr = String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, modOrModPack, projectName);
+		val modOrModPack = curseFile.isModpack() ? reference.getCurseforgeWidgetJsonModpack() : reference.getCurseforgeWidgetJsonMod();
+		String urlStr = String.format(reference.getCurseforgeWidgetJsonUrl(), modOrModPack, projectName);
 		log.debug(urlStr);
 		try {
 			return URLHelper.getJsonFromUrl(urlStr);
 		} catch (final FileNotFoundException e) {
-			urlStr = String.format(Reference.CURSEFORGE_WIDGET_JSON_URL, modOrModPack, projectId + "-" + projectName);
+			urlStr = String.format(reference.getCurseforgeWidgetJsonUrl(), modOrModPack, projectId + "-" + projectName);
 			log.debug(urlStr, e);
 			return URLHelper.getJsonFromUrl(urlStr);
 		}

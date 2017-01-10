@@ -23,6 +23,9 @@ import java.util.regex.Pattern;
 
 @Log4j2
 public class UpdateModsProcessor extends AbstractProcessor {
+
+	private static Reference reference = Reference.getInstance();
+
 	public UpdateModsProcessor(final List<File> manifestFiles) {
 		super(manifestFiles);
 	}
@@ -81,7 +84,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 
 		int updateCount = 1;
 		for (val mod : modList) {
-			log.info(String.format(Reference.UPDATING_MOD_X_OF_Y, mod.getName(), updateCount++, Reference.updateTotal));
+			log.info(String.format(reference.getUpdatingModXOfY(), mod.getName(), updateCount++, Reference.updateTotal));
 			Runnable modUpdate = new Thread(() -> {
 				MOD_HANDLERS.get(mod.getClass()).updateMod(mod);
 				Reference.updateCount++;

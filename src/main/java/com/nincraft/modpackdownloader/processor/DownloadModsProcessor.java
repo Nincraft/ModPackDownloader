@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 @Log4j2
 public class DownloadModsProcessor extends AbstractProcessor {
 	private static final List<Mod> MOD_LIST = Lists.newArrayList();
+	private static Reference reference = Reference.getInstance();
 
 	public DownloadModsProcessor(final List<File> manifestFiles) {
 		super(manifestFiles);
@@ -36,7 +37,7 @@ public class DownloadModsProcessor extends AbstractProcessor {
 		log.trace(String.format("Downloading %s mods...", MOD_LIST.size()));
 		int downloadCount = 1;
 		for (val mod : MOD_LIST) {
-			log.info(String.format(Reference.DOWNLOADING_MOD_X_OF_Y, mod.getName(), downloadCount++,
+			log.info(String.format(reference.getDownloadingModXOfY(), mod.getName(), downloadCount++,
 					Reference.downloadTotal));
 
 			Runnable modDownload = new Thread(() -> {

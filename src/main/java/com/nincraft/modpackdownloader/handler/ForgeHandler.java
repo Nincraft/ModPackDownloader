@@ -17,6 +17,9 @@ import java.util.List;
 @Log4j2
 @UtilityClass
 public class ForgeHandler {
+
+	private static Reference reference = Reference.getInstance();
+
 	public static void downloadForge(String minecraftVersion, List<ModLoader> modLoaders) {
 		if (CollectionUtils.isEmpty(modLoaders) || Strings.isNullOrEmpty(minecraftVersion)) {
 			log.debug("No Forge or Minecraft version found in manifest, skipping");
@@ -42,13 +45,13 @@ public class ForgeHandler {
 	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, boolean downloadInstaller, boolean alternateDownloadUrl) {
 		modLoader.setRename(modLoader.getRename(downloadInstaller));
 		String forgeFileName = "forge-" + minecraftVersion + "-" + modLoader.getForgeId();
-		String forgeURL = Reference.forgeURL + minecraftVersion + "-" + modLoader.getForgeId();
+		String forgeURL = reference.getForgeUrl() + minecraftVersion + "-" + modLoader.getForgeId();
 		if (alternateDownloadUrl) {
 			forgeFileName += "-" + minecraftVersion;
 			forgeURL += "-" + minecraftVersion;
 		}
 
-		forgeFileName += downloadInstaller ? Reference.forgeInstaller : Reference.forgeUniversal;
+		forgeFileName += downloadInstaller ? reference.getForgeInstaller() : reference.getForgeUniversal();
 		forgeURL += "/" + forgeFileName;
 
 		modLoader.setDownloadUrl(forgeURL);
@@ -72,7 +75,7 @@ public class ForgeHandler {
 				modLoader.setRelease("recommended");
 			}
 			try {
-				fileListJson = (JSONObject) (URLHelper.getJsonFromUrl(Reference.forgeUpdateURL)).get("promos");
+				fileListJson = (JSONObject) (URLHelper.getJsonFromUrl(reference.getForgeUpdateUrl())).get("promos");
 				String updatedForgeVersion = (String) fileListJson.get(minecraftVersion + "-" + modLoader.getRelease());
 				String manifestForgeVersion = modLoader.getId().substring(modLoader.getId().indexOf('-') + 1);
 

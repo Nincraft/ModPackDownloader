@@ -35,6 +35,7 @@ public class CurseFile extends Mod {
 	private String projectUrl;
 	private String projectName;
 	private boolean isModpack;
+	private Reference reference = Reference.getInstance();
 
 	public CurseFile() {
 		//empty
@@ -84,7 +85,7 @@ public class CurseFile extends Mod {
 	}
 
 	public String buildProjectUrl() {
-		return String.format(Reference.CURSEFORGE_BASE_URL + "%s" + Reference.COOKIE_TEST_1, getProjectID());
+		return String.format(reference.getCurseforgeBaseUrl() + "%s" + reference.getCookieTest1(), getProjectID());
 	}
 
 	public String getCurseForgeDownloadUrl() {
@@ -92,7 +93,7 @@ public class CurseFile extends Mod {
 	}
 
 	public String getCurseForgeDownloadUrl(boolean isCurseForge) {
-		String baseUrl = isCurseForge ? Reference.CURSEFORGE_BASE_URL : Reference.FTB_BASE_URL;
+		String baseUrl = isCurseForge ? reference.getCurseforgeBaseUrl() : reference.getFtbBaseUrl();
 		return String.format(baseUrl + "%s/files/%s/download", getProjectName(),
 				getFileID());
 	}
