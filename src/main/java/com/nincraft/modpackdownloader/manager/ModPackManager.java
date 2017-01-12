@@ -2,6 +2,7 @@ package com.nincraft.modpackdownloader.manager;
 
 import com.google.gson.Gson;
 import com.nincraft.modpackdownloader.container.CurseFile;
+import com.nincraft.modpackdownloader.container.CurseModpackFile;
 import com.nincraft.modpackdownloader.container.Manifest;
 import com.nincraft.modpackdownloader.handler.CurseFileHandler;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
@@ -25,6 +26,10 @@ public class ModPackManager {
 
 	private static Gson gson = new Gson();
 
+	private ModPackManager() {
+		//no-op
+	}
+
 	public static boolean updateModPack() {
 		boolean returnStatus;
 		log.trace("Updating Curse modpack");
@@ -42,8 +47,8 @@ public class ModPackManager {
 			return false;
 		}
 		String modPackName = modPackIdName.substring(modPackIdName.indexOf('-') + 1);
-		CurseFile modPack = new CurseFile(modPackId, modPackName);
-		modPack.initModpack();
+		CurseModpackFile modPack = new CurseModpackFile(modPackId, modPackName);
+		modPack.init();
 		Arguments.mcVersion = "*";
 		CurseFileHandler.updateCurseFile(modPack);
 		if (!modPack.getFileName().contains(".zip")) {

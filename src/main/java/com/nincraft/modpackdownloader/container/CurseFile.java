@@ -34,7 +34,6 @@ public class CurseFile extends Mod {
 	private Boolean skipUpdate;
 	private String projectUrl;
 	private String projectName;
-	private boolean isModpack;
 	private Reference reference = Reference.getInstance();
 
 	public CurseFile() {
@@ -49,7 +48,6 @@ public class CurseFile extends Mod {
 		skipUpdate = curseFile.skipUpdate;
 		projectUrl = curseFile.projectUrl;
 		projectName = curseFile.projectName;
-		isModpack = curseFile.isModpack;
 	}
 
 	public CurseFile(String projectId, String projectName) {
@@ -57,6 +55,10 @@ public class CurseFile extends Mod {
 			setProjectID(Integer.parseInt(projectId));
 		}
 		setProjectName(projectName);
+	}
+
+	public String getCurseforgeWidgetJson() {
+		return reference.getCurseforgeWidgetJsonMod();
 	}
 
 	@Override
@@ -96,11 +98,5 @@ public class CurseFile extends Mod {
 		String baseUrl = isCurseForge ? reference.getCurseforgeBaseUrl() : reference.getFtbBaseUrl();
 		return String.format(baseUrl + "%s/files/%s/download", getProjectName(),
 				getFileID());
-	}
-
-	public void initModpack() {
-		init();
-		setFileID(0);
-		setModpack(true);
 	}
 }

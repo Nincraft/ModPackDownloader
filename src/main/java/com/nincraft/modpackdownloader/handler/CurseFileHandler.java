@@ -2,6 +2,7 @@ package com.nincraft.modpackdownloader.handler;
 
 import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.container.CurseFile;
+import com.nincraft.modpackdownloader.container.CurseModpackFile;
 import com.nincraft.modpackdownloader.container.Mod;
 import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.DownloadHelper;
@@ -70,17 +71,22 @@ public class CurseFileHandler implements ModHandler {
 				retryCount++;
 			}
 
-			int lastIndexUrl = actualURL.lastIndexOf(reference.getUrlDelimiter()) + 1;
-			if (actualURL.substring(lastIndexUrl).contains(reference.getJarFileExt()) || actualURL.substring(lastIndexUrl).contains(reference.getZipFileExt())) {
-				encodedDownloadLocation = actualURL.substring(lastIndexUrl);
-			} else {
-				encodedDownloadLocation = projectName + reference.getJarFileExt();
-			}
+			encodedDownloadLocation = getEncodedDownloadLocation(projectName, actualURL, actualURL.lastIndexOf(reference.getUrlDelimiter()) + 1);
 			curseFile.setDownloadUrl(actualURL.replace("http:", "https:"));
 		}
 		curseFile.setFileName(URLHelper.decodeSpaces(encodedDownloadLocation));
 
 		return curseFile;
+	}
+
+	private static String getEncodedDownloadLocation(String projectName, String actualURL, int lastIndexUrl) {
+		String encodedDownloadLocation;
+		if (actualURL.substring(lastIndexUrl).contains(reference.getJarFileExt()) || actualURL.substring(lastIndexUrl).contains(reference.getZipFileExt())) {
+			encodedDownloadLocation = actualURL.substring(lastIndexUrl);
+		} else {
+			encodedDownloadLocation = projectName + reference.getJarFileExt();
+		}
+		return encodedDownloadLocation;
 	}
 
 	public static void updateCurseFile(final CurseFile curseFile) {
@@ -116,7 +122,7 @@ public class CurseFileHandler implements ModHandler {
 	private static void updateCurseFile(CurseFile curseFile, CurseFile newMod) {
 		curseFile.setFileID(newMod.getFileID());
 		curseFile.setVersion(newMod.getVersion());
-		if (curseFile.isModpack()) {
+		if (curseFile instanceof CurseModpackFile) {
 			curseFile.setFileName(newMod.getVersion());
 		}
 	}
@@ -176,10 +182,7 @@ public class CurseFileHandler implements ModHandler {
 	}
 
 	private static String defaultReleaseType(String releaseType) {
-		if (Strings.isNullOrEmpty(releaseType)) {
-			releaseType = "release";
-		}
-		return releaseType;
+		return Strings.isNullOrEmpty(releaseType) ? "release" : releaseType;
 	}
 
 	private static CurseFile checkBackupVersions(String releaseType, CurseFile curseFile, JSONObject fileListJson, String mcVersion, CurseFile newMod) {
@@ -215,7 +218,7 @@ public class CurseFileHandler implements ModHandler {
 		log.trace("Getting CurseForge Widget JSON...");
 		val projectId = curseFile.getProjectID();
 		val projectName = curseFile.getProjectName();
-		val modOrModPack = curseFile.isModpack() ? reference.getCurseforgeWidgetJsonModpack() : reference.getCurseforgeWidgetJsonMod();
+		val modOrModPack = curseFile.getCurseforgeWidgetJson();
 		String urlStr = String.format(reference.getCurseforgeWidgetJsonUrl(), modOrModPack, projectName);
 		log.debug(urlStr);
 		try {
