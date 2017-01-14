@@ -28,7 +28,7 @@ public class CurseFileHandler implements ModHandler {
 
 	private static Reference reference = Reference.getInstance();
 
-	private static void downloadCurseMod(CurseFile curseFile) {
+	private void downloadCurseMod(CurseFile curseFile) {
 		try {
 			DownloadHelper.getInstance().downloadFile(getCurseForgeDownloadLocation(curseFile));
 		} catch (IOException e) {
@@ -36,11 +36,11 @@ public class CurseFileHandler implements ModHandler {
 		}
 	}
 
-	public static CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
+	public CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
 		return getCurseForgeDownloadLocation(curseFile, true);
 	}
 
-	public static CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile, boolean isCurseForge) throws IOException {
+	public CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile, boolean isCurseForge) throws IOException {
 		val url = curseFile.getCurseForgeDownloadUrl(isCurseForge);
 		val projectName = curseFile.getName();
 		String encodedDownloadLocation = URLHelper.encodeSpaces(projectName);
@@ -79,7 +79,7 @@ public class CurseFileHandler implements ModHandler {
 		return curseFile;
 	}
 
-	private static String getEncodedDownloadLocation(String projectName, String actualURL, int lastIndexUrl) {
+	private String getEncodedDownloadLocation(String projectName, String actualURL, int lastIndexUrl) {
 		String encodedDownloadLocation;
 		if (actualURL.substring(lastIndexUrl).contains(reference.getJarFileExt()) || actualURL.substring(lastIndexUrl).contains(reference.getZipFileExt())) {
 			encodedDownloadLocation = actualURL.substring(lastIndexUrl);
@@ -89,7 +89,7 @@ public class CurseFileHandler implements ModHandler {
 		return encodedDownloadLocation;
 	}
 
-	public static void updateCurseFile(final CurseFile curseFile) {
+	public void updateCurseFile(final CurseFile curseFile) {
 		if (BooleanUtils.isTrue(curseFile.getSkipUpdate())) {
 			log.info("Skipped updating " + curseFile.getName());
 			return;
@@ -119,7 +119,7 @@ public class CurseFileHandler implements ModHandler {
 		}
 	}
 
-	private static void updateCurseFile(CurseFile curseFile, CurseFile newMod) {
+	private void updateCurseFile(CurseFile curseFile, CurseFile newMod) {
 		curseFile.setFileID(newMod.getFileID());
 		curseFile.setVersion(newMod.getVersion());
 		if (curseFile instanceof CurseModpackFile) {
@@ -127,7 +127,7 @@ public class CurseFileHandler implements ModHandler {
 		}
 	}
 
-	private static CurseFile getLatestVersion(String releaseType,
+	private CurseFile getLatestVersion(String releaseType,
 											  CurseFile curseFile, final JSONObject fileListJson, String mcVersion) {
 		log.trace("Getting most recent available file...");
 		boolean backup = true;
@@ -166,14 +166,14 @@ public class CurseFileHandler implements ModHandler {
 		return newMod;
 	}
 
-	private static void setUpdatedFileId(CurseFile curseFile, JSONObject fileListJson, CurseFile newMod, List<Long> fileIds) {
+	private void setUpdatedFileId(CurseFile curseFile, JSONObject fileListJson, CurseFile newMod, List<Long> fileIds) {
 		if (!fileIds.isEmpty() && fileIds.get(0).intValue() != curseFile.getFileID()) {
 			newMod.setFileID(fileIds.get(0).intValue());
 			newMod.setVersion((String) ((JSONObject) fileListJson.get(newMod.getFileID().toString())).get("name"));
 		}
 	}
 
-	private static void checkFileIds(String releaseType, String mcVersion, List<JSONObject> fileList, List<Long> fileIds) {
+	private void checkFileIds(String releaseType, String mcVersion, List<JSONObject> fileList, List<Long> fileIds) {
 		for (JSONObject file : fileList) {
 			if (equalOrLessThan((String) file.get("type"), releaseType) && isMcVersion((String) file.get("version"), mcVersion)) {
 				fileIds.add((Long) file.get("id"));
@@ -181,11 +181,11 @@ public class CurseFileHandler implements ModHandler {
 		}
 	}
 
-	private static String defaultReleaseType(String releaseType) {
+	private String defaultReleaseType(String releaseType) {
 		return Strings.isNullOrEmpty(releaseType) ? "release" : releaseType;
 	}
 
-	private static CurseFile checkBackupVersions(String releaseType, CurseFile curseFile, JSONObject fileListJson, String mcVersion, CurseFile newMod) {
+	private CurseFile checkBackupVersions(String releaseType, CurseFile curseFile, JSONObject fileListJson, String mcVersion, CurseFile newMod) {
 		for (String backupVersion : Arguments.backupVersions) {
 			log.info(String.format("No files found for Minecraft %s, checking backup version %s", mcVersion, backupVersion));
 			newMod = getLatestVersion(releaseType, curseFile, fileListJson, backupVersion);
@@ -198,23 +198,23 @@ public class CurseFileHandler implements ModHandler {
 		return newMod;
 	}
 
-	private static boolean isMcVersion(String modVersion, String argVersion) {
+	private boolean isMcVersion(String modVersion, String argVersion) {
 		return "*".equals(argVersion) || argVersion.equals(modVersion);
 	}
 
-	private static CurseFile checkFileId(CurseFile curseFile) {
+	private CurseFile checkFileId(CurseFile curseFile) {
 		if (curseFile.getFileID() == null) {
 			curseFile.setFileID(0);
 		}
 		return curseFile;
 	}
 
-	private static boolean equalOrLessThan(final String modRelease, final String releaseType) {
+	private boolean equalOrLessThan(final String modRelease, final String releaseType) {
 		return "alpha".equals(releaseType) || releaseType.equals(modRelease)
 				|| "beta".equals(releaseType) && "release".equals(modRelease);
 	}
 
-	private static JSONObject getCurseProjectJson(final CurseFile curseFile) throws ParseException, IOException {
+	private JSONObject getCurseProjectJson(final CurseFile curseFile) throws ParseException, IOException {
 		log.trace("Getting CurseForge Widget JSON...");
 		val projectId = curseFile.getProjectID();
 		val projectName = curseFile.getProjectName();

@@ -26,6 +26,8 @@ public class ModPackManager {
 
 	private static Gson gson = new Gson();
 
+	private static CurseFileHandler curseFileHandler = new CurseFileHandler();
+
 	private ModPackManager() {
 		//no-op
 	}
@@ -50,7 +52,7 @@ public class ModPackManager {
 		CurseModpackFile modPack = new CurseModpackFile(modPackId, modPackName);
 		modPack.init();
 		Arguments.mcVersion = "*";
-		CurseFileHandler.updateCurseFile(modPack);
+		curseFileHandler.updateCurseFile(modPack);
 		if (!modPack.getFileName().contains(".zip")) {
 			modPack.setFileName(modPack.getFileName() + ".zip");
 		}
@@ -117,7 +119,7 @@ public class ModPackManager {
 
 	private static void getDownloadUrl(CurseFile modPack, boolean isCurseForge) {
 		try {
-			CurseFileHandler.getCurseForgeDownloadLocation(modPack, isCurseForge);
+			curseFileHandler.getCurseForgeDownloadLocation(modPack, isCurseForge);
 		} catch (IOException e) {
 			log.error(String.format("Failed to get download location for %s", modPack.getName()), e);
 		}
