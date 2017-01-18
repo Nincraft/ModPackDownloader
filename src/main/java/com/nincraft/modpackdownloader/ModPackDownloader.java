@@ -47,10 +47,13 @@ public class ModPackDownloader {
 
 		setupRepo();
 
-		if (Arguments.updateCurseModPack && ModPackManager.updateModPack()) {
-			ModPackManager.checkPastForgeVersion();
-			ModPackManager.handlePostDownload();
-			Arguments.downloadMods = true;
+		if (Arguments.updateCurseModPack) {
+			log.warn("The parameter updateCurseModpack will be changing in the next version. You will need to supply the modpack ID in future versions.");
+			if (ModPackManager.updateModPack()) {
+				ModPackManager.checkPastForgeVersion();
+				ModPackManager.handlePostDownload();
+				Arguments.downloadMods = true;
+			}
 		}
 
 		processManifests();
