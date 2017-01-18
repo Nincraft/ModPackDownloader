@@ -85,11 +85,17 @@ public abstract class AbstractProcessor {
 
 	protected abstract void init(Map<File, Manifest> manifestMap);
 
-	protected abstract void preprocess(Entry<File, Manifest> manifest);
+	protected boolean preprocess(Entry<File, Manifest> manifest){
+		return true;
+	}
 
-	protected abstract void process(Entry<File, Manifest> manifest) throws InterruptedException;
+	protected boolean process(Entry<File, Manifest> manifest) throws InterruptedException{
+		return true;
+	}
 
-	protected abstract void postProcess(Entry<File, Manifest> manifest);
+	protected boolean postProcess(Entry<File, Manifest> manifest){
+		return true;
+	}
 
 	public static List<Mod> buildModList(final File file, final Manifest manifest) {
 		log.trace("Building Mod List...");

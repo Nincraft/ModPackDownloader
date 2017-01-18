@@ -4,7 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.nincraft.modpackdownloader.handler.ApplicationUpdateHandler;
-import com.nincraft.modpackdownloader.manager.ModPackManager;
+import com.nincraft.modpackdownloader.processor.DownloadModpackProcessor;
 import com.nincraft.modpackdownloader.processor.DownloadModsProcessor;
 import com.nincraft.modpackdownloader.processor.MergeManifestsProcessor;
 import com.nincraft.modpackdownloader.processor.UpdateModsProcessor;
@@ -49,11 +49,8 @@ public class ModPackDownloader {
 
 		if (Arguments.updateCurseModPack) {
 			log.warn("The parameter updateCurseModpack will be changing in the next version. You will need to supply the modpack ID in future versions.");
-			if (ModPackManager.updateModPack()) {
-				ModPackManager.checkPastForgeVersion();
-				ModPackManager.handlePostDownload();
-				Arguments.downloadMods = true;
-			}
+			new DownloadModpackProcessor(Arguments.manifests).process();
+			Arguments.downloadMods = true;
 		}
 
 		processManifests();

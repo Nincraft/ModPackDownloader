@@ -36,18 +36,21 @@ public class UpdateModsProcessor extends AbstractProcessor {
 	}
 
 	@Override
-	protected void preprocess(final Entry<File, Manifest> manifestEntry) {
+	protected boolean preprocess(final Entry<File, Manifest> manifestEntry) {
 		backupManifest(manifestEntry.getKey(), manifestEntry.getValue());
+		return true;
 	}
 
 	@Override
-	protected void process(final Entry<File, Manifest> manifestEntry) {
+	protected boolean process(final Entry<File, Manifest> manifestEntry) {
 		updateMods(manifestEntry.getValue(), buildModList(manifestEntry.getKey(), manifestEntry.getValue()));
+		return true;
 	}
 
 	@Override
-	protected void postProcess(final Entry<File, Manifest> manifestEntry) {
+	protected boolean postProcess(final Entry<File, Manifest> manifestEntry) {
 		updateManifest(manifestEntry.getKey(), manifestEntry.getValue());
+		return true;
 	}
 
 	private void backupManifest(final File manifestFile, final Manifest manifest) {

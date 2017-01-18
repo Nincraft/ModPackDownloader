@@ -13,22 +13,8 @@ public class MergeManifestsProcessor extends AbstractProcessor {
 	}
 
 	@Override
-	protected void init(final Map<File, Manifest> manifestFiles) {
-		// no-op
+	protected void init(Map<File, Manifest> manifestMap) {
+		//no-op
 	}
 
-	@Override
-	protected void preprocess(final Entry<File, Manifest> manifest) {
-		// no-op
-	}
-
-	@Override
-	protected void process(final Entry<File, Manifest> manifest) {
-		// no-op
-	}
-
-	@Override
-	protected void postProcess(final Entry<File, Manifest> manifest) {
-		// no-op
-	}
 }

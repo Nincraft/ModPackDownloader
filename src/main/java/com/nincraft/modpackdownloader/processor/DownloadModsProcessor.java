@@ -62,19 +62,16 @@ public class DownloadModsProcessor extends AbstractProcessor {
 	}
 
 	@Override
-	protected void preprocess(final Entry<File, Manifest> manifestEntry) {
-		// no-op
-	}
-
-	@Override
-	protected void process(final Entry<File, Manifest> manifestEntry) {
+	protected boolean process(final Entry<File, Manifest> manifestEntry) {
 		downloadMods(manifestEntry.getValue());
+		return true;
 	}
 
 	@Override
-	protected void postProcess(final Entry<File, Manifest> manifestEntry) {
+	protected boolean postProcess(final Entry<File, Manifest> manifestEntry) {
 		moveOverrides(manifestEntry.getValue());
 		DownloadHelper.getDownloadSummarizer().summarize();
+		return true;
 	}
 
 	private void moveOverrides(Manifest manifest) {
