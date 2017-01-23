@@ -19,7 +19,7 @@ public class ApplicationUpdateHandler {
 
 	private Reference reference = Reference.getInstance();
 
-	public static void update() {
+	public void update() {
 		JSONObject appJson;
 		try {
 			appJson = URLHelper.getJsonFromUrl(reference.getUpdateAppUrl());

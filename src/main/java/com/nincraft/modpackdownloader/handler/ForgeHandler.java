@@ -20,7 +20,7 @@ public class ForgeHandler {
 
 	private static Reference reference = Reference.getInstance();
 
-	public static void downloadForge(String minecraftVersion, List<ModLoader> modLoaders) {
+	public void downloadForge(String minecraftVersion, List<ModLoader> modLoaders) {
 		if (CollectionUtils.isEmpty(modLoaders) || Strings.isNullOrEmpty(minecraftVersion)) {
 			log.debug("No Forge or Minecraft version found in manifest, skipping");
 			return;
@@ -38,11 +38,11 @@ public class ForgeHandler {
 		}
 	}
 
-	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, boolean downloadInstaller) {
+	private void downloadForgeFile(String minecraftVersion, ModLoader modLoader, boolean downloadInstaller) {
 		downloadForgeFile(minecraftVersion, modLoader, downloadInstaller, true);
 	}
 
-	private static void downloadForgeFile(String minecraftVersion, ModLoader modLoader, boolean downloadInstaller, boolean alternateDownloadUrl) {
+	private void downloadForgeFile(String minecraftVersion, ModLoader modLoader, boolean downloadInstaller, boolean alternateDownloadUrl) {
 		modLoader.setRename(modLoader.getRename(downloadInstaller));
 		String forgeFileName = "forge-" + minecraftVersion + "-" + modLoader.getForgeId();
 		String forgeURL = reference.getForgeUrl() + minecraftVersion + "-" + modLoader.getForgeId();
@@ -62,7 +62,7 @@ public class ForgeHandler {
 		}
 	}
 
-	public static List<ModLoader> updateForge(String minecraftVersion, List<ModLoader> modLoaders) {
+	public List<ModLoader> updateForge(String minecraftVersion, List<ModLoader> modLoaders) {
 		if (!Arguments.updateForge) {
 			log.trace("Updating Forge disabled");
 			return modLoaders;

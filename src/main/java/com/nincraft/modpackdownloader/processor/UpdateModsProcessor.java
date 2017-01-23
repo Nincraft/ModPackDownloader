@@ -59,7 +59,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		}
 	}
 
-	public static void backupCurseManifest(final File manifestFile) {
+	public void backupCurseManifest(final File manifestFile) {
 		try {
 			FileUtils.copyFile(manifestFile, new File(manifestFile.getAbsolutePath() + ".bak"), true);
 		} catch (IOException e) {
@@ -67,7 +67,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		}
 	}
 
-	public static void updateMods(final Manifest manifest, final List<Mod> modList) {
+	public void updateMods(final Manifest manifest, final List<Mod> modList) {
 		if (!manifest.getBatchAddCurse().isEmpty()) {
 			log.info("Found batch add for Curse");
 			addBatch(manifest, modList);
@@ -99,7 +99,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		log.trace(String.format("Finished updating %s mods.", Reference.updateTotal));
 	}
 
-	private static void addBatch(final Manifest manifestFile, final List<Mod> modList) {
+	private void addBatch(final Manifest manifestFile, final List<Mod> modList) {
 		CurseFile curseFile;
 		String projectIdPattern = "(\\d)+";
 		String projectNamePattern = "(((?:[a-z][a-z]+))(-)?)+";
@@ -132,7 +132,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		}
 	}
 
-	public static void updateManifest(final File file, final Manifest manifest) {
+	public void updateManifest(final File file, final Manifest manifest) {
 		log.info("Updating Manifest File...");
 		// Sort Mod Lists
 		manifest.getCurseFiles().sort(MOD_COMPARATOR);
@@ -151,7 +151,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		}
 	}
 
-	public static void cleanupLists(final Manifest manifest) {
+	public void cleanupLists(final Manifest manifest) {
 
 		// Clean up Empty Lists
 		if (manifest.getCurseFiles().isEmpty()) {

@@ -36,7 +36,7 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		super(manifestFiles);
 	}
 
-	private static boolean backupModsFolder(File modsFolder, File backupModsFolder) {
+	private boolean backupModsFolder(File modsFolder, File backupModsFolder) {
 		if (modsFolder.exists()) {
 			try {
 				FileUtils.moveDirectory(modsFolder, backupModsFolder);
@@ -48,7 +48,7 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		return false;
 	}
 
-	private static boolean checkSuccessfulDownloadStatus(DownloadStatus downloadStatus) {
+	private boolean checkSuccessfulDownloadStatus(DownloadStatus downloadStatus) {
 		return DownloadStatus.SUCCESS_DOWNLOAD.equals(downloadStatus) || DownloadStatus.SUCCESS_CACHE.equals(downloadStatus);
 	}
 

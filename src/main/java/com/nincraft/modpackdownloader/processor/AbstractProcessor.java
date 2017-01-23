@@ -97,7 +97,7 @@ public abstract class AbstractProcessor {
 		return true;
 	}
 
-	public static List<Mod> buildModList(final File file, final Manifest manifest) {
+	public List<Mod> buildModList(final File file, final Manifest manifest) {
 		log.trace("Building Mod List...");
 
 		val modList = new ArrayList<Mod>();
@@ -116,7 +116,7 @@ public abstract class AbstractProcessor {
 		return modList;
 	}
 
-	protected static void waitFinishProcessingMods() throws InterruptedException {
+	protected void waitFinishProcessingMods() throws InterruptedException {
 		while (!getExecutorService().isTerminated()) {
 			Thread.sleep(1);
 		}
