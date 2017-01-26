@@ -14,6 +14,7 @@ import com.nincraft.modpackdownloader.util.Reference;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.Arrays;
@@ -67,7 +68,7 @@ public class ModPackDownloader {
 	}
 
 	private static void updateMods() throws InterruptedException {
-		if (Arguments.updateMods) {
+		if (Arguments.updateMods || !StringUtils.isBlank(Arguments.checkMCUpdate)) {
 			new UpdateModsProcessor(Arguments.manifests).process();
 		}
 	}
@@ -99,7 +100,7 @@ public class ModPackDownloader {
 			log.info("No output folder supplied, using default \"mods\"");
 			Arguments.modFolder = "mods";
 		}
-		if (!Arguments.downloadMods && !Arguments.updateMods && !Arguments.mergeManifests) {
+		if (!Arguments.downloadMods && !Arguments.updateMods && !Arguments.mergeManifests && StringUtils.isBlank(Arguments.checkMCUpdate)) {
 			Arguments.downloadMods = true;
 		}
 	}

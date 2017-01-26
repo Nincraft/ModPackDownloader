@@ -99,6 +99,20 @@ public class ModPackDownloaderTest {
 	}
 
 	@Test
+	public void testCheckUpdate() throws InterruptedException, IOException, ParseException {
+		String manifestName = "src/test/resources/update-test.json";
+		File manifestFile = new File(manifestName);
+		String[] args = {"-manifest", manifestName, "-checkMCUpdate", "1.10.2"};
+		Gson gson = new Gson();
+		JSONObject jsonLists = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
+		Manifest manifest = gson.fromJson(jsonLists.toString(), Manifest.class);
+		String oldForgeVersion = manifest.getForgeVersion();
+		ModPackDownloader.main(args);
+		jsonLists = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
+		manifest = gson.fromJson(jsonLists.toString(), Manifest.class);
+	}
+
+	@Test
 	public void testAppUpdate() throws InterruptedException {
 		String[] args = {"-updateApp"};
 		ModPackDownloader.main(args);

@@ -5,11 +5,15 @@ import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
 import com.nincraft.modpackdownloader.container.Mod;
 import com.nincraft.modpackdownloader.handler.ForgeHandler;
+import com.nincraft.modpackdownloader.summary.UpdateCheckSummarizer;
+import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.Reference;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -25,38 +29,13 @@ import java.util.regex.Pattern;
 public class UpdateModsProcessor extends AbstractProcessor {
 
 	private static Reference reference = Reference.getInstance();
+	private static UpdateCheckSummarizer updateCheckSummarizer = UpdateCheckSummarizer.getInstance();
+	@Getter
+	private boolean checkUpdate;
 
 	public UpdateModsProcessor(final List<File> manifestFiles) {
 		super(manifestFiles);
-	}
-
-	@Override
-	protected void init(final Map<File, Manifest> manifestMap) {
-		// no-op
-	}
-
-	@Override
-	protected boolean preprocess(final Entry<File, Manifest> manifestEntry) {
-		backupManifest(manifestEntry.getKey(), manifestEntry.getValue());
-		return true;
-	}
-
-	@Override
-	protected boolean process(final Entry<File, Manifest> manifestEntry) {
-		updateMods(manifestEntry.getValue(), buildModList(manifestEntry.getKey(), manifestEntry.getValue()));
-		return true;
-	}
-
-	@Override
-	protected boolean postProcess(final Entry<File, Manifest> manifestEntry) {
-		updateManifest(manifestEntry.getKey(), manifestEntry.getValue());
-		return true;
-	}
-
-	private void backupManifest(final File manifestFile, final Manifest manifest) {
-		if (CollectionUtils.isNotEmpty(manifest.getCurseFiles())) {
-			backupCurseManifest(manifestFile);
-		}
+		checkUpdate = !StringUtils.isBlank(Arguments.checkMCUpdate);
 	}
 
 	public void backupCurseManifest(final File manifestFile) {
@@ -76,8 +55,8 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		Reference.updateTotal = modList.size();
 
 		Runnable forgeThread = new Thread(() ->
-			manifest.getMinecraft().setModLoaders(
-					ForgeHandler.updateForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders())));
+				manifest.getMinecraft().setModLoaders(
+						ForgeHandler.updateForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders())));
 
 		setExecutorService(Executors.newFixedThreadPool(Reference.updateTotal + 1));
 
@@ -166,5 +145,42 @@ public class UpdateModsProcessor extends AbstractProcessor {
 
 		// Always Clean up Batch Add
 		manifest.setBatchAddCurse(null);
+	}
+
+	@Override
+	protected void init(final Map<File, Manifest> manifestMap) {
+		// no-op
+	}
+
+	@Override
+	protected boolean preprocess(final Entry<File, Manifest> manifestEntry) {
+		if (!isCheckUpdate()) {
+			backupManifest(manifestEntry.getKey(), manifestEntry.getValue());
+		} else {
+			Arguments.mcVersion = Arguments.checkMCUpdate;
+		}
+		return true;
+	}
+
+	@Override
+	protected boolean process(final Entry<File, Manifest> manifestEntry) {
+		updateMods(manifestEntry.getValue(), buildModList(manifestEntry.getKey(), manifestEntry.getValue()));
+		return true;
+	}
+
+	@Override
+	protected boolean postProcess(final Entry<File, Manifest> manifestEntry) {
+		if (isCheckUpdate()) {
+			updateCheckSummarizer.summarize();
+		} else {
+			updateManifest(manifestEntry.getKey(), manifestEntry.getValue());
+		}
+		return true;
+	}
+
+	private void backupManifest(final File manifestFile, final Manifest manifest) {
+		if (CollectionUtils.isNotEmpty(manifest.getCurseFiles())) {
+			backupCurseManifest(manifestFile);
+		}
 	}
 }

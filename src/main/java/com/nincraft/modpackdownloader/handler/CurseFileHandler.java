@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.CurseModpackFile;
 import com.nincraft.modpackdownloader.container.Mod;
+import com.nincraft.modpackdownloader.summary.UpdateCheckSummarizer;
 import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.DownloadHelper;
 import com.nincraft.modpackdownloader.util.Reference;
@@ -27,6 +28,8 @@ import java.util.List;
 public class CurseFileHandler implements ModHandler {
 
 	private static Reference reference = Reference.getInstance();
+
+	private static UpdateCheckSummarizer updateCheckSummarizer = UpdateCheckSummarizer.getInstance();
 
 	private void downloadCurseMod(CurseFile curseFile) {
 		try {
@@ -116,6 +119,7 @@ public class CurseFileHandler implements ModHandler {
 			log.info(String.format("Update found for %s.  Most recent version is %s.", curseFile.getName(),
 					newMod.getVersion()));
 			updateCurseFile(curseFile, newMod);
+			updateCheckSummarizer.getModList().add(curseFile);
 		}
 	}
 

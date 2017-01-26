@@ -45,6 +45,8 @@ public class Arguments {
 	public static boolean downloadMods;
 	@Parameter(names = {"-updateMods"}, description = "Updates mods in the given manifests")
 	public static boolean updateMods;
+	@Parameter(names = {"-checkMCUpdate"}, description = "Checks mods for updates given the Minecraft version (passed to this parameter) and manifests")
+	public static String checkMCUpdate;
 	@Parameter(names = {"-mergeManifests"}, description = "Merges the given manifests into one manifest")
 	public static boolean mergeManifests;
 	@Parameter(names = {"-help"}, description = "Displays this great message", help = true)

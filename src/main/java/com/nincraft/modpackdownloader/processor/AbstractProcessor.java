@@ -1,17 +1,5 @@
 package com.nincraft.modpackdownloader.processor;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
-
-import lombok.Setter;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.beust.jcommander.internal.Maps;
 import com.google.gson.Gson;
 import com.nincraft.modpackdownloader.container.CurseFile;
@@ -22,10 +10,24 @@ import com.nincraft.modpackdownloader.handler.CurseFileHandler;
 import com.nincraft.modpackdownloader.handler.ModHandler;
 import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
 import com.nincraft.modpackdownloader.util.Arguments;
-
 import lombok.Getter;
-import lombok.val;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
 
 @Log4j2
 public abstract class AbstractProcessor {
@@ -101,7 +103,7 @@ public abstract class AbstractProcessor {
 		log.trace("Building Mod List...");
 
 		val modList = new ArrayList<Mod>();
-		if (manifest.getMinecraftVersion() != null) {
+		if (manifest.getMinecraftVersion() != null && StringUtils.isBlank(Arguments.checkMCUpdate)) {
 			Arguments.mcVersion = manifest.getMinecraftVersion();
 		}
 
