@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public abstract class AbstractProcessor {
@@ -118,9 +119,7 @@ public abstract class AbstractProcessor {
 		return modList;
 	}
 
-	protected void waitFinishProcessingMods() throws InterruptedException {
-		while (!getExecutorService().isTerminated()) {
-			Thread.sleep(1);
-		}
+	private void waitFinishProcessingMods() throws InterruptedException {
+		getExecutorService().awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 	}
 }
