@@ -3,7 +3,6 @@ package com.nincraft.modpackdownloader;
 import com.google.gson.Gson;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
-import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.VersionHelper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,7 +13,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -28,12 +26,6 @@ import java.util.stream.Collectors;
 
 @Log4j2
 public class ModPackDownloaderTest {
-
-	@Before
-	public void setup() {
-		Arguments.updateMods = false;
-		Arguments.updateApp = false;
-	}
 
 	@After
 	public void cleanUp() throws IOException {

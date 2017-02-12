@@ -9,6 +9,7 @@ import com.nincraft.modpackdownloader.processor.DownloadModsProcessor;
 import com.nincraft.modpackdownloader.processor.MergeManifestsProcessor;
 import com.nincraft.modpackdownloader.processor.UpdateModsProcessor;
 import com.nincraft.modpackdownloader.util.Arguments;
+import com.nincraft.modpackdownloader.util.DownloadHelper;
 import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.experimental.UtilityClass;
@@ -24,12 +25,14 @@ import java.util.Arrays;
 public class ModPackDownloader {
 
 	private static Reference reference = Reference.getInstance();
+	private Arguments arguments;
+	private DownloadHelper downloadHelper;
 
 	public static void main(final String[] args) throws InterruptedException {
 		log.info("Starting ModPackDownloader with arguments: " + Arrays.toString(args));
 		JCommander jCommander = initArguments(args);
 
-		if (Arguments.helpEnabled) {
+		if (arguments.isHelpEnabled()) {
 			jCommander.usage();
 			return;
 		}
@@ -37,11 +40,11 @@ public class ModPackDownloader {
 		// Set default application arguments
 		defaultArguments();
 
-		if (Arguments.clearCache) {
+		if (arguments.isClearCache()) {
 			FileSystemHelper.clearCache();
 			return;
 		}
-		if (Arguments.updateApp) {
+		if (arguments.isUpdateApp()) {
 			ApplicationUpdateHandler.update();
 			return;
 		}
@@ -53,7 +56,7 @@ public class ModPackDownloader {
 
 	private static void processManifests() throws InterruptedException {
 		log.trace("Processing Manifests...");
-
+		downloadHelper = new DownloadHelper(arguments);
 		downloadModpack();
 		updateMods();
 		downloadMods();
@@ -63,48 +66,51 @@ public class ModPackDownloader {
 	}
 
 	private static void downloadModpack() throws InterruptedException{
-		if (Arguments.updateCurseModPack) {
+		if (arguments.isUpdateCurseModPack()) {
 			log.warn("The parameter updateCurseModpack will be changing in the next version. You will need to supply the modpack ID in future versions.");
-			new DownloadModpackProcessor(Arguments.manifests).process();
-			Arguments.downloadMods = true;
+			new DownloadModpackProcessor(arguments, downloadHelper).process();
+			arguments.setDownloadMods(true);
 		}
 	}
 
 	private static void updateMods() throws InterruptedException {
-		if (Arguments.updateMods || !StringUtils.isBlank(Arguments.checkMCUpdate)) {
-			new UpdateModsProcessor(Arguments.manifests).process();
+		if (arguments.isUpdateMods() || !StringUtils.isBlank(arguments.getCheckMCUpdate())) {
+			new UpdateModsProcessor(arguments, downloadHelper).process();
 		}
 	}
 
 	private static void downloadMods() throws InterruptedException {
-		if (Arguments.downloadMods) {
-			new DownloadModsProcessor(Arguments.manifests).process();
+		if (arguments.isDownloadMods()) {
+			new DownloadModsProcessor(arguments, downloadHelper).process();
 		}
 	}
 
 	private static void mergeManifests() throws InterruptedException {
-		if (Arguments.mergeManifests) {
-			new MergeManifestsProcessor(Arguments.manifests).process();
+		if (arguments.isMergeManifests()) {
+			new MergeManifestsProcessor(arguments, downloadHelper).process();
 		}
 	}
 
 	private static JCommander initArguments(final String[] args) {
 		// Initialize application arguments
-		return new JCommander(new Arguments(), args);
+		Arguments arg = new Arguments();
+		JCommander jCommander = new JCommander(arg, args);
+		arguments = arg;
+		return jCommander;
 	}
 
 	private static void defaultArguments() {
-		if (CollectionUtils.isEmpty(Arguments.manifests)) {
+		if (CollectionUtils.isEmpty(arguments.getManifests())) {
 			log.info(String.format("No manifest supplied, using default %s", reference.getDefaultManifestFile()));
 
-			Arguments.manifests = Lists.newArrayList(new File(reference.getDefaultManifestFile()));
+			arguments.setManifests(Lists.newArrayList(new File(reference.getDefaultManifestFile())));
 		}
-		if (Strings.isNullOrEmpty(Arguments.modFolder)) {
+		if (Strings.isNullOrEmpty(arguments.getModFolder())) {
 			log.info("No output folder supplied, using default \"mods\"");
-			Arguments.modFolder = "mods";
+			arguments.setModFolder("mods");
 		}
-		if (!Arguments.downloadMods && !Arguments.updateMods && !Arguments.mergeManifests && StringUtils.isBlank(Arguments.checkMCUpdate)) {
-			Arguments.downloadMods = true;
+		if (!arguments.isDownloadMods() && !arguments.isUpdateMods() && !arguments.isMergeManifests() && StringUtils.isBlank(arguments.getCheckMCUpdate())) {
+			arguments.setDownloadMods(true);
 		}
 	}
 

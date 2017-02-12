@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.nincraft.modpackdownloader.container.ModLoader;
 import com.nincraft.modpackdownloader.status.DownloadStatus;
 import com.nincraft.modpackdownloader.util.*;
-import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -15,10 +14,16 @@ import java.io.IOException;
 import java.util.List;
 
 @Log4j2
-@UtilityClass
 public class ForgeHandler {
 
 	private static Reference reference = Reference.getInstance();
+	private Arguments arguments;
+	private DownloadHelper downloadHelper;
+
+	public ForgeHandler(Arguments arguments, DownloadHelper downloadHelper) {
+		this.arguments = arguments;
+		this.downloadHelper = downloadHelper;
+	}
 
 	public void downloadForge(String minecraftVersion, List<ModLoader> modLoaders) {
 		if (CollectionUtils.isEmpty(modLoaders) || Strings.isNullOrEmpty(minecraftVersion)) {
@@ -56,14 +61,14 @@ public class ForgeHandler {
 
 		modLoader.setDownloadUrl(forgeURL);
 		modLoader.setFileName(forgeFileName);
-		if (DownloadStatus.FAILURE.equals(DownloadHelper.getInstance().downloadFile(modLoader)) && alternateDownloadUrl) {
+		if (DownloadStatus.FAILURE.equals(downloadHelper.downloadFile(modLoader)) && alternateDownloadUrl) {
 			log.warn("Attempting alternate Forge download URL");
 			downloadForgeFile(minecraftVersion, modLoader, downloadInstaller, false);
 		}
 	}
 
 	public List<ModLoader> updateForge(String minecraftVersion, List<ModLoader> modLoaders) {
-		if (!Arguments.updateForge) {
+		if (!arguments.isUpdateForge()) {
 			log.trace("Updating Forge disabled");
 			return modLoaders;
 		}

@@ -1,14 +1,15 @@
 package com.nincraft.modpackdownloader.processor;
 
 import com.nincraft.modpackdownloader.container.Manifest;
+import com.nincraft.modpackdownloader.util.Arguments;
+import com.nincraft.modpackdownloader.util.DownloadHelper;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 public class MergeManifestsProcessor extends AbstractProcessor {
-	public MergeManifestsProcessor(final List<File> manifestFiles) {
-		super(manifestFiles);
+	public MergeManifestsProcessor(Arguments arguments, DownloadHelper downloadHelper) {
+		super(arguments, downloadHelper);
 	}
 
 	@Override

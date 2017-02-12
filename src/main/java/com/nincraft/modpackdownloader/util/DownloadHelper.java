@@ -17,16 +17,12 @@ import java.util.Observable;
 public class DownloadHelper extends Observable {
 
 	@Getter
-	private static final DownloadHelper instance = new DownloadHelper();
-	@Getter
 	private static final DownloadSummarizer downloadSummarizer = new DownloadSummarizer();
+	private Arguments arguments;
 
-	static {
-		instance.addObserver(downloadSummarizer);
-	}
-
-	private DownloadHelper() {
-
+	public DownloadHelper(Arguments arguments) {
+		this.addObserver(downloadSummarizer);
+		this.arguments = arguments;
 	}
 
 	/**
@@ -56,12 +52,12 @@ public class DownloadHelper extends Observable {
 		}
 		val decodedFileName = URLHelper.decodeSpaces(downloadableFile.getFileName());
 
-		if (FileSystemHelper.getDownloadedFile(decodedFileName, downloadableFile.getFolder()).exists() && !Arguments.forceDownload) {
+		if (FileSystemHelper.getDownloadedFile(decodedFileName, downloadableFile.getFolder()).exists() && !arguments.isForceDownload()) {
 			log.info(String.format("Found %s already downloaded, skipping", decodedFileName));
 			return notifyStatus(DownloadStatus.SKIPPED);
 		}
 
-		if (!FileSystemHelper.isInLocalRepo(downloadableFile.getName(), decodedFileName) || Arguments.forceDownload) {
+		if (!FileSystemHelper.isInLocalRepo(downloadableFile.getName(), decodedFileName) || arguments.isForceDownload()) {
 			val downloadedFile = FileSystemHelper.getLocalFile(downloadableFile);
 			try {
 				FileUtils.copyURLToFile(new URL(downloadableFile.getDownloadUrl()), downloadedFile);
@@ -77,7 +73,7 @@ public class DownloadHelper extends Observable {
 		} else {
 			status = DownloadStatus.SUCCESS_CACHE;
 		}
-		FileSystemHelper.moveFromLocalRepo(downloadableFile, decodedFileName, downloadToLocalRepo);
+		FileSystemHelper.moveFromLocalRepo(downloadableFile, decodedFileName, downloadToLocalRepo, arguments.getModFolder());
 		log.info(String.format("Successfully %s %s", status, downloadableFile.getFileName()));
 		return notifyStatus(status);
 	}

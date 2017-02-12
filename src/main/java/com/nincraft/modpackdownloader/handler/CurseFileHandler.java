@@ -27,13 +27,20 @@ import java.util.List;
 @Log4j2
 public class CurseFileHandler implements ModHandler {
 
+	private Arguments arguments;
+	private DownloadHelper downloadHelper;
 	private static Reference reference = Reference.getInstance();
 
 	private static UpdateCheckSummarizer updateCheckSummarizer = UpdateCheckSummarizer.getInstance();
 
+	public CurseFileHandler(Arguments arguments, DownloadHelper downloadHelper) {
+		this.arguments = arguments;
+		this.downloadHelper = downloadHelper;
+	}
+
 	private void downloadCurseMod(CurseFile curseFile) {
 		try {
-			DownloadHelper.getInstance().downloadFile(getCurseForgeDownloadLocation(curseFile));
+			downloadHelper.downloadFile(getCurseForgeDownloadLocation(curseFile));
 		} catch (IOException e) {
 			log.error(e);
 		}
@@ -114,7 +121,7 @@ public class CurseFileHandler implements ModHandler {
 			return;
 		}
 
-		val newMod = getLatestVersion(curseFile.getReleaseType() != null ? curseFile.getReleaseType() : Arguments.releaseType, curseFile, fileListJson, null);
+		val newMod = getLatestVersion(curseFile.getReleaseType() != null ? curseFile.getReleaseType() : arguments.getReleaseType(), curseFile, fileListJson, null);
 		if (curseFile.getFileID().compareTo(newMod.getFileID()) < 0) {
 			log.info(String.format("Update found for %s.  Most recent version is %s.", curseFile.getName(),
 					newMod.getVersion()));
@@ -136,7 +143,7 @@ public class CurseFileHandler implements ModHandler {
 		log.trace("Getting most recent available file...");
 		boolean backup = true;
 		if (Strings.isNullOrEmpty(mcVersion)) {
-			mcVersion = Arguments.mcVersion;
+			mcVersion = arguments.getMcVersion();
 			backup = false;
 		}
 		releaseType = defaultReleaseType(releaseType);
@@ -151,7 +158,7 @@ public class CurseFileHandler implements ModHandler {
 		setUpdatedFileId(curseFile, fileListJson, newMod, fileIds);
 
 		if (!"alpha".equals(releaseType) && fileIds.isEmpty()) {
-			if (CollectionUtils.isEmpty(Arguments.backupVersions)) {
+			if (CollectionUtils.isEmpty(arguments.getBackupVersions())) {
 				log.info(String.format("No files found for Minecraft %s, disabling download of %s", mcVersion, curseFile.getName()));
 				curseFile.setSkipDownload(true);
 			} else if (!backup) {
@@ -190,7 +197,7 @@ public class CurseFileHandler implements ModHandler {
 	}
 
 	private CurseFile checkBackupVersions(String releaseType, CurseFile curseFile, JSONObject fileListJson, String mcVersion, CurseFile newMod) {
-		for (String backupVersion : Arguments.backupVersions) {
+		for (String backupVersion : arguments.getBackupVersions()) {
 			log.info(String.format("No files found for Minecraft %s, checking backup version %s", mcVersion, backupVersion));
 			newMod = getLatestVersion(releaseType, curseFile, fileListJson, backupVersion);
 			if (BooleanUtils.isFalse(newMod.getSkipDownload())) {

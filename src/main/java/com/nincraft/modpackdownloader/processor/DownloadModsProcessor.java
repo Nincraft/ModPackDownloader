@@ -24,13 +24,14 @@ public class DownloadModsProcessor extends AbstractProcessor {
 	private static final List<Mod> MOD_LIST = Lists.newArrayList();
 	private static Reference reference = Reference.getInstance();
 
-	public DownloadModsProcessor(final List<File> manifestFiles) {
-		super(manifestFiles);
+	public DownloadModsProcessor(Arguments arguments, DownloadHelper downloadHelper) {
+		super(arguments, downloadHelper);
 	}
 
 	public void downloadMods(final Manifest manifest) {
-		setExecutorService(Executors.newFixedThreadPool(Arguments.maxDownloadThreads > 0 ? Arguments.maxDownloadThreads : MOD_LIST.size() + 1));
-		Runnable forgeThread = new Thread(() -> ForgeHandler.downloadForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders()));
+		setExecutorService(Executors.newFixedThreadPool(arguments.getMaxDownloadThreads() > 0 ? arguments.getMaxDownloadThreads() : MOD_LIST.size() + 1));
+		ForgeHandler forgeHandler = new ForgeHandler(arguments, downloadHelper);
+		Runnable forgeThread = new Thread(() -> forgeHandler.downloadForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders()));
 
 		getExecutorService().execute(forgeThread);
 

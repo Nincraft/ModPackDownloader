@@ -10,6 +10,7 @@ import com.nincraft.modpackdownloader.handler.CurseFileHandler;
 import com.nincraft.modpackdownloader.handler.ModHandler;
 import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
 import com.nincraft.modpackdownloader.util.Arguments;
+import com.nincraft.modpackdownloader.util.DownloadHelper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -43,16 +44,15 @@ public abstract class AbstractProcessor {
 
 	protected Map<File, Manifest> manifestMap = Maps.newHashMap();
 	private static Gson gson = new Gson();
+	protected Arguments arguments;
+	protected DownloadHelper downloadHelper;
 
-	static {
-		log.trace("Registering various mod type handlers...");
-		MOD_HANDLERS.put(CurseFile.class, new CurseFileHandler());
-		MOD_HANDLERS.put(ThirdParty.class, new ThirdPartyModHandler());
-		log.trace("Finished registering various mod type handlers.");
-	}
-
-	public AbstractProcessor(final List<File> manifestFiles) {
-		buildManifestList(manifestFiles);
+	public AbstractProcessor(Arguments arguments, DownloadHelper downloadHelper) {
+		MOD_HANDLERS.put(CurseFile.class, new CurseFileHandler(arguments, downloadHelper));
+		MOD_HANDLERS.put(ThirdParty.class, new ThirdPartyModHandler(downloadHelper));
+		this.arguments = arguments;
+		this.downloadHelper = downloadHelper;
+		buildManifestList(arguments.getManifests());
 	}
 
 	private void buildManifestList(final List<File> manifestFiles) {
@@ -104,8 +104,8 @@ public abstract class AbstractProcessor {
 		log.trace("Building Mod List...");
 
 		val modList = new ArrayList<Mod>();
-		if (manifest.getMinecraftVersion() != null && StringUtils.isBlank(Arguments.checkMCUpdate)) {
-			Arguments.mcVersion = manifest.getMinecraftVersion();
+		if (manifest.getMinecraftVersion() != null && StringUtils.isBlank(arguments.getCheckMCUpdate())) {
+			arguments.setMcVersion(manifest.getMinecraftVersion());
 		}
 
 		modList.addAll(manifest.getCurseFiles());

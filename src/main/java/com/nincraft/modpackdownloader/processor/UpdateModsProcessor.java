@@ -7,6 +7,7 @@ import com.nincraft.modpackdownloader.container.Mod;
 import com.nincraft.modpackdownloader.handler.ForgeHandler;
 import com.nincraft.modpackdownloader.summary.UpdateCheckSummarizer;
 import com.nincraft.modpackdownloader.util.Arguments;
+import com.nincraft.modpackdownloader.util.DownloadHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -33,9 +34,9 @@ public class UpdateModsProcessor extends AbstractProcessor {
 	@Getter
 	private boolean checkUpdate;
 
-	public UpdateModsProcessor(final List<File> manifestFiles) {
-		super(manifestFiles);
-		checkUpdate = !StringUtils.isBlank(Arguments.checkMCUpdate);
+	public UpdateModsProcessor(Arguments arguments, DownloadHelper downloadHelper) {
+		super(arguments, downloadHelper);
+		checkUpdate = !StringUtils.isBlank(arguments.getCheckMCUpdate());
 	}
 
 	public void backupCurseManifest(final File manifestFile) {
@@ -54,9 +55,10 @@ public class UpdateModsProcessor extends AbstractProcessor {
 
 		Reference.updateTotal = modList.size();
 
+		ForgeHandler forgeHandler = new ForgeHandler(arguments, downloadHelper);
 		Runnable forgeThread = new Thread(() ->
 				manifest.getMinecraft().setModLoaders(
-						ForgeHandler.updateForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders())));
+						forgeHandler.updateForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders())));
 
 		setExecutorService(Executors.newFixedThreadPool(Reference.updateTotal + 1));
 
@@ -157,7 +159,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		if (!isCheckUpdate()) {
 			backupManifest(manifestEntry.getKey(), manifestEntry.getValue());
 		} else {
-			Arguments.mcVersion = Arguments.checkMCUpdate;
+			arguments.setMcVersion(arguments.getCheckMCUpdate());
 		}
 		return true;
 	}

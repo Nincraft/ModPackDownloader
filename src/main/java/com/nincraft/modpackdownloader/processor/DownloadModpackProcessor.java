@@ -21,7 +21,6 @@ import org.json.simple.parser.ParseException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -32,8 +31,8 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 
 	private CurseFileHandler curseFileHandler;
 
-	public DownloadModpackProcessor(final List<File> manifestFiles) {
-		super(manifestFiles);
+	public DownloadModpackProcessor(Arguments arguments, DownloadHelper downloadHelper) {
+		super(arguments, downloadHelper);
 	}
 
 	private boolean backupModsFolder(File modsFolder, File backupModsFolder) {
@@ -55,7 +54,7 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 	@Override
 	protected void init(final Map<File, Manifest> manifestMap) {
 		gson = new Gson();
-		curseFileHandler = new CurseFileHandler();
+		curseFileHandler = new CurseFileHandler(arguments, downloadHelper);
 	}
 
 	@Override
@@ -96,21 +95,21 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		String modPackName = modPackIdName.substring(modPackIdName.indexOf('-') + 1);
 		CurseModpackFile modPack = new CurseModpackFile(modPackId, modPackName);
 		modPack.init();
-		Arguments.mcVersion = "*";
+		arguments.setMcVersion("*");
 		curseFileHandler.updateCurseFile(modPack);
 		if (!modPack.getFileName().contains(".zip")) {
 			modPack.setFileName(modPack.getFileName() + ".zip");
 		}
-		Arguments.modFolder = ".";
+		arguments.setModFolder(".");
 		modPack.setDownloadUrl(modPack.getCurseForgeDownloadUrl());
 		getDownloadUrl(modPack, true);
-		DownloadStatus downloadStatus = DownloadHelper.getInstance().downloadFile(modPack, false);
+		DownloadStatus downloadStatus = downloadHelper.downloadFile(modPack, false);
 
 		if (DownloadStatus.FAILURE.equals(downloadStatus)) {
 			log.warn(String.format("Failed to download %s. Attempting redownload with FTB URL", modPack.getName()));
 			modPack.setDownloadUrl(modPack.getCurseForgeDownloadUrl(false));
 			getDownloadUrl(modPack, false);
-			downloadStatus = DownloadHelper.getInstance().downloadFile(modPack, false);
+			downloadStatus = downloadHelper.downloadFile(modPack, false);
 		}
 
 		if (DownloadStatus.SKIPPED.equals(downloadStatus)) {
@@ -118,8 +117,8 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		}
 
 		returnStatus = checkSuccessfulDownloadStatus(downloadStatus);
-		Arguments.modFolder = "mods";
-		File modsFolder = new File(Arguments.modFolder);
+		arguments.setModFolder("mods");
+		File modsFolder = new File(arguments.getModFolder());
 		File backupModsFolder = new File("backupmods");
 		if (backupModsFolder(modsFolder, backupModsFolder)) {
 			return false;
@@ -177,7 +176,7 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 			JSONObject currentJson = null;
 			JSONObject multiMCJson = null;
 			try {
-				currentJson = (JSONObject) new JSONParser().parse(new FileReader(Arguments.manifests.get(0)));
+				currentJson = (JSONObject) new JSONParser().parse(new FileReader(arguments.getManifests().get(0)));
 				multiMCJson = (JSONObject) new JSONParser().parse(new FileReader("../patches/net.minecraftforge.json"));
 			} catch (IOException | ParseException e) {
 				log.error(e);

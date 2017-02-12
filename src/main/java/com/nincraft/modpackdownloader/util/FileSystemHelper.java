@@ -25,11 +25,11 @@ public final class FileSystemHelper {
 		}
 	}
 
-	public static void moveFromLocalRepo(final DownloadableFile downloadableFile, final String fileName, boolean downloadToLocalRepo) {
+	public static void moveFromLocalRepo(final DownloadableFile downloadableFile, final String fileName, boolean downloadToLocalRepo, String modFolder) {
 		val newProjectName = getProjectNameOrDefault(downloadableFile.getName());
 		String folder = downloadableFile.getFolder();
 		if (Strings.isNullOrEmpty(folder)) {
-			folder = Arguments.modFolder;
+			folder = modFolder;
 		}
 		try {
 			File downloadedFile = getDownloadedFile(fileName, folder);
@@ -50,8 +50,8 @@ public final class FileSystemHelper {
 		return getLocalFile(fileName, getProjectNameOrDefault(projectName)).exists();
 	}
 
-	public static File getDownloadedFile(final String fileName) {
-		return getDownloadedFile(fileName, null);
+	public static File getDownloadedFile(final String fileName, String modFolder) {
+		return getDownloadedFile(fileName, null, modFolder);
 	}
 
 	public static String getProjectNameOrDefault(final String projectName) {
@@ -66,13 +66,13 @@ public final class FileSystemHelper {
 		return new File(reference.getUserhome() + newProjectName + File.separator + fileName);
 	}
 
-	public static File getDownloadedFile(String fileName, String folder) {
+	public static File getDownloadedFile(String fileName, String folder, String modFolder) {
 		if (folder != null) {
 			createFolder(folder);
 			return new File(folder + File.separator + fileName);
-		} else if (Arguments.modFolder != null) {
-			createFolder(Arguments.modFolder);
-			return new File(Arguments.modFolder + File.separator + fileName);
+		} else if (modFolder != null) {
+			createFolder(modFolder);
+			return new File(modFolder + File.separator + fileName);
 		} else {
 			return new File(fileName);
 		}
