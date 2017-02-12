@@ -47,24 +47,27 @@ public class ModPackDownloader {
 		}
 
 		setupRepo();
-
-		if (Arguments.updateCurseModPack) {
-			log.warn("The parameter updateCurseModpack will be changing in the next version. You will need to supply the modpack ID in future versions.");
-			new DownloadModpackProcessor(Arguments.manifests).process();
-			Arguments.downloadMods = true;
-		}
-
+		
 		processManifests();
 	}
 
 	private static void processManifests() throws InterruptedException {
 		log.trace("Processing Manifests...");
 
+		downloadModpack();
 		updateMods();
 		downloadMods();
 		mergeManifests();
 
 		log.trace("Finished Processing Manifests.");
+	}
+
+	private static void downloadModpack() throws InterruptedException{
+		if (Arguments.updateCurseModPack) {
+			log.warn("The parameter updateCurseModpack will be changing in the next version. You will need to supply the modpack ID in future versions.");
+			new DownloadModpackProcessor(Arguments.manifests).process();
+			Arguments.downloadMods = true;
+		}
 	}
 
 	private static void updateMods() throws InterruptedException {

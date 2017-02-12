@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.annotation.Generated;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class CurseFile extends Mod {
 	}
 
 	public CurseFile(String projectId, String projectName) {
-		if (projectId != null) {
+		if (NumberUtils.isParsable(projectId)) {
 			setProjectID(Integer.parseInt(projectId));
 		}
 		setProjectName(projectName);
