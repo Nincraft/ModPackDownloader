@@ -35,15 +35,12 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractProcessor {
 
 	public static final Comparator<Mod> MOD_COMPARATOR = Comparator.comparing(mod -> mod.getName().toLowerCase());
-
+	protected static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
 	@Getter
 	@Setter
 	private static ExecutorService executorService;
-
-	protected static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
-
-	protected Map<File, Manifest> manifestMap = Maps.newHashMap();
 	private static Gson gson = new Gson();
+	protected Map<File, Manifest> manifestMap = Maps.newHashMap();
 	protected Arguments arguments;
 	protected DownloadHelper downloadHelper;
 
@@ -88,15 +85,15 @@ public abstract class AbstractProcessor {
 
 	protected abstract void init(Map<File, Manifest> manifestMap);
 
-	protected boolean preprocess(Entry<File, Manifest> manifest){
+	protected boolean preprocess(Entry<File, Manifest> manifest) {
 		return true;
 	}
 
-	protected boolean process(Entry<File, Manifest> manifest) throws InterruptedException{
+	protected boolean process(Entry<File, Manifest> manifest) throws InterruptedException {
 		return true;
 	}
 
-	protected boolean postProcess(Entry<File, Manifest> manifest){
+	protected boolean postProcess(Entry<File, Manifest> manifest) {
 		return true;
 	}
 

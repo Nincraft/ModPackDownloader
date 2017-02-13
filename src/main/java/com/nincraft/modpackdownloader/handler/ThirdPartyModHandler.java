@@ -9,7 +9,7 @@ public class ThirdPartyModHandler implements ModHandler {
 
 	private DownloadHelper downloadHelper;
 
-	public ThirdPartyModHandler(DownloadHelper downloadHelper){
+	public ThirdPartyModHandler(DownloadHelper downloadHelper) {
 		this.downloadHelper = downloadHelper;
 	}
 

@@ -27,11 +27,10 @@ import java.util.List;
 @Log4j2
 public class CurseFileHandler implements ModHandler {
 
+	private static Reference reference = Reference.getInstance();
+	private static UpdateCheckSummarizer updateCheckSummarizer = UpdateCheckSummarizer.getInstance();
 	private Arguments arguments;
 	private DownloadHelper downloadHelper;
-	private static Reference reference = Reference.getInstance();
-
-	private static UpdateCheckSummarizer updateCheckSummarizer = UpdateCheckSummarizer.getInstance();
 
 	public CurseFileHandler(Arguments arguments, DownloadHelper downloadHelper) {
 		this.arguments = arguments;
@@ -139,7 +138,7 @@ public class CurseFileHandler implements ModHandler {
 	}
 
 	private CurseFile getLatestVersion(String releaseType,
-											  CurseFile curseFile, final JSONObject fileListJson, String mcVersion) {
+									   CurseFile curseFile, final JSONObject fileListJson, String mcVersion) {
 		log.trace("Getting most recent available file...");
 		boolean backup = true;
 		if (Strings.isNullOrEmpty(mcVersion)) {
