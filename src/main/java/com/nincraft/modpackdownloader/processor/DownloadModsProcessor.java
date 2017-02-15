@@ -35,21 +35,21 @@ public class DownloadModsProcessor extends AbstractProcessor {
 
 		getExecutorService().execute(forgeThread);
 
-		log.trace(String.format("Downloading %s mods...", MOD_LIST.size()));
+		log.trace("Downloading {} mods...", MOD_LIST.size());
 		int downloadCount = 1;
 		for (val mod : MOD_LIST) {
-			log.info(String.format(reference.getDownloadingModXOfY(), mod.getName(), downloadCount++,
-					Reference.downloadTotal));
+			log.info(reference.getDownloadingModXOfY(), mod.getName(), downloadCount++,
+					Reference.downloadTotal);
 
 			Runnable modDownload = new Thread(() -> {
 				MOD_HANDLERS.get(mod.getClass()).downloadMod(mod);
 				Reference.downloadCount++;
-				log.trace(String.format("Finished downloading %s", mod.getName()));
+				log.trace("Finished downloading {}", mod.getName());
 			});
 			getExecutorService().execute(modDownload);
 		}
 		getExecutorService().shutdown();
-		log.trace(String.format("Finished downloading %s mods.", MOD_LIST.size()));
+		log.trace("Finished downloading {} mods.", MOD_LIST.size());
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class DownloadModsProcessor extends AbstractProcessor {
 		}
 
 		Reference.downloadTotal = MOD_LIST.size();
-		log.debug("A total of %s mods will be downloaded.");
+		log.debug("A total of {} mods will be downloaded.", Reference.downloadTotal);
 	}
 
 	@Override
@@ -82,10 +82,10 @@ public class DownloadModsProcessor extends AbstractProcessor {
 				if (overridesDirectory.exists()) {
 					FileUtils.copyDirectory(overridesDirectory, new File("."));
 					FileUtils.deleteDirectory(overridesDirectory);
-					log.info(String.format("Successfully moved overrides: %s", manifest.getOverrides()));
+					log.info("Successfully moved overrides: {}", manifest.getOverrides());
 				}
 			} catch (IOException e) {
-				log.error(String.format("Unable to move %s folder", manifest.getOverrides()), e);
+				log.error("Unable to move {} folder", manifest.getOverrides(), e);
 			}
 		}
 	}

@@ -36,13 +36,13 @@ public class DownloadSummarizer implements Observer {
 
 	public void summarize() {
 		if (successTotal != 0) {
-			log.info(String.format("Successfully downloaded %s %s", successTotal, getEnding(successTotal)));
+			log.info("Successfully downloaded {} {}", successTotal, getEnding(successTotal));
 		}
 		if (failureTotal != 0) {
-			log.info(String.format("Failed to download %s %s", failureTotal, getEnding(failureTotal)));
+			log.info("Failed to download {} {}", failureTotal, getEnding(failureTotal));
 		}
 		if (skipTotal != 0) {
-			log.info(String.format("Skipped downloading %s %s", skipTotal, getEnding(skipTotal)));
+			log.info("Skipped downloading {} {}", skipTotal, getEnding(skipTotal));
 		}
 	}
 

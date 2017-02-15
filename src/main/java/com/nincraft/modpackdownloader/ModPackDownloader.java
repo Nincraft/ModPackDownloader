@@ -29,7 +29,7 @@ public class ModPackDownloader {
 	private DownloadHelper downloadHelper;
 
 	public static void main(final String[] args) throws InterruptedException {
-		log.info("Starting ModPackDownloader with arguments: " + Arrays.toString(args));
+		log.info("Starting ModPackDownloader with arguments: {}", Arrays.toString(args));
 		JCommander jCommander = initArguments(args);
 
 		if (arguments.isHelpEnabled()) {
@@ -93,15 +93,13 @@ public class ModPackDownloader {
 
 	private static JCommander initArguments(final String[] args) {
 		// Initialize application arguments
-		Arguments arg = new Arguments();
-		JCommander jCommander = new JCommander(arg, args);
-		arguments = arg;
-		return jCommander;
+		arguments = new Arguments();
+		return new JCommander(arguments, args);
 	}
 
 	private static void defaultArguments() {
 		if (CollectionUtils.isEmpty(arguments.getManifests())) {
-			log.info(String.format("No manifest supplied, using default %s", reference.getDefaultManifestFile()));
+			log.info("No manifest supplied, using default {}", reference.getDefaultManifestFile());
 
 			arguments.setManifests(Lists.newArrayList(new File(reference.getDefaultManifestFile())));
 		}
@@ -118,10 +116,10 @@ public class ModPackDownloader {
 		log.trace("Setting up local repository...");
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(System.getProperty("user.home"));
-		log.debug(String.format("User Home System Property detected as: %s", stringBuilder.toString()));
+		log.debug("User Home System Property detected as: {}", stringBuilder.toString());
 
 		reference.setOs(System.getProperty("os.name"));
-		log.debug(String.format("Operating System detected as: %s", reference.getOs()));
+		log.debug("Operating System detected as: {}", reference.getOs());
 
 
 		if (reference.getOs().startsWith("Windows")) {
@@ -133,7 +131,7 @@ public class ModPackDownloader {
 		}
 		reference.setUserhome(stringBuilder.toString());
 
-		log.debug(String.format("User Home Folder set to: %s", reference.getUserhome()));
+		log.debug("User Home Folder set to: {}", reference.getUserhome());
 
 		FileSystemHelper.createFolder(reference.getUserhome());
 

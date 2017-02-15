@@ -64,20 +64,20 @@ public class UpdateModsProcessor extends AbstractProcessor {
 
 		getExecutorService().execute(forgeThread);
 
-		log.trace(String.format("Updating %s mods...", Reference.updateTotal));
+		log.trace("Updating {} mods...", Reference.updateTotal);
 
 		int updateCount = 1;
 		for (val mod : modList) {
-			log.info(String.format(reference.getUpdatingModXOfY(), mod.getName(), updateCount++, Reference.updateTotal));
+			log.info(reference.getUpdatingModXOfY(), mod.getName(), updateCount++, Reference.updateTotal);
 			Runnable modUpdate = new Thread(() -> {
 				MOD_HANDLERS.get(mod.getClass()).updateMod(mod);
 				Reference.updateCount++;
-				log.info(String.format("Finished updating %s", mod.getName()));
+				log.info("Finished updating {}", mod.getName());
 			});
 			getExecutorService().execute(modUpdate);
 		}
 		getExecutorService().shutdown();
-		log.trace(String.format("Finished updating %s mods.", Reference.updateTotal));
+		log.trace("Finished updating {} mods.", Reference.updateTotal);
 	}
 
 	private void addBatch(final Manifest manifestFile, final List<Mod> modList) {
@@ -104,11 +104,11 @@ public class UpdateModsProcessor extends AbstractProcessor {
 			if (projectId != null && projectName != null) {
 				curseFile = new CurseFile(projectId, projectName);
 				curseFile.init();
-				log.info(String.format("Adding %s from batch add", curseFile.getName()));
+				log.info("Adding {} from batch add", curseFile.getName());
 				modList.add(curseFile);
 				manifestFile.getCurseFiles().add(curseFile);
 			} else {
-				log.warn(String.format("Unable to add %s from batch add", projectUrl));
+				log.warn("Unable to add {} from batch add", projectUrl);
 			}
 		}
 	}

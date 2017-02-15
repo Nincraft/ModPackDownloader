@@ -17,7 +17,7 @@ public class UpdateCheckSummarizer {
 	private List<Mod> modList = new ArrayList<>();
 
 	public void summarize() {
-		log.info("Number of updates found: " + modList.size());
+		log.info("Number of updates found: {}", modList.size());
 		if (!modList.isEmpty()) {
 			log.info("Updatable mod list: ");
 			for (Mod mod : modList) {

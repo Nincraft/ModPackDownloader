@@ -82,14 +82,14 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		String modPackIdName = "";
 		try {
 			modPackIdName = FileUtils.readFileToString(new File("modpackid"));
-			log.info(String.format("Found modpackid file with id %s", modPackIdName));
+			log.info("Found modpackid file with id {}", modPackIdName);
 		} catch (IOException e) {
 			log.error("Could not find modpackid file", e);
 			return false;
 		}
 		String modPackId = modPackIdName.substring(0, modPackIdName.indexOf('-'));
 		if (!NumberUtils.isNumber(modPackId)) {
-			log.error(String.format("Unable to find a valid project ID, found %s", modPackId));
+			log.error("Unable to find a valid project ID, found {}", modPackId);
 			return false;
 		}
 		String modPackName = modPackIdName.substring(modPackIdName.indexOf('-') + 1);
@@ -106,14 +106,14 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		DownloadStatus downloadStatus = downloadHelper.downloadFile(modPack, false);
 
 		if (DownloadStatus.FAILURE.equals(downloadStatus)) {
-			log.warn(String.format("Failed to download %s. Attempting redownload with FTB URL", modPack.getName()));
+			log.warn("Failed to download {}. Attempting redownload with FTB URL", modPack.getName());
 			modPack.setDownloadUrl(modPack.getCurseForgeDownloadUrl(false));
 			getDownloadUrl(modPack, false);
 			downloadStatus = downloadHelper.downloadFile(modPack, false);
 		}
 
 		if (DownloadStatus.SKIPPED.equals(downloadStatus)) {
-			log.info(String.format("No new updates found for %s", modPack.getName()));
+			log.info("No new updates found for {}", modPack.getName());
 		}
 
 		returnStatus = checkSuccessfulDownloadStatus(downloadStatus);
@@ -156,7 +156,7 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		try {
 			curseFileHandler.getCurseForgeDownloadLocation(modPack, isCurseForge);
 		} catch (IOException e) {
-			log.error(String.format("Failed to get download location for %s", modPack.getName()), e);
+			log.error("Failed to get download location for {}", modPack.getName(), e);
 		}
 	}
 
@@ -186,9 +186,9 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 			String manifestForge = currentManifestFile.getForgeVersion();
 			String multiMCForge = (String) multiMCJson.get("version");
 			if (!manifestForge.contains(multiMCForge)) {
-				log.error(String.format(
-						"Current MultiMC Forge version is not the same as the current downloaded pack, please update this instance's Forge to %s",
-						manifestForge));
+				log.error(
+						"Current MultiMC Forge version is not the same as the current downloaded pack, please update this instance's Forge to {}",
+						manifestForge);
 				System.exit(1);
 			}
 		}

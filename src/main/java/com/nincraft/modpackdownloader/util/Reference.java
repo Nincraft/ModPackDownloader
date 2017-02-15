@@ -17,8 +17,8 @@ public class Reference {
 	private String curseforgeWidgetJsonModpack = "modpacks";
 	private String curseforgeWidgetJsonUrl = "http://widget.mcf.li/%s/minecraft/%s.json";
 	private String cookieTest1 = "?cookieTest=1";
-	private String downloadingModXOfY = "Downloading %s. Mod %s of %s.";
-	private String updatingModXOfY = "Updating %s. Mod %s of %s.";
+	private String downloadingModXOfY = "Downloading {}. Mod {} of {}.";
+	private String updatingModXOfY = "Updating {}. Mod {} of {}.";
 	private String windowsFolder = "\\.modpackdownloader\\";
 	private String macFolder = "/Library/Application Support/modpackdownloader/";
 	private String otherFolder = "/.modpackdownloader/";

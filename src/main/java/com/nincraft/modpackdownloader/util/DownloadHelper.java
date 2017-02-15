@@ -47,13 +47,13 @@ public class DownloadHelper extends Observable {
 	public DownloadStatus downloadFile(final DownloadableFile downloadableFile, boolean downloadToLocalRepo) {
 		DownloadStatus status = DownloadStatus.FAILURE;
 		if (BooleanUtils.isTrue(downloadableFile.getSkipDownload())) {
-			log.info(String.format("Skipped downloading %s", downloadableFile.getName()));
+			log.info("Skipped downloading {}", downloadableFile.getName());
 			return notifyStatus(DownloadStatus.SKIPPED);
 		}
 		val decodedFileName = URLHelper.decodeSpaces(downloadableFile.getFileName());
 
 		if (FileSystemHelper.getDownloadedFile(decodedFileName, downloadableFile.getFolder()).exists() && !arguments.isForceDownload()) {
-			log.info(String.format("Found %s already downloaded, skipping", decodedFileName));
+			log.info("Found {} already downloaded, skipping", decodedFileName);
 			return notifyStatus(DownloadStatus.SKIPPED);
 		}
 
@@ -62,7 +62,7 @@ public class DownloadHelper extends Observable {
 			try {
 				FileUtils.copyURLToFile(new URL(downloadableFile.getDownloadUrl()), downloadedFile);
 			} catch (final IOException e) {
-				log.error(String.format("Could not download %s.", downloadableFile.getFileName()), e);
+				log.error("Could not download {}.", downloadableFile.getFileName(), e);
 				Reference.downloadCount++;
 				if ("forge".equals(downloadableFile.getName())) {
 					return status;
@@ -74,7 +74,7 @@ public class DownloadHelper extends Observable {
 			status = DownloadStatus.SUCCESS_CACHE;
 		}
 		FileSystemHelper.moveFromLocalRepo(downloadableFile, decodedFileName, downloadToLocalRepo, arguments.getModFolder());
-		log.info(String.format("Successfully %s %s", status, downloadableFile.getFileName()));
+		log.info("Successfully {} {}", status, downloadableFile.getFileName());
 		return notifyStatus(status);
 	}
 
