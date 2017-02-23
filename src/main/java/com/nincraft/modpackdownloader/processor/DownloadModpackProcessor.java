@@ -21,6 +21,7 @@ import org.json.simple.parser.ParseException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -81,14 +82,14 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		log.trace("Updating Curse modpack");
 		String modPackIdName = "";
 		try {
-			modPackIdName = FileUtils.readFileToString(new File("modpackid"));
+			modPackIdName = FileUtils.readFileToString(new File("modpackid"), Charset.defaultCharset());
 			log.info("Found modpackid file with id {}", modPackIdName);
 		} catch (IOException e) {
 			log.error("Could not find modpackid file", e);
 			return false;
 		}
 		String modPackId = modPackIdName.substring(0, modPackIdName.indexOf('-'));
-		if (!NumberUtils.isNumber(modPackId)) {
+		if (!NumberUtils.isCreatable(modPackId)) {
 			log.error("Unable to find a valid project ID, found {}", modPackId);
 			return false;
 		}
