@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 @UtilityClass
 @Log4j2
-public class ModPackDownloader {
+class ModPackDownloader {
 
 	private static Reference reference = Reference.getInstance();
 	private Arguments arguments;
@@ -116,10 +116,14 @@ public class ModPackDownloader {
 		log.trace("Setting up local repository...");
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(System.getProperty("user.home"));
-		log.debug("User Home System Property detected as: {}", stringBuilder.toString());
+		if (log.isDebugEnabled()) {
+			log.debug("User Home System Property detected as: {}", stringBuilder.toString());
+		}
 
 		reference.setOs(System.getProperty("os.name"));
-		log.debug("Operating System detected as: {}", reference.getOs());
+		if (log.isDebugEnabled()) {
+			log.debug("Operating System detected as: {}", reference.getOs());
+		}
 
 
 		if (reference.getOs().startsWith("Windows")) {
@@ -131,7 +135,9 @@ public class ModPackDownloader {
 		}
 		reference.setUserhome(stringBuilder.toString());
 
-		log.debug("User Home Folder set to: {}", reference.getUserhome());
+		if (log.isDebugEnabled()) {
+			log.debug("User Home Folder set to: {}", reference.getUserhome());
+		}
 
 		FileSystemHelper.createFolder(reference.getUserhome());
 

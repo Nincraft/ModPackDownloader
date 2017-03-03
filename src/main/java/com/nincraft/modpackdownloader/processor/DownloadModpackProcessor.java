@@ -72,15 +72,15 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 	}
 
 	@Override
-	protected boolean preprocess(final Entry<File, Manifest> manifest) {
+	boolean preprocess(final Entry<File, Manifest> manifest) {
 		return true;
 	}
 
 	@Override
-	protected boolean process(final Entry<File, Manifest> manifest) throws InterruptedException {
+	boolean process(final Entry<File, Manifest> manifest) throws InterruptedException {
 		boolean returnStatus;
 		log.trace("Updating Curse modpack");
-		String modPackIdName = "";
+		String modPackIdName;
 		try {
 			modPackIdName = FileUtils.readFileToString(new File("modpackid"), Charset.defaultCharset());
 			log.info("Found modpackid file with id {}", modPackIdName);
@@ -147,7 +147,7 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 	}
 
 	@Override
-	protected boolean postProcess(final Entry<File, Manifest> manifest) {
+	boolean postProcess(final Entry<File, Manifest> manifest) {
 		checkPastForgeVersion();
 		handlePostDownload();
 		return true;
@@ -161,7 +161,7 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		}
 	}
 
-	public void handlePostDownload() {
+	private void handlePostDownload() {
 		try {
 			File overrides = new File("overrides");
 			FileUtils.copyDirectory(overrides, new File("."), true);
@@ -172,10 +172,10 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 
 	}
 
-	public void checkPastForgeVersion() {
+	private void checkPastForgeVersion() {
 		if (new File(".").getAbsolutePath().contains("MultiMC")) {
-			JSONObject currentJson = null;
-			JSONObject multiMCJson = null;
+			JSONObject currentJson;
+			JSONObject multiMCJson;
 			try {
 				currentJson = (JSONObject) new JSONParser().parse(new FileReader(arguments.getManifests().get(0)));
 				multiMCJson = (JSONObject) new JSONParser().parse(new FileReader("../patches/net.minecraftforge.json"));

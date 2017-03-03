@@ -28,7 +28,7 @@ public class DownloadModsProcessor extends AbstractProcessor {
 		super(arguments, downloadHelper);
 	}
 
-	public void downloadMods(final Manifest manifest) {
+	private void downloadMods(final Manifest manifest) {
 		setExecutorService(Executors.newFixedThreadPool(arguments.getMaxDownloadThreads() > 0 ? arguments.getMaxDownloadThreads() : MOD_LIST.size() + 1));
 		ForgeHandler forgeHandler = new ForgeHandler(arguments, downloadHelper);
 		Runnable forgeThread = new Thread(() -> forgeHandler.downloadForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders()));
@@ -59,7 +59,9 @@ public class DownloadModsProcessor extends AbstractProcessor {
 		}
 
 		Reference.downloadTotal = MOD_LIST.size();
-		log.debug("A total of {} mods will be downloaded.", Reference.downloadTotal);
+		if (log.isDebugEnabled()) {
+			log.debug("A total of {} mods will be downloaded.", Reference.downloadTotal);
+		}
 	}
 
 	@Override

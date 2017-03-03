@@ -22,11 +22,11 @@ public abstract class DownloadableFile {
 	private String fileName;
 	private String downloadUrl;
 
-	public DownloadableFile() {
+	DownloadableFile() {
 
 	}
 
-	public DownloadableFile(DownloadableFile downloadableFile) {
+	DownloadableFile(DownloadableFile downloadableFile) {
 		name = downloadableFile.name;
 		rename = downloadableFile.rename;
 		skipDownload = downloadableFile.skipDownload;

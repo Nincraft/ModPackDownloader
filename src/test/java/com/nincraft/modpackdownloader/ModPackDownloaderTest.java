@@ -52,7 +52,7 @@ public class ModPackDownloaderTest {
 
 		for (String fileCheck : checkFiles) {
 			mod = new File(fileCheck);
-			log.info("Checking " + mod + ": " + mod.exists());
+			log.info("Checking {}: {}", mod, mod.exists());
 			Assert.assertTrue(mod.exists());
 			mod.deleteOnExit();
 		}

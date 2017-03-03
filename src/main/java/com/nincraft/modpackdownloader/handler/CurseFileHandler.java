@@ -45,7 +45,7 @@ public class CurseFileHandler implements ModHandler {
 		}
 	}
 
-	public CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
+	private CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
 		return getCurseForgeDownloadLocation(curseFile, true);
 	}
 
@@ -103,7 +103,7 @@ public class CurseFileHandler implements ModHandler {
 			log.info("Skipped updating {}", curseFile.getName());
 			return;
 		}
-		JSONObject fileListJson = null;
+		JSONObject fileListJson;
 		try {
 			val conn = (HttpURLConnection) new URL(curseFile.getProjectUrl()).openConnection();
 			conn.setInstanceFollowRedirects(false);
@@ -195,16 +195,17 @@ public class CurseFileHandler implements ModHandler {
 	}
 
 	private CurseFile checkBackupVersions(String releaseType, CurseFile curseFile, JSONObject fileListJson, String mcVersion, CurseFile newMod) {
+		CurseFile returnMod = newMod;
 		for (String backupVersion : arguments.getBackupVersions()) {
 			log.info("No files found for Minecraft {}, checking backup version {}", mcVersion, backupVersion);
-			newMod = getLatestVersion(releaseType, curseFile, fileListJson, backupVersion);
+			returnMod = getLatestVersion(releaseType, curseFile, fileListJson, backupVersion);
 			if (BooleanUtils.isFalse(newMod.getSkipDownload())) {
 				curseFile.setSkipDownload(null);
 				log.info("Found update for {} in Minecraft {}", curseFile.getName(), backupVersion);
 				break;
 			}
 		}
-		return newMod;
+		return returnMod;
 	}
 
 	private boolean isMcVersion(String modVersion, String argVersion) {
@@ -229,12 +230,16 @@ public class CurseFileHandler implements ModHandler {
 		val projectName = curseFile.getProjectName();
 		val modOrModPack = curseFile.getCurseforgeWidgetJson();
 		String urlStr = String.format(reference.getCurseforgeWidgetJsonUrl(), modOrModPack, projectName);
-		log.debug(urlStr);
+		if (log.isDebugEnabled()) {
+			log.debug(urlStr);
+		}
 		try {
 			return URLHelper.getJsonFromUrl(urlStr);
 		} catch (final FileNotFoundException e) {
 			urlStr = String.format(reference.getCurseforgeWidgetJsonUrl(), modOrModPack, projectId + "-" + projectName);
-			log.debug(urlStr, e);
+			if (log.isDebugEnabled()) {
+				log.debug(urlStr, e);
+			}
 			return URLHelper.getJsonFromUrl(urlStr);
 		}
 	}

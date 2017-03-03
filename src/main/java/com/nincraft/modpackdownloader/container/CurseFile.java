@@ -87,7 +87,7 @@ public class CurseFile extends Mod {
 
 	}
 
-	public String buildProjectUrl() {
+	private String buildProjectUrl() {
 		return String.format(reference.getCurseforgeBaseUrl() + "%s" + reference.getCookieTest1(), getProjectID());
 	}
 

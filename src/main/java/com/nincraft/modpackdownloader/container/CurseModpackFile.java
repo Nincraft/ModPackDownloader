@@ -8,11 +8,6 @@ public class CurseModpackFile extends CurseFile {
 
 	private Reference reference = Reference.getInstance();
 
-	public CurseModpackFile() {
-		super();
-		setFileID(0);
-	}
-
 	public CurseModpackFile(String projectId, String projectName) {
 		super(projectId, projectName);
 		setFileID(0);

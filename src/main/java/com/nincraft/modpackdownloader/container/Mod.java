@@ -1,16 +1,18 @@
 package com.nincraft.modpackdownloader.container;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public abstract class Mod extends DownloadableFile implements Cloneable {
 	private String version;
 
 
-	public Mod() {
+	Mod() {
 	}
 
-	public Mod(Mod mod) {
+	Mod(Mod mod) {
 		super(mod);
 		version = mod.version;
 	}

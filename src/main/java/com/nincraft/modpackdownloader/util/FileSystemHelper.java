@@ -54,7 +54,7 @@ public final class FileSystemHelper {
 		return getDownloadedFile(fileName, null, modFolder);
 	}
 
-	public static String getProjectNameOrDefault(final String projectName) {
+	private static String getProjectNameOrDefault(final String projectName) {
 		return projectName != null ? projectName : "thirdParty";
 	}
 
@@ -62,11 +62,11 @@ public final class FileSystemHelper {
 		return getLocalFile(downloadableFile.getFileName(), downloadableFile.getName());
 	}
 
-	public static File getLocalFile(final String fileName, final String newProjectName) {
+	private static File getLocalFile(final String fileName, final String newProjectName) {
 		return new File(reference.getUserhome() + newProjectName + File.separator + fileName);
 	}
 
-	public static File getDownloadedFile(String fileName, String folder, String modFolder) {
+	private static File getDownloadedFile(String fileName, String folder, String modFolder) {
 		if (folder != null) {
 			createFolder(folder);
 			return new File(folder + File.separator + fileName);

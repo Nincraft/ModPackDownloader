@@ -34,17 +34,17 @@ import java.util.concurrent.TimeUnit;
 @Log4j2
 public abstract class AbstractProcessor {
 
-	public static final Comparator<Mod> MOD_COMPARATOR = Comparator.comparing(mod -> mod.getName().toLowerCase());
-	protected static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
+	static final Comparator<Mod> MOD_COMPARATOR = Comparator.comparing(mod -> mod.getName().toLowerCase());
+	static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
 	@Getter
 	@Setter
 	private static ExecutorService executorService;
 	private static Gson gson = new Gson();
-	protected Map<File, Manifest> manifestMap = Maps.newHashMap();
-	protected Arguments arguments;
-	protected DownloadHelper downloadHelper;
+	Map<File, Manifest> manifestMap = Maps.newHashMap();
+	Arguments arguments;
+	DownloadHelper downloadHelper;
 
-	public AbstractProcessor(Arguments arguments, DownloadHelper downloadHelper) {
+	AbstractProcessor(Arguments arguments, DownloadHelper downloadHelper) {
 		MOD_HANDLERS.put(CurseFile.class, new CurseFileHandler(arguments, downloadHelper));
 		MOD_HANDLERS.put(ThirdParty.class, new ThirdPartyModHandler(downloadHelper));
 		this.arguments = arguments;
@@ -59,7 +59,7 @@ public abstract class AbstractProcessor {
 	}
 
 	private Manifest buildManifest(final File manifestFile) {
-		JSONObject jsonLists = null;
+		JSONObject jsonLists;
 		try {
 			jsonLists = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
 		} catch (IOException | ParseException e) {
@@ -85,19 +85,19 @@ public abstract class AbstractProcessor {
 
 	protected abstract void init(Map<File, Manifest> manifestMap);
 
-	protected boolean preprocess(Entry<File, Manifest> manifest) {
+	boolean preprocess(Entry<File, Manifest> manifest) {
 		return true;
 	}
 
-	protected boolean process(Entry<File, Manifest> manifest) throws InterruptedException {
+	boolean process(Entry<File, Manifest> manifest) throws InterruptedException {
 		return true;
 	}
 
-	protected boolean postProcess(Entry<File, Manifest> manifest) {
+	boolean postProcess(Entry<File, Manifest> manifest) {
 		return true;
 	}
 
-	public List<Mod> buildModList(final File file, final Manifest manifest) {
+	List<Mod> buildModList(final File file, final Manifest manifest) {
 		log.trace("Building Mod List...");
 
 		val modList = new ArrayList<Mod>();
