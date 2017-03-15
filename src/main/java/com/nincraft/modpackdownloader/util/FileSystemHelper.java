@@ -42,7 +42,7 @@ public final class FileSystemHelper {
 				downloadedFile.renameTo(new File(downloadedFile.getParent() + File.separator + downloadableFile.getRename()));
 			}
 		} catch (final IOException e) {
-			log.error(String.format("Could not copy %s from local repo.", newProjectName), e);
+			log.error("Could not copy {} from local repo.", newProjectName, e);
 		}
 	}
 
