@@ -80,6 +80,7 @@ public final class FileSystemHelper {
 
 	public static void clearCache() {
 		File cache = new File(reference.getUserhome());
+		log.info("Clearing cache at {}", Reference.userhome);
 		try {
 			FileUtils.deleteDirectory(cache);
 		} catch (IOException e) {
