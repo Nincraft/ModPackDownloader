@@ -42,18 +42,13 @@ class ModPackDownloader {
 
 		setupRepo();
 
-		if (Arguments.clearCache) {
+		if (arguments.isClearCache()) {
 			FileSystemHelper.clearCache();
 			return;
 		}
 		if (arguments.isUpdateApp()) {
 			ApplicationUpdateHandler.update();
 			return;
-		}
-		if (Arguments.updateCurseModPack && ModPackManager.updateModPack()) {
-			ModPackManager.checkPastForgeVersion();
-			ModPackManager.handlePostDownload();
-			Arguments.downloadMods = true;
 		}
 
 		processManifests();
