@@ -33,6 +33,8 @@ public class ModPackDownloader {
 		// Set default application arguments
 		defaultArguments();
 
+		setupRepo();
+
 		if (Arguments.clearCache) {
 			FileSystemHelper.clearCache();
 			return;
@@ -41,9 +43,6 @@ public class ModPackDownloader {
 			ApplicationUpdateHandler.update();
 			return;
 		}
-
-		setupRepo();
-
 		if (Arguments.updateCurseModPack && ModPackManager.updateModPack()) {
 			ModPackManager.checkPastForgeVersion();
 			ModPackManager.handlePostDownload();
