@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.annotation.Generated;
 import java.io.IOException;
@@ -34,17 +35,31 @@ public class CurseFile extends Mod {
 	private Boolean skipUpdate;
 	private String projectUrl;
 	private String projectName;
-	private boolean isModpack;
+	private Reference reference = Reference.getInstance();
 
 	public CurseFile() {
 		//empty
 	}
 
+	public CurseFile(CurseFile curseFile) {
+		super(curseFile);
+		fileID = curseFile.fileID;
+		projectID = curseFile.projectID;
+		releaseType = curseFile.releaseType;
+		skipUpdate = curseFile.skipUpdate;
+		projectUrl = curseFile.projectUrl;
+		projectName = curseFile.projectName;
+	}
+
 	public CurseFile(String projectId, String projectName) {
-		if (projectId != null) {
+		if (NumberUtils.isParsable(projectId)) {
 			setProjectID(Integer.parseInt(projectId));
 		}
 		setProjectName(projectName);
+	}
+
+	public String getCurseforgeWidgetJson() {
+		return reference.getCurseforgeWidgetJsonMod();
 	}
 
 	@Override
@@ -72,8 +87,8 @@ public class CurseFile extends Mod {
 
 	}
 
-	public String buildProjectUrl() {
-		return String.format(Reference.CURSEFORGE_BASE_URL + "%s" + Reference.COOKIE_TEST_1, getProjectID());
+	private String buildProjectUrl() {
+		return String.format(reference.getCurseforgeBaseUrl() + "%s" + reference.getCookieTest1(), getProjectID());
 	}
 
 	public String getCurseForgeDownloadUrl() {
@@ -81,14 +96,8 @@ public class CurseFile extends Mod {
 	}
 
 	public String getCurseForgeDownloadUrl(boolean isCurseForge) {
-		String baseUrl = isCurseForge ? Reference.CURSEFORGE_BASE_URL : Reference.FTB_BASE_URL;
+		String baseUrl = isCurseForge ? reference.getCurseforgeBaseUrl() : reference.getFtbBaseUrl();
 		return String.format(baseUrl + "%s/files/%s/download", getProjectName(),
 				getFileID());
-	}
-
-	public void initModpack() {
-		init();
-		setFileID(0);
-		setModpack(true);
 	}
 }

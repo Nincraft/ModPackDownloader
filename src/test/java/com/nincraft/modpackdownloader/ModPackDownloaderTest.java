@@ -3,8 +3,9 @@ package com.nincraft.modpackdownloader;
 import com.google.gson.Gson;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
-import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.VersionHelper;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -14,8 +15,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -27,13 +28,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Log4j2
+@RunWith(JUnitParamsRunner.class)
 public class ModPackDownloaderTest {
-
-	@Before
-	public void setup() {
-		Arguments.updateMods = false;
-		Arguments.updateApp = false;
-	}
 
 	@After
 	public void cleanUp() throws IOException {
@@ -47,32 +43,16 @@ public class ModPackDownloaderTest {
 	}
 
 	@Test
-	public void testDownload() throws InterruptedException {
-		String[] args = {"-manifest", "src/test/resources/download-test.json"};
-		ModPackDownloader.main(args);
-		File mod = null;
+	@Parameters({"-manifest src/test/resources/download-test.json -releaseType release", "-manifest src/test/resources/download-test.json -maxDownloadThreads 1"})
+	public void testDownload(String arg) throws InterruptedException {
+		ModPackDownloader.main(arg.split(" "));
+		File mod;
 		List<String> mods = new ArrayList<>(Arrays.asList("Thaumcraft-1.8.9-5.2.4.jar", "DimensionalDoors-2.2.5-test9.jar", "pants.jar", "forge-1.8.9-11.15.1.1902-1.8.9-installer.jar"));
 		List<String> checkFiles = addMods(mods);
 
 		for (String fileCheck : checkFiles) {
 			mod = new File(fileCheck);
-			log.info("Checking " + mod + ": " + mod.exists());
-			Assert.assertTrue(mod.exists());
-			mod.deleteOnExit();
-		}
-	}
-
-	@Test
-	public void testDownloadOneThread() throws InterruptedException {
-		String[] args = {"-manifest", "src/test/resources/download-test.json", "-maxDownloadThreads", "1"};
-		ModPackDownloader.main(args);
-		File mod = null;
-		List<String> mods = new ArrayList<>(Arrays.asList("Thaumcraft-1.8.9-5.2.4.jar", "DimensionalDoors-2.2.5-test9.jar", "pants.jar", "forge-1.8.9-11.15.1.1902-1.8.9-installer.jar"));
-		List<String> checkFiles = addMods(mods);
-
-		for (String fileCheck : checkFiles) {
-			mod = new File(fileCheck);
-			log.info("Checking " + mod + ": " + mod.exists());
+			log.info("Checking {}: {}", mod, mod.exists());
 			Assert.assertTrue(mod.exists());
 			mod.deleteOnExit();
 		}
@@ -82,7 +62,7 @@ public class ModPackDownloaderTest {
 	public void testUpdate() throws InterruptedException, IOException, ParseException {
 		String manifestName = "src/test/resources/update-test.json";
 		File manifestFile = new File(manifestName);
-		String[] args = {"-manifest", manifestName, "-updateMods", "-updateForge"};
+		String[] args = {"-manifest", manifestName, "-updateMods", "-updateForge", "-backupVersion", "1.8.9"};
 
 		Gson gson = new Gson();
 		JSONObject jsonLists = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
@@ -96,6 +76,13 @@ public class ModPackDownloaderTest {
 		}
 		Assert.assertTrue(VersionHelper.compareVersions(oldForgeVersion.substring(oldForgeVersion.indexOf('-') + 1),
 				manifest.getForgeVersion().substring(manifest.getForgeVersion().indexOf('-') + 1)) < 0);
+	}
+
+	@Test
+	public void testCheckUpdate() throws InterruptedException, IOException, ParseException {
+		String manifestName = "src/test/resources/update-test.json";
+		String[] args = {"-manifest", manifestName, "-checkMCUpdate", "1.10.2"};
+		ModPackDownloader.main(args);
 	}
 
 	@Test

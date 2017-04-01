@@ -22,6 +22,19 @@ public abstract class DownloadableFile {
 	private String fileName;
 	private String downloadUrl;
 
+	DownloadableFile() {
+
+	}
+
+	DownloadableFile(DownloadableFile downloadableFile) {
+		name = downloadableFile.name;
+		rename = downloadableFile.rename;
+		skipDownload = downloadableFile.skipDownload;
+		folder = downloadableFile.folder;
+		fileName = downloadableFile.fileName;
+		downloadUrl = downloadableFile.downloadUrl;
+	}
+
 	public String getFileName() {
 		if (!Strings.isNullOrEmpty(getRename())) {
 			return getRename();

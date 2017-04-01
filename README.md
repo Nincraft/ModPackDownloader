@@ -1,4 +1,4 @@
-# ModPack Downloader [![Build Status](http://play.nincraft.com:8080/buildStatus/icon?job=Mod Pack Downloader)](http://play.nincraft.com:8080/job/Mod Pack Downloader)
+# ModPack Downloader [![Build Status](http://play.nincraft.com:8080/buildStatus/icon?job=Mod%20Pack%20Downloader)](http://play.nincraft.com:8080/job/Mod%20Pack%20Downloader)
 A simple command line downloader for Minecraft Forge Modpacks. Also works with Curse manifest JSONs.
 # Usage
 Execute via command line with two arguments, the manifest json and the folder where you want your mods downloaded.

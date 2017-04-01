@@ -17,10 +17,12 @@ import java.net.URL;
 @Log4j2
 public class ApplicationUpdateHandler {
 
-	public static void update() {
+	private Reference reference = Reference.getInstance();
+
+	public void update() {
 		JSONObject appJson;
 		try {
-			appJson = URLHelper.getJsonFromUrl(Reference.updateAppURL);
+			appJson = URLHelper.getJsonFromUrl(reference.getUpdateAppUrl());
 		} catch (IOException | ParseException e) {
 			log.error("Failed to get latest download link, Nincraft server down?", e);
 			return;

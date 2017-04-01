@@ -1,17 +1,5 @@
 package com.nincraft.modpackdownloader.processor;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
-
-import lombok.Setter;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.beust.jcommander.internal.Maps;
 import com.google.gson.Gson;
 import com.nincraft.modpackdownloader.container.CurseFile;
@@ -22,44 +10,56 @@ import com.nincraft.modpackdownloader.handler.CurseFileHandler;
 import com.nincraft.modpackdownloader.handler.ModHandler;
 import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
 import com.nincraft.modpackdownloader.util.Arguments;
-
+import com.nincraft.modpackdownloader.util.DownloadHelper;
 import lombok.Getter;
-import lombok.val;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public abstract class AbstractProcessor {
 
-	public static Comparator<Mod> compareMods = (mod1, mod2) -> mod1.getName().toLowerCase().compareTo(mod2.getName().toLowerCase());
-
+	static final Comparator<Mod> MOD_COMPARATOR = Comparator.comparing(mod -> mod.getName().toLowerCase());
+	static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
 	@Getter
 	@Setter
 	private static ExecutorService executorService;
-
-	protected static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
-
-	protected Map<File, Manifest> manifestMap = Maps.newHashMap();
 	private static Gson gson = new Gson();
+	Map<File, Manifest> manifestMap = Maps.newHashMap();
+	Arguments arguments;
+	DownloadHelper downloadHelper;
 
-	static {
-		log.trace("Registering various mod type handlers...");
-		MOD_HANDLERS.put(CurseFile.class, new CurseFileHandler());
-		MOD_HANDLERS.put(ThirdParty.class, new ThirdPartyModHandler());
-		log.trace("Finished registering various mod type handlers.");
+	AbstractProcessor(Arguments arguments, DownloadHelper downloadHelper) {
+		MOD_HANDLERS.put(CurseFile.class, new CurseFileHandler(arguments, downloadHelper));
+		MOD_HANDLERS.put(ThirdParty.class, new ThirdPartyModHandler(downloadHelper));
+		this.arguments = arguments;
+		this.downloadHelper = downloadHelper;
+		buildManifestList(arguments.getManifests());
 	}
 
-	public AbstractProcessor(final List<File> manifestFiles) {
-		buildManifestList(manifestFiles);
-	}
-
-	private final void buildManifestList(final List<File> manifestFiles) {
+	private void buildManifestList(final List<File> manifestFiles) {
 		for (val manifestFile : manifestFiles) {
 			manifestMap.put(manifestFile, buildManifest(manifestFile));
 		}
 	}
 
 	private Manifest buildManifest(final File manifestFile) {
-		JSONObject jsonLists = null;
+		JSONObject jsonLists;
 		try {
 			jsonLists = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
 		} catch (IOException | ParseException e) {
@@ -85,18 +85,24 @@ public abstract class AbstractProcessor {
 
 	protected abstract void init(Map<File, Manifest> manifestMap);
 
-	protected abstract void preprocess(Entry<File, Manifest> manifest);
+	boolean preprocess(Entry<File, Manifest> manifest) {
+		return true;
+	}
 
-	protected abstract void process(Entry<File, Manifest> manifest) throws InterruptedException;
+	boolean process(Entry<File, Manifest> manifest) throws InterruptedException {
+		return true;
+	}
 
-	protected abstract void postProcess(Entry<File, Manifest> manifest);
+	boolean postProcess(Entry<File, Manifest> manifest) {
+		return true;
+	}
 
-	public static List<Mod> buildModList(final File file, final Manifest manifest) {
+	List<Mod> buildModList(final File file, final Manifest manifest) {
 		log.trace("Building Mod List...");
 
 		val modList = new ArrayList<Mod>();
-		if (manifest.getMinecraftVersion() != null) {
-			Arguments.mcVersion = manifest.getMinecraftVersion();
+		if (manifest.getMinecraftVersion() != null && StringUtils.isBlank(arguments.getCheckMCUpdate())) {
+			arguments.setMcVersion(manifest.getMinecraftVersion());
 		}
 
 		modList.addAll(manifest.getCurseFiles());
@@ -104,15 +110,13 @@ public abstract class AbstractProcessor {
 
 		modList.forEach(Mod::init);
 
-		Collections.sort(modList, compareMods);
+		modList.sort(MOD_COMPARATOR);
 
 		log.trace("Finished Building Mod List.");
 		return modList;
 	}
 
-	protected static void waitFinishProcessingMods() throws InterruptedException {
-		while (!getExecutorService().isTerminated()) {
-			Thread.sleep(1);
-		}
+	private void waitFinishProcessingMods() throws InterruptedException {
+		getExecutorService().awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 	}
 }

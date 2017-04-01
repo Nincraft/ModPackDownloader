@@ -5,11 +5,17 @@ import com.nincraft.modpackdownloader.util.DownloadHelper;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class ThirdPartyModHandler extends ModHandler {
+public class ThirdPartyModHandler implements ModHandler {
+
+	private DownloadHelper downloadHelper;
+
+	public ThirdPartyModHandler(DownloadHelper downloadHelper) {
+		this.downloadHelper = downloadHelper;
+	}
 
 	@Override
 	public void downloadMod(final Mod mod) {
-		DownloadHelper.getInstance().downloadFile(mod);
+		downloadHelper.downloadFile(mod);
 	}
 
 	@Override

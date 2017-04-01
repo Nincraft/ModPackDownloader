@@ -1,32 +1,42 @@
 package com.nincraft.modpackdownloader.util;
 
+import lombok.Data;
+import lombok.Getter;
+
+@Data
 public class Reference {
-	public static final String CURSEFORGE_BASE_URL = "https://minecraft.curseforge.com/projects/";
-	public static final String FTB_BASE_URL = "https://www.feed-the-beast.com/projects/";
-	public static final String CURSEFORGE_WIDGET_JSON_MOD = "mc-mods";
-	public static final String CURSEFORGE_WIDGET_JSON_MODPACK = "modpacks";
-	public static final String CURSEFORGE_WIDGET_JSON_URL = "http://widget.mcf.li/%s/minecraft/%s.json";
-	public static final String COOKIE_TEST_1 = "?cookieTest=1";
-	public static final String DOWNLOADING_MOD_X_OF_Y = "Downloading %s. Mod %s of %s.";
-	public static final String UPDATING_MOD_X_OF_Y = "Updating %s. Mod %s of %s.";
-	public static final String WINDOWS_FOLDER = "\\.modpackdownloader\\";
-	public static final String MAC_FOLDER = "/Library/Application Support/modpackdownloader/";
-	public static final String OTHER_FOLDER = "/.modpackdownloader/";
-	public static final String JAR_FILE_EXT = ".jar";
-	public static final String ZIP_FILE_EXT = ".zip";
-	public static final int RETRY_COUNTER = 5;
-	public static final char URL_DELIMITER = '/';
-	public static final String DEFAULT_MANIFEST_FILE = "manifest.json";
-	public static String userhome;
-	public static String os;
+	@Getter
+	private static final Reference instance = new Reference();
 	public static int downloadCount = 0;
 	public static int downloadTotal = 0;
 	public static int updateCount = 0;
 	public static int updateTotal = 0;
-	public static String updateAppURL = "http://play.nincraft.com:8080/job/Mod%20Pack%20Downloader/lastStableBuild/artifact/target/classes/latest.json";
-	public static String forgeURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/";
-	public static String forgeInstaller = "-installer.jar";
-	public static String forgeUniversal = "-universal.jar";
-	public static String forgeUpdateURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json";
-	public static String javaContentType = "application/java-archive";
+	private String curseforgeBaseUrl = "https://minecraft.curseforge.com/projects/";
+	private String ftbBaseUrl = "https://www.feed-the-beast.com/projects/";
+	private String curseforgeWidgetJsonMod = "mc-mods";
+	private String curseforgeWidgetJsonModpack = "modpacks";
+	private String curseforgeWidgetJsonUrl = "http://widget.mcf.li/%s/minecraft/%s.json";
+	private String cookieTest1 = "?cookieTest=1";
+	private String downloadingModXOfY = "Downloading {}. Mod {} of {}.";
+	private String updatingModXOfY = "Updating {}. Mod {} of {}.";
+	private String windowsFolder = "\\.modpackdownloader\\";
+	private String macFolder = "/Library/Application Support/modpackdownloader/";
+	private String otherFolder = "/.modpackdownloader/";
+	private String jarFileExt = ".jar";
+	private String zipFileExt = ".zip";
+	private int retryCounter = 5;
+	private char urlDelimiter = '/';
+	private String defaultManifestFile = "manifest.json";
+	private String userhome;
+	private String os;
+	private String updateAppUrl = "http://play.nincraft.com:8080/job/Mod%20Pack%20Downloader/lastSuccessfulBuild/artifact/target/classes/latest.json";
+	private String forgeUrl = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/";
+	private String forgeInstaller = "-installer.jar";
+	private String forgeUniversal = "-universal.jar";
+	private String forgeUpdateUrl = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json";
+	private String javaContentType = "application/java-archive";
+
+	private Reference() {
+		//no-op
+	}
 }
