@@ -172,7 +172,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 
 	@Override
 	protected boolean postProcess(final Entry<File, Manifest> manifestEntry) {
-		if (isCheckUpdate()) {
+		if (isCheckUpdate() || arguments.isUpdateMods()) {
 			updateCheckSummarizer.summarize();
 		} else {
 			updateManifest(manifestEntry.getKey(), manifestEntry.getValue());
