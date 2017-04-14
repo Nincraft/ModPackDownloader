@@ -98,12 +98,12 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		modPack.init();
 		arguments.setMcVersion("*");
 		curseFileHandler.updateCurseFile(modPack);
-		if (!modPack.getFileName().contains(".zip")) {
-			modPack.setFileName(modPack.getFileName() + ".zip");
-		}
 		arguments.setModFolder(".");
 		modPack.setDownloadUrl(modPack.getCurseForgeDownloadUrl());
 		getDownloadUrl(modPack, true);
+		if (!modPack.getFileName().contains(".zip")) {
+			modPack.setFileName(modPack.getName() + ".zip");
+		}
 		DownloadStatus downloadStatus = downloadHelper.downloadFile(modPack, false);
 
 		if (DownloadStatus.FAILURE.equals(downloadStatus)) {
