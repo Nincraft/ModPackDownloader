@@ -80,14 +80,7 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 	boolean process(final Entry<File, Manifest> manifest) throws InterruptedException {
 		boolean returnStatus;
 		log.trace("Updating Curse modpack");
-		String modPackIdName;
-		try {
-			modPackIdName = FileUtils.readFileToString(new File("modpackid"), Charset.defaultCharset());
-			log.info("Found modpackid file with id {}", modPackIdName);
-		} catch (IOException e) {
-			log.error("Could not find modpackid file", e);
-			return false;
-		}
+		String modPackIdName = arguments.getUpdateCurseModPack();
 		String modPackId = modPackIdName.substring(0, modPackIdName.indexOf('-'));
 		if (!NumberUtils.isCreatable(modPackId)) {
 			log.error("Unable to find a valid project ID, found {}", modPackId);

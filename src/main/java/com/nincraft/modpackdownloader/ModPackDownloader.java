@@ -66,7 +66,7 @@ class ModPackDownloader {
 	}
 
 	private static void downloadModpack() throws InterruptedException {
-		if (arguments.isUpdateCurseModPack()) {
+		if (StringUtils.isNotBlank(arguments.getUpdateCurseModPack())) {
 			log.warn("The parameter updateCurseModpack will be changing in the next version. You will need to supply the modpack ID in future versions.");
 			new DownloadModpackProcessor(arguments, downloadHelper).process();
 			arguments.setDownloadMods(true);

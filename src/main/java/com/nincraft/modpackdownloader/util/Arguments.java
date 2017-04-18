@@ -42,8 +42,8 @@ public class Arguments {
 			"specified Minecraft version")
 	private boolean updateForge;
 	@Getter
-	@Parameter(names = {"-updateCurseModPack"}, description = "Updates the Curse modpack instance")
-	private boolean updateCurseModPack;
+	@Parameter(names = {"-updateCurseModPack"}, description = "Updates the Curse modpack instance, takes in a Curse modpack slug")
+	private String updateCurseModPack;
 	@Getter
 	@Parameter(names = {"-updateApp"}, description = "Downloads latest version of ModPack Downloader")
 	private boolean updateApp;
