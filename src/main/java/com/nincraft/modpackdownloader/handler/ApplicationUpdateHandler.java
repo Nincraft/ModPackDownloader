@@ -39,7 +39,7 @@ public class ApplicationUpdateHandler {
 		}
 		try {
 			FileUtils.copyURLToFile(new URL(downloadUrl), updatedApp);
-			log.info("Downloaded " + appName);
+			log.info("Downloaded {}", appName);
 		} catch (IOException e) {
 			log.error("Failed to download update", e);
 		}

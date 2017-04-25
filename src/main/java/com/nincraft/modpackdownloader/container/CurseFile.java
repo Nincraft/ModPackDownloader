@@ -35,10 +35,11 @@ public class CurseFile extends Mod {
 	private Boolean skipUpdate;
 	private String projectUrl;
 	private String projectName;
+	private boolean curseForge;
 	private Reference reference = Reference.getInstance();
 
 	public CurseFile() {
-		//empty
+		curseForge = true;
 	}
 
 	public CurseFile(CurseFile curseFile) {
@@ -49,6 +50,7 @@ public class CurseFile extends Mod {
 		skipUpdate = curseFile.skipUpdate;
 		projectUrl = curseFile.projectUrl;
 		projectName = curseFile.projectName;
+		curseForge = curseFile.curseForge;
 	}
 
 	public CurseFile(String projectId, String projectName) {
@@ -92,11 +94,7 @@ public class CurseFile extends Mod {
 	}
 
 	public String getCurseForgeDownloadUrl() {
-		return getCurseForgeDownloadUrl(true);
-	}
-
-	public String getCurseForgeDownloadUrl(boolean isCurseForge) {
-		String baseUrl = isCurseForge ? reference.getCurseforgeBaseUrl() : reference.getFtbBaseUrl();
+		String baseUrl = curseForge ? reference.getCurseforgeBaseUrl() : reference.getFtbBaseUrl();
 		return String.format(baseUrl + "%s/files/%s/download", getProjectName(),
 				getFileID());
 	}

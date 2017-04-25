@@ -31,19 +31,21 @@ import java.util.stream.Collectors;
 @RunWith(JUnitParamsRunner.class)
 public class ModPackDownloaderTest {
 
+	private static final String RESOURCES = "src/test/resources/";
+
 	@After
 	public void cleanUp() throws IOException {
-		String[] deleteFiles = {"src/test/resources/update-test.json.bak", "src/test/resources/download-test.json.bak", "src/test/resources/update-test.json"};
+		String[] deleteFiles = {RESOURCES + "update-test.json.bak", RESOURCES + "download-test.json.bak", RESOURCES + "update-test.json"};
 		for (String s : deleteFiles) {
 			new File(s).delete();
 		}
-		File backupUpdate = new File("src/test/resources/update-test-backup.json");
-		File updateFile = new File("src/test/resources/update-test.json");
+		File backupUpdate = new File(RESOURCES + "update-test-backup.json");
+		File updateFile = new File(RESOURCES + "update-test.json");
 		FileUtils.copyFile(backupUpdate, updateFile);
 	}
 
 	@Test
-	@Parameters({"-manifest src/test/resources/download-test.json -releaseType release", "-manifest src/test/resources/download-test.json -maxDownloadThreads 1"})
+	@Parameters({"-manifest " + RESOURCES + "download-test.json -releaseType release", "-manifest " + RESOURCES + "download-test.json -maxDownloadThreads 1"})
 	public void testDownload(String arg) throws InterruptedException {
 		ModPackDownloader.main(arg.split(" "));
 		File mod;
@@ -60,7 +62,7 @@ public class ModPackDownloaderTest {
 
 	@Test
 	public void testUpdate() throws InterruptedException, IOException, ParseException {
-		String manifestName = "src/test/resources/update-test.json";
+		String manifestName = RESOURCES + "update-test.json";
 		File manifestFile = new File(manifestName);
 		String[] args = {"-manifest", manifestName, "-updateMods", "-updateForge", "-backupVersion", "1.8.9"};
 
@@ -80,7 +82,7 @@ public class ModPackDownloaderTest {
 
 	@Test
 	public void testCheckUpdate() throws InterruptedException, IOException, ParseException {
-		String manifestName = "src/test/resources/update-test.json";
+		String manifestName = RESOURCES + "update-test.json";
 		String[] args = {"-manifest", manifestName, "-checkMCUpdate", "1.10.2"};
 		ModPackDownloader.main(args);
 	}

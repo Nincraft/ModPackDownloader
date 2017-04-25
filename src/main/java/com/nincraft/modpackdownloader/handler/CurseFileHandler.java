@@ -45,12 +45,8 @@ public class CurseFileHandler implements ModHandler {
 		}
 	}
 
-	private CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
-		return getCurseForgeDownloadLocation(curseFile, true);
-	}
-
-	public CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile, boolean isCurseForge) throws IOException {
-		val url = curseFile.getCurseForgeDownloadUrl(isCurseForge);
+	public CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
+		val url = curseFile.getCurseForgeDownloadUrl();
 		val projectName = curseFile.getName();
 		String encodedDownloadLocation = URLHelper.encodeSpaces(projectName);
 
@@ -230,16 +226,12 @@ public class CurseFileHandler implements ModHandler {
 		val projectName = curseFile.getProjectName();
 		val modOrModPack = curseFile.getCurseforgeWidgetJson();
 		String urlStr = String.format(reference.getCurseforgeWidgetJsonUrl(), modOrModPack, projectName);
-		if (log.isDebugEnabled()) {
-			log.debug(urlStr);
-		}
+		log.debug(urlStr);
 		try {
 			return URLHelper.getJsonFromUrl(urlStr);
 		} catch (final FileNotFoundException e) {
 			urlStr = String.format(reference.getCurseforgeWidgetJsonUrl(), modOrModPack, projectId + "-" + projectName);
-			if (log.isDebugEnabled()) {
-				log.debug(urlStr, e);
-			}
+			log.debug(urlStr, e);
 			return URLHelper.getJsonFromUrl(urlStr);
 		}
 	}

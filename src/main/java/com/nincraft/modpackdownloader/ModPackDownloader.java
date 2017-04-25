@@ -67,16 +67,19 @@ class ModPackDownloader {
 
 	private static void downloadModpack() throws InterruptedException {
 		if (StringUtils.isNotBlank(arguments.getUpdateCurseModPack())) {
-			log.warn("The parameter updateCurseModpack will be changing in the next version. You will need to supply the modpack ID in future versions.");
 			new DownloadModpackProcessor(arguments, downloadHelper).process();
 			arguments.setDownloadMods(true);
 		}
 	}
 
 	private static void updateMods() throws InterruptedException {
-		if (arguments.isUpdateMods() || !StringUtils.isBlank(arguments.getCheckMCUpdate())) {
+		if (shouldProcessUpdate()) {
 			new UpdateModsProcessor(arguments, downloadHelper).process();
 		}
+	}
+
+	private static boolean shouldProcessUpdate() {
+		return arguments.isUpdateMods() || !StringUtils.isBlank(arguments.getCheckMCUpdate());
 	}
 
 	private static void downloadMods() throws InterruptedException {
@@ -107,23 +110,24 @@ class ModPackDownloader {
 			log.info("No output folder supplied, using default \"mods\"");
 			arguments.setModFolder("mods");
 		}
-		if (!arguments.isDownloadMods() && !arguments.isUpdateMods() && !arguments.isMergeManifests() && StringUtils.isBlank(arguments.getCheckMCUpdate())) {
+		if (noProcessArgsSupplied()) {
 			arguments.setDownloadMods(true);
 		}
+	}
+
+	private static boolean noProcessArgsSupplied() {
+		return !arguments.isDownloadMods() && !arguments.isUpdateMods() && !arguments.isMergeManifests() && StringUtils.isBlank(arguments.getCheckMCUpdate());
 	}
 
 	private static void setupRepo() {
 		log.trace("Setting up local repository...");
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(System.getProperty("user.home"));
-		if (log.isDebugEnabled()) {
-			log.debug("User Home System Property detected as: {}", stringBuilder.toString());
-		}
+		log.debug("User Home System Property detected as: {}", stringBuilder.toString());
+
 
 		reference.setOs(System.getProperty("os.name"));
-		if (log.isDebugEnabled()) {
-			log.debug("Operating System detected as: {}", reference.getOs());
-		}
+		log.debug("Operating System detected as: {}", reference.getOs());
 
 
 		if (reference.getOs().startsWith("Windows")) {
@@ -135,9 +139,7 @@ class ModPackDownloader {
 		}
 		reference.setUserhome(stringBuilder.toString());
 
-		if (log.isDebugEnabled()) {
-			log.debug("User Home Folder set to: {}", reference.getUserhome());
-		}
+		log.debug("User Home Folder set to: {}", reference.getUserhome());
 
 		FileSystemHelper.createFolder(reference.getUserhome());
 

@@ -25,7 +25,7 @@ public final class FileSystemHelper {
 		}
 	}
 
-	public static void moveFromLocalRepo(final DownloadableFile downloadableFile, final String fileName, boolean downloadToLocalRepo, String modFolder) {
+	static void moveFromLocalRepo(final DownloadableFile downloadableFile, final String fileName, boolean downloadToLocalRepo, String modFolder) {
 		val newProjectName = getProjectNameOrDefault(downloadableFile.getName());
 		String folder = downloadableFile.getFolder();
 		if (Strings.isNullOrEmpty(folder)) {
@@ -46,36 +46,29 @@ public final class FileSystemHelper {
 		}
 	}
 
-	public static boolean isInLocalRepo(final String projectName, final String fileName) {
+	static boolean isInLocalRepo(final String projectName, final String fileName) {
 		return getLocalFile(fileName, getProjectNameOrDefault(projectName)).exists();
 	}
 
 	public static File getDownloadedFile(final String fileName, String modFolder) {
-		return getDownloadedFile(fileName, null, modFolder);
+		if (modFolder != null) {
+			createFolder(modFolder);
+			return new File(modFolder + File.separator + fileName);
+		} else {
+			return new File(fileName);
+		}
 	}
 
 	private static String getProjectNameOrDefault(final String projectName) {
 		return projectName != null ? projectName : "thirdParty";
 	}
 
-	public static File getLocalFile(DownloadableFile downloadableFile) {
+	static File getLocalFile(DownloadableFile downloadableFile) {
 		return getLocalFile(downloadableFile.getFileName(), downloadableFile.getName());
 	}
 
 	private static File getLocalFile(final String fileName, final String newProjectName) {
 		return new File(reference.getUserhome() + newProjectName + File.separator + fileName);
-	}
-
-	private static File getDownloadedFile(String fileName, String folder, String modFolder) {
-		if (folder != null) {
-			createFolder(folder);
-			return new File(folder + File.separator + fileName);
-		} else if (modFolder != null) {
-			createFolder(modFolder);
-			return new File(modFolder + File.separator + fileName);
-		} else {
-			return new File(fileName);
-		}
 	}
 
 	public static void clearCache() {

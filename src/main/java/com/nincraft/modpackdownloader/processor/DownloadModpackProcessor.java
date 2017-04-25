@@ -21,7 +21,6 @@ import org.json.simple.parser.ParseException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -93,7 +92,7 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		curseFileHandler.updateCurseFile(modPack);
 		arguments.setModFolder(".");
 		modPack.setDownloadUrl(modPack.getCurseForgeDownloadUrl());
-		getDownloadUrl(modPack, true);
+		getDownloadUrl(modPack);
 		if (!modPack.getFileName().contains(".zip")) {
 			modPack.setFileName(modPack.getName() + ".zip");
 		}
@@ -101,8 +100,9 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 
 		if (DownloadStatus.FAILURE.equals(downloadStatus)) {
 			log.warn("Failed to download {}. Attempting redownload with FTB URL", modPack.getName());
-			modPack.setDownloadUrl(modPack.getCurseForgeDownloadUrl(false));
-			getDownloadUrl(modPack, false);
+			modPack.setCurseForge(false);
+			modPack.setDownloadUrl(modPack.getCurseForgeDownloadUrl());
+			getDownloadUrl(modPack);
 			downloadStatus = downloadHelper.downloadFile(modPack, false);
 		}
 
@@ -146,9 +146,9 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		return true;
 	}
 
-	private void getDownloadUrl(CurseFile modPack, boolean isCurseForge) {
+	private void getDownloadUrl(CurseFile modPack) {
 		try {
-			curseFileHandler.getCurseForgeDownloadLocation(modPack, isCurseForge);
+			curseFileHandler.getCurseForgeDownloadLocation(modPack);
 		} catch (IOException e) {
 			log.error("Failed to get download location for {}", modPack.getName(), e);
 		}

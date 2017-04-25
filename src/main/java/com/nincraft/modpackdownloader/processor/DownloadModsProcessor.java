@@ -59,9 +59,7 @@ public class DownloadModsProcessor extends AbstractProcessor {
 		}
 
 		Reference.downloadTotal = MOD_LIST.size();
-		if (log.isDebugEnabled()) {
-			log.debug("A total of {} mods will be downloaded.", Reference.downloadTotal);
-		}
+		log.debug("A total of {} mods will be downloaded.", Reference.downloadTotal);
 	}
 
 	@Override
