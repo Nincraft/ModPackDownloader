@@ -2,8 +2,10 @@ package com.nincraft.modpackdownloader.util;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.experimental.UtilityClass;
 
 @Data
+@UtilityClass
 public class Reference {
 	@Getter
 	private static final Reference instance = new Reference();
@@ -35,8 +37,4 @@ public class Reference {
 	private String forgeUniversal = "-universal.jar";
 	private String forgeUpdateUrl = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json";
 	private String javaContentType = "application/java-archive";
-
-	private Reference() {
-		//no-op
-	}
 }
