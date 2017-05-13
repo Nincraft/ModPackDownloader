@@ -5,13 +5,15 @@ import com.beust.jcommander.converters.FileConverter;
 import com.nincraft.modpackdownloader.validation.ExistingFile;
 import com.nincraft.modpackdownloader.validation.ReleaseType;
 import lombok.Data;
-import lombok.experimental.UtilityClass;
+import lombok.NoArgsConstructor;
 
 import java.io.File;
 import java.util.List;
 
+import static lombok.AccessLevel.PRIVATE;
+
 @Data
-@UtilityClass
+@NoArgsConstructor(access = PRIVATE)
 public class Arguments {
 	@Parameter(names = {"-modFolder", "-folder", "-mods"}, description = "Folder where mods will be downloaded")
 	private String modFolder;

@@ -2,10 +2,13 @@ package com.nincraft.modpackdownloader.util;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.UtilityClass;
 
+import static lombok.AccessLevel.PRIVATE;
+
 @Data
-@UtilityClass
+@NoArgsConstructor(access = PRIVATE)
 public class Reference {
 	@Getter
 	private static final Reference instance = new Reference();
