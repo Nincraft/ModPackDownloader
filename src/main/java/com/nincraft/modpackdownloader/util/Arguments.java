@@ -10,10 +10,8 @@ import lombok.NoArgsConstructor;
 import java.io.File;
 import java.util.List;
 
-import static lombok.AccessLevel.PRIVATE;
-
 @Data
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor
 public class Arguments {
 	@Parameter(names = {"-modFolder", "-folder", "-mods"}, description = "Folder where mods will be downloaded")
 	private String modFolder;
