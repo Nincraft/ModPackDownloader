@@ -2,7 +2,6 @@ package com.nincraft.modpackdownloader.util;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
-import com.nincraft.modpackdownloader.validation.ExistingFile;
 import com.nincraft.modpackdownloader.validation.ReleaseType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,7 +39,7 @@ public class Arguments {
 	@Parameter(names = {"-clearCache"}, description = "Clears ModPack Downloader's cache")
 	private boolean clearCache;
 	@Parameter(names = {"-manifest", "-manifests"}, description = "List of manifests to use for downloading/updating",
-			listConverter = FileConverter.class, validateWith = ExistingFile.class)
+			listConverter = FileConverter.class)
 	private List<File> manifests;
 	@Parameter(names = {"-downloadMods"}, description = "Downloads mods in the given manifests." +
 			"Enabled by default if update and merge are not")
