@@ -14,6 +14,7 @@ import com.nincraft.modpackdownloader.util.FileSystemHelper;
 import com.nincraft.modpackdownloader.util.Reference;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,7 +23,7 @@ import java.util.Arrays;
 
 @UtilityClass
 @Log4j2
-class ModPackDownloader {
+public class ModPackDownloader {
 
 	private static Reference reference = Reference.getInstance();
 	private Arguments arguments;
@@ -30,7 +31,7 @@ class ModPackDownloader {
 
 	public static void main(final String[] args) throws InterruptedException {
 		log.info("Starting ModPackDownloader with arguments: {}", Arrays.toString(args));
-		JCommander jCommander = initArguments(args);
+		val jCommander = initArguments(args);
 
 		if (arguments.isHelpEnabled()) {
 			jCommander.usage();
@@ -103,7 +104,6 @@ class ModPackDownloader {
 	private static void defaultArguments() {
 		if (CollectionUtils.isEmpty(arguments.getManifests())) {
 			log.info("No manifest supplied, using default {}", reference.getDefaultManifestFile());
-
 			arguments.setManifests(Lists.newArrayList(new File(reference.getDefaultManifestFile())));
 		}
 		if (Strings.isNullOrEmpty(arguments.getModFolder())) {
@@ -125,14 +125,12 @@ class ModPackDownloader {
 		stringBuilder.append(System.getProperty("user.home"));
 		log.debug("User Home System Property detected as: {}", stringBuilder.toString());
 
+		val os = System.getProperty("os.name");
+		log.debug("Operating System detected as: {}", os);
 
-		reference.setOs(System.getProperty("os.name"));
-		log.debug("Operating System detected as: {}", reference.getOs());
-
-
-		if (reference.getOs().startsWith("Windows")) {
+		if (os.startsWith("Windows")) {
 			stringBuilder.append(reference.getWindowsFolder());
-		} else if (reference.getOs().startsWith("Mac")) {
+		} else if (os.startsWith("Mac")) {
 			stringBuilder.append(reference.getMacFolder());
 		} else {
 			stringBuilder.append(reference.getOtherFolder());

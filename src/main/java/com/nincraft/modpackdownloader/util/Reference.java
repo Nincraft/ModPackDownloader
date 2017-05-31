@@ -33,7 +33,6 @@ public class Reference {
 	private char urlDelimiter = '/';
 	private String defaultManifestFile = "manifest.json";
 	private String userhome;
-	private String os;
 	private String updateAppUrl = "http://play.nincraft.com:8080/job/Mod%20Pack%20Downloader/lastSuccessfulBuild/artifact/target/classes/latest.json";
 	private String forgeUrl = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/";
 	private String forgeInstaller = "-installer.jar";
