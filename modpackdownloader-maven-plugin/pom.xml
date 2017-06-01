@@ -10,6 +10,7 @@
 		<version>0.5-SNAPSHOT</version>
 	</parent>
     <artifactId>modpackdownloader-maven-plugin</artifactId>
+	<name>Modpack Downloader Maven Plugin</name>
 
     <packaging>maven-plugin</packaging>
     <dependencies>

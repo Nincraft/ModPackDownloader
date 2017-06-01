@@ -8,6 +8,7 @@
 	<artifactId>modpackdownloader</artifactId>
 	<version>0.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	<name>Modpack Downloader</name>
 	<modules>
 		<module>modpackdownloader-core</module>
 		<module>modpackdownloader-maven-plugin</module>
