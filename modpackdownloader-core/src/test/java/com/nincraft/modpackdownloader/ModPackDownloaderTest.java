@@ -91,7 +91,7 @@ public class ModPackDownloaderTest {
 	public void testAppUpdate() throws InterruptedException {
 		String[] args = {"-updateApp"};
 		ModPackDownloader.main(args);
-		FileFilter fileFilter = new WildcardFileFilter("ModPackDownloader*jar");
+		FileFilter fileFilter = new WildcardFileFilter("ModpackDownloader*jar");
 		File directory = new File(".");
 		List<File> files = Arrays.asList(directory.listFiles(fileFilter));
 		Assert.assertTrue(!CollectionUtils.isEmpty(files));
