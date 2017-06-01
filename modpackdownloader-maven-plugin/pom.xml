@@ -27,8 +27,7 @@
         </dependency>
         <dependency>
             <groupId>com.nincraft</groupId>
-            <artifactId>ModPackDownloader</artifactId>
-            <version>0.5-SNAPSHOT</version>
+            <artifactId>modpackdownloader-core</artifactId>
         </dependency>
     </dependencies>
     <build>
