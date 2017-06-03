@@ -3,7 +3,6 @@ package com.nincraft.modpackdownloader.util;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.UtilityClass;
 
 import static lombok.AccessLevel.PRIVATE;
 
