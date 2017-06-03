@@ -19,6 +19,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 
+/**
+ * ModpackDownloaderManager is the main class for starting a download/update.
+ */
 @Log4j2
 public class ModpackDownloaderManager {
 
@@ -29,11 +32,21 @@ public class ModpackDownloaderManager {
 	@Getter
 	private JCommander jCommander;
 
+	/**
+	 * Initializes arguments and jCommander
+	 *
+	 * @param args String[] of arguments for execution. See {@link Arguments} for all current parameters
+	 */
 	public ModpackDownloaderManager(String[] args){
 		arguments = new Arguments();
 		jCommander = initArguments(args);
 	}
 
+	/**
+	 * Starts processing the manifest files passed in. This includes downloading a modpack, updating the mods in a
+	 * manifest, downloading individual mods, and merging all manifests.
+	 * @throws InterruptedException exception is thrown if a processor is interrupted
+	 */
 	public void processManifests() throws InterruptedException {
 		log.trace("Processing Manifests...");
 		downloadHelper = new DownloadHelper(arguments);
@@ -89,7 +102,8 @@ public class ModpackDownloaderManager {
 	}
 
 	private boolean noProcessArgsSupplied(Arguments arguments) {
-		return !arguments.isDownloadMods() && !arguments.isUpdateMods() && !arguments.isMergeManifests() && StringUtils.isBlank(arguments.getCheckMCUpdate());
+		return !arguments.isDownloadMods() && !arguments.isUpdateMods() && !arguments.isMergeManifests()
+				&& StringUtils.isBlank(arguments.getCheckMCUpdate());
 	}
 
 	private void setupRepo() {
@@ -120,6 +134,9 @@ public class ModpackDownloaderManager {
 		log.trace("Finished setting up local repository.");
 	}
 
+	/**
+	 * Initializes the default arguments and sets up the local repo if needed
+	 */
 	public void init() {
 		defaultArguments(arguments);
 		setupRepo();

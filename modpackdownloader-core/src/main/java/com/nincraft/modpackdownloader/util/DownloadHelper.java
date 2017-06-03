@@ -27,10 +27,10 @@ public class DownloadHelper extends Observable {
 
 	/**
 	 * Downloads a {@link DownloadableFile} moves it to the correct folder. Downloads to the local cache and then
-	 * copies to the download folder. Returns a {@link DownloadStatus}
+	 * copies to the download folder.
 	 *
-	 * @param downloadableFile
-	 * @return {@link DownloadStatus}
+	 * @param downloadableFile a DownloadableFile with a download URL
+	 * @return status of the download, failed, skipped, or success
 	 */
 	public DownloadStatus downloadFile(final DownloadableFile downloadableFile) {
 		return downloadFile(downloadableFile, true);
@@ -38,11 +38,11 @@ public class DownloadHelper extends Observable {
 
 	/**
 	 * Downloads a {@link DownloadableFile} moves it to the correct folder. Downloads to the local cache if
-	 * downloadToLocalRepo is set to true and then copies to the download folder. Returns a {@link DownloadStatus}
+	 * downloadToLocalRepo is set to true and then copies to the download folder.
 	 *
-	 * @param downloadableFile
-	 * @param downloadToLocalRepo
-	 * @return {@link DownloadStatus}
+	 * @param downloadableFile a DownloadableFile with a download URL
+	 * @param downloadToLocalRepo set to true to keep a copy of the DownloadableFile in local cache
+	 * @return status of the download, failed, skipped, or success
 	 */
 	public DownloadStatus downloadFile(final DownloadableFile downloadableFile, boolean downloadToLocalRepo) {
 		DownloadStatus status = DownloadStatus.FAILURE;
