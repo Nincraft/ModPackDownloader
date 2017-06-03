@@ -1,6 +1,7 @@
 package com.nincraft.modpackdownloader;
 
 import com.google.gson.Gson;
+import com.nincraft.modpackdownloader.cli.ModpackDownloaderCLI;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
 import com.nincraft.modpackdownloader.util.VersionHelper;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @RunWith(JUnitParamsRunner.class)
-public class ModPackDownloaderTest {
+public class ModpackDownloaderCLITest {
 
 	private static final String RESOURCES = "src/test/resources/";
 
@@ -47,7 +48,7 @@ public class ModPackDownloaderTest {
 	@Test
 	@Parameters({"-manifest " + RESOURCES + "download-test.json -releaseType release", "-manifest " + RESOURCES + "download-test.json -maxDownloadThreads 1"})
 	public void testDownload(String arg) throws InterruptedException {
-		ModPackDownloader.main(arg.split(" "));
+		ModpackDownloaderCLI.main(arg.split(" "));
 		File mod;
 		List<String> mods = new ArrayList<>(Arrays.asList("Thaumcraft-1.8.9-5.2.4.jar", "DimensionalDoors-2.2.5-test9.jar", "pants.jar", "forge-1.8.9-11.15.1.1902-1.8.9-installer.jar"));
 		List<String> checkFiles = addMods(mods);
@@ -70,7 +71,7 @@ public class ModPackDownloaderTest {
 		JSONObject jsonLists = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
 		Manifest manifest = gson.fromJson(jsonLists.toString(), Manifest.class);
 		String oldForgeVersion = manifest.getForgeVersion();
-		ModPackDownloader.main(args);
+		ModpackDownloaderCLI.main(args);
 		jsonLists = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
 		manifest = gson.fromJson(jsonLists.toString(), Manifest.class);
 		for (CurseFile curseFile : manifest.getCurseFiles()) {
@@ -84,13 +85,13 @@ public class ModPackDownloaderTest {
 	public void testCheckUpdate() throws InterruptedException, IOException, ParseException {
 		String manifestName = RESOURCES + "update-test.json";
 		String[] args = {"-manifest", manifestName, "-checkMCUpdate", "1.10.2"};
-		ModPackDownloader.main(args);
+		ModpackDownloaderCLI.main(args);
 	}
 
 	@Test
 	public void testAppUpdate() throws InterruptedException {
 		String[] args = {"-updateApp"};
-		ModPackDownloader.main(args);
+		ModpackDownloaderCLI.main(args);
 		FileFilter fileFilter = new WildcardFileFilter("ModpackDownloader*jar");
 		File directory = new File(".");
 		List<File> files = Arrays.asList(directory.listFiles(fileFilter));

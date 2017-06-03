@@ -1,6 +1,5 @@
 package com.nincraft.modpackdownloader.processor;
 
-import com.beust.jcommander.internal.Maps;
 import com.google.gson.Gson;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
@@ -23,10 +22,7 @@ import org.json.simple.parser.ParseException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,12 +31,12 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractProcessor {
 
 	static final Comparator<Mod> MOD_COMPARATOR = Comparator.comparing(mod -> mod.getName().toLowerCase());
-	static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = Maps.newHashMap();
+	static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = new HashMap<>();
 	@Getter
 	@Setter
 	private static ExecutorService executorService;
 	private static Gson gson = new Gson();
-	Map<File, Manifest> manifestMap = Maps.newHashMap();
+	Map<File, Manifest> manifestMap = new HashMap<>();
 	Arguments arguments;
 	DownloadHelper downloadHelper;
 

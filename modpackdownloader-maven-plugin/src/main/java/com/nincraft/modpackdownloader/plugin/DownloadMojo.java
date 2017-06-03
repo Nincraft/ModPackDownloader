@@ -1,6 +1,6 @@
 package com.nincraft.modpackdownloader.plugin;
 
-import com.nincraft.modpackdownloader.ModPackDownloader;
+import com.nincraft.modpackdownloader.ModpackDownloaderManager;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -20,8 +20,10 @@ public class DownloadMojo extends AbstractMojo {
         getLog().info("Starting modpack download");
         String[] args = {"-manifest", manifest, "-modFolder", modFolder};
         try {
-            ModPackDownloader.main(args);
-        } catch (InterruptedException e) {
+			ModpackDownloaderManager modpackDownloaderManager = new ModpackDownloaderManager(args);
+			modpackDownloaderManager.init();
+			modpackDownloaderManager.processManifests();
+		} catch (InterruptedException e) {
             getLog().error("Download interrupted", e);
         }
     }
