@@ -34,6 +34,8 @@ public class Arguments {
 	private boolean updateForge;
 	@Parameter(names = {"-updateCurseModPack"}, description = "Updates the Curse modpack instance, takes in a Curse modpack slug")
 	private String updateCurseModPack;
+	@Parameter(names = {"-curseFileId"}, description = "File id of the Curse modpack you want to download")
+	private String curseFileId;
 	@Parameter(names = {"-updateApp"}, description = "Downloads latest version of ModPack Downloader")
 	private boolean updateApp;
 	@Parameter(names = {"-clearCache"}, description = "Clears ModPack Downloader's cache")

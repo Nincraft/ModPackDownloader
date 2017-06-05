@@ -80,13 +80,17 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		boolean returnStatus;
 		log.trace("Updating Curse modpack");
 		String modPackIdName = arguments.getUpdateCurseModPack();
+		int fileId = 0;
+		if (NumberUtils.isParsable(arguments.getCurseFileId())) {
+			fileId = Integer.parseInt(arguments.getCurseFileId());
+		}
 		String modPackId = modPackIdName.substring(0, modPackIdName.indexOf('-'));
 		if (!NumberUtils.isCreatable(modPackId)) {
 			log.error("Unable to find a valid project ID, found {}", modPackId);
 			return false;
 		}
 		String modPackName = modPackIdName.substring(modPackIdName.indexOf('-') + 1);
-		CurseModpackFile modPack = new CurseModpackFile(modPackId, modPackName);
+		CurseModpackFile modPack = new CurseModpackFile(modPackId, modPackName, fileId);
 		modPack.init();
 		arguments.setMcVersion("*");
 		curseFileHandler.updateCurseFile(modPack);

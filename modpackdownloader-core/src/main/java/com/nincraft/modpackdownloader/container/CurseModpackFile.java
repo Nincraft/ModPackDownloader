@@ -8,9 +8,9 @@ public class CurseModpackFile extends CurseFile {
 
 	private Reference reference = Reference.getInstance();
 
-	public CurseModpackFile(String projectId, String projectName) {
+	public CurseModpackFile(String projectId, String projectName, int fileId) {
 		super(projectId, projectName);
-		setFileID(0);
+		setFileID(fileId);
 	}
 
 	@Override
