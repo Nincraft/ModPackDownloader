@@ -27,8 +27,8 @@ import java.util.List;
 @Log4j2
 public class CurseFileHandler implements ModHandler {
 
-	private static Reference reference = Reference.getInstance();
-	private static UpdateCheckSummarizer updateCheckSummarizer = UpdateCheckSummarizer.getInstance();
+	private Reference reference = Reference.getInstance();
+	private UpdateCheckSummarizer updateCheckSummarizer = UpdateCheckSummarizer.getInstance();
 	private Arguments arguments;
 	private DownloadHelper downloadHelper;
 

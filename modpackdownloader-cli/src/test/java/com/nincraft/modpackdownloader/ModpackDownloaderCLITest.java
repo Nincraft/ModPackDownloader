@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class ModpackDownloaderCLITest {
 
-	private static final String RESOURCES = "src/test/resources/";
+	private final String RESOURCES = "src/test/resources/";
 
 	@After
 	public void cleanUp() throws IOException {

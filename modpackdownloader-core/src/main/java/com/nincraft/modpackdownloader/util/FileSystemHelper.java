@@ -14,7 +14,7 @@ import java.io.IOException;
 @UtilityClass
 public final class FileSystemHelper {
 
-	private static Reference reference = Reference.getInstance();
+	private Reference reference = Reference.getInstance();
 
 	public static void createFolder(final String folder) {
 		if (folder != null) {

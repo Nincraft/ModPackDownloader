@@ -28,8 +28,8 @@ import java.util.concurrent.Executors;
 @Log4j2
 public class UpdateModsProcessor extends AbstractProcessor {
 
-	private static Reference reference = Reference.getInstance();
-	private static UpdateCheckSummarizer updateCheckSummarizer = UpdateCheckSummarizer.getInstance();
+	private Reference reference = Reference.getInstance();
+	private UpdateCheckSummarizer updateCheckSummarizer = UpdateCheckSummarizer.getInstance();
 	@Getter
 	private boolean checkUpdate;
 
@@ -69,7 +69,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		for (val mod : modList) {
 			log.info(reference.getUpdatingModXOfY(), mod.getName(), updateCount++, Reference.updateTotal);
 			Runnable modUpdate = new Thread(() -> {
-				MOD_HANDLERS.get(mod.getClass()).updateMod(mod);
+				modHandlerHashMap.get(mod.getClass()).updateMod(mod);
 				Reference.updateCount++;
 				log.info("Finished updating {}", mod.getName());
 			});
@@ -102,8 +102,8 @@ public class UpdateModsProcessor extends AbstractProcessor {
 	private void updateManifest(final File file, final Manifest manifest) {
 		log.info("Updating Manifest File...");
 		// Sort Mod Lists
-		manifest.getCurseFiles().sort(MOD_COMPARATOR);
-		manifest.getThirdParty().sort(MOD_COMPARATOR);
+		manifest.getCurseFiles().sort(modComparator);
+		manifest.getThirdParty().sort(modComparator);
 
 		// Clean up Empty Lists
 		cleanupLists(manifest);

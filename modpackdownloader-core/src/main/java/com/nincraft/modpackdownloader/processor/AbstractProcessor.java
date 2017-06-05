@@ -30,19 +30,19 @@ import java.util.concurrent.TimeUnit;
 @Log4j2
 public abstract class AbstractProcessor {
 
-	static final Comparator<Mod> MOD_COMPARATOR = Comparator.comparing(mod -> mod.getName().toLowerCase());
-	static final Map<Class<? extends Mod>, ModHandler> MOD_HANDLERS = new HashMap<>();
+	final Comparator<Mod> modComparator = Comparator.comparing(mod -> mod.getName().toLowerCase());
+	final Map<Class<? extends Mod>, ModHandler> modHandlerHashMap = new HashMap<>();
 	@Getter
 	@Setter
-	private static ExecutorService executorService;
-	private static Gson gson = new Gson();
+	private ExecutorService executorService;
+	private Gson gson = new Gson();
 	Map<File, Manifest> manifestMap = new HashMap<>();
 	Arguments arguments;
 	DownloadHelper downloadHelper;
 
 	AbstractProcessor(Arguments arguments, DownloadHelper downloadHelper) {
-		MOD_HANDLERS.put(CurseFile.class, new CurseFileHandler(arguments, downloadHelper));
-		MOD_HANDLERS.put(ThirdParty.class, new ThirdPartyModHandler(downloadHelper));
+		modHandlerHashMap.put(CurseFile.class, new CurseFileHandler(arguments, downloadHelper));
+		modHandlerHashMap.put(ThirdParty.class, new ThirdPartyModHandler(downloadHelper));
 		this.arguments = arguments;
 		this.downloadHelper = downloadHelper;
 		buildManifestList(arguments.getManifests());
@@ -106,7 +106,7 @@ public abstract class AbstractProcessor {
 
 		modList.forEach(Mod::init);
 
-		modList.sort(MOD_COMPARATOR);
+		modList.sort(modComparator);
 
 		log.trace("Finished Building Mod List.");
 		return modList;

@@ -25,7 +25,7 @@ import java.io.File;
 @Log4j2
 public class ModpackDownloaderManager {
 
-	private static Reference reference = Reference.getInstance();
+	private Reference reference = Reference.getInstance();
 	private DownloadHelper downloadHelper;
 	@Getter
 	private Arguments arguments;

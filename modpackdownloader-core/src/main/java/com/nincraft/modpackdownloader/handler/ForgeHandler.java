@@ -16,7 +16,7 @@ import java.util.List;
 @Log4j2
 public class ForgeHandler {
 
-	private static Reference reference = Reference.getInstance();
+	private Reference reference = Reference.getInstance();
 	private Arguments arguments;
 	private DownloadHelper downloadHelper;
 

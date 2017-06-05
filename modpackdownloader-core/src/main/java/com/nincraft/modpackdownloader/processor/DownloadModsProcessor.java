@@ -21,44 +21,44 @@ import java.util.concurrent.Executors;
 
 @Log4j2
 public class DownloadModsProcessor extends AbstractProcessor {
-	private static final List<Mod> MOD_LIST = Lists.newArrayList();
-	private static Reference reference = Reference.getInstance();
+	private final List<Mod> modList = Lists.newArrayList();
+	private Reference reference = Reference.getInstance();
 
 	public DownloadModsProcessor(Arguments arguments, DownloadHelper downloadHelper) {
 		super(arguments, downloadHelper);
 	}
 
 	private void downloadMods(final Manifest manifest) {
-		setExecutorService(Executors.newFixedThreadPool(arguments.getMaxDownloadThreads() > 0 ? arguments.getMaxDownloadThreads() : MOD_LIST.size() + 1));
+		setExecutorService(Executors.newFixedThreadPool(arguments.getMaxDownloadThreads() > 0 ? arguments.getMaxDownloadThreads() : modList.size() + 1));
 		ForgeHandler forgeHandler = new ForgeHandler(arguments, downloadHelper);
 		Runnable forgeThread = new Thread(() -> forgeHandler.downloadForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders()));
 
 		getExecutorService().execute(forgeThread);
 
-		log.trace("Downloading {} mods...", MOD_LIST.size());
+		log.trace("Downloading {} mods...", modList.size());
 		int downloadCount = 1;
-		for (val mod : MOD_LIST) {
+		for (val mod : modList) {
 			log.info(reference.getDownloadingModXOfY(), mod.getName(), downloadCount++,
 					Reference.downloadTotal);
 
 			Runnable modDownload = new Thread(() -> {
-				MOD_HANDLERS.get(mod.getClass()).downloadMod(mod);
+				modHandlerHashMap.get(mod.getClass()).downloadMod(mod);
 				Reference.downloadCount++;
 				log.trace("Finished downloading {}", mod.getName());
 			});
 			getExecutorService().execute(modDownload);
 		}
 		getExecutorService().shutdown();
-		log.trace("Finished downloading {} mods.", MOD_LIST.size());
+		log.trace("Finished downloading {} mods.", modList.size());
 	}
 
 	@Override
 	protected void init(final Map<File, Manifest> manifestMap) {
 		for (val manifestEntry : manifestMap.entrySet()) {
-			MOD_LIST.addAll(buildModList(manifestEntry.getKey(), manifestEntry.getValue()));
+			modList.addAll(buildModList(manifestEntry.getKey(), manifestEntry.getValue()));
 		}
 
-		Reference.downloadTotal = MOD_LIST.size();
+		Reference.downloadTotal = modList.size();
 		log.debug("A total of {} mods will be downloaded.", Reference.downloadTotal);
 	}
 
@@ -71,7 +71,7 @@ public class DownloadModsProcessor extends AbstractProcessor {
 	@Override
 	protected boolean postProcess(final Entry<File, Manifest> manifestEntry) {
 		moveOverrides(manifestEntry.getValue());
-		DownloadHelper.getDownloadSummarizer().summarize();
+		downloadHelper.getDownloadSummarizer().summarize();
 		return true;
 	}
 

@@ -16,15 +16,15 @@ import java.util.regex.Pattern;
 @UtilityClass
 @Log4j2
 public final class URLHelper {
-	private static final String WHITESPACE = " ";
-	private static final String WHITESPACE_ENCODED = "%20";
+	private String whitespace = " ";
+	private String whitespaceEncoded = "%20";
 
 	public static String encodeSpaces(final String url) {
-		return url.replace(WHITESPACE, WHITESPACE_ENCODED);
+		return url.replace(whitespace, whitespaceEncoded);
 	}
 
 	public static String decodeSpaces(final String url) {
-		return url.replace(WHITESPACE_ENCODED, WHITESPACE);
+		return url.replace(whitespaceEncoded, whitespace);
 	}
 
 	public static JSONObject getJsonFromUrl(final String url) throws ParseException, IOException {

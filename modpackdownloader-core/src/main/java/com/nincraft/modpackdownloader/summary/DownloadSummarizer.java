@@ -9,9 +9,9 @@ import java.util.Observer;
 @Log4j2
 public class DownloadSummarizer implements Observer {
 
-	private static int successTotal = 0;
-	private static int failureTotal = 0;
-	private static int skipTotal = 0;
+	private int successTotal = 0;
+	private int failureTotal = 0;
+	private int skipTotal = 0;
 
 	@Override
 	public void update(Observable o, Object arg) {

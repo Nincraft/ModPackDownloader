@@ -17,7 +17,7 @@ import java.util.Observable;
 public class DownloadHelper extends Observable {
 
 	@Getter
-	private static final DownloadSummarizer downloadSummarizer = new DownloadSummarizer();
+	private DownloadSummarizer downloadSummarizer = new DownloadSummarizer();
 	private Arguments arguments;
 
 	public DownloadHelper(Arguments arguments) {
