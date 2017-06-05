@@ -56,6 +56,7 @@ public class ModpackDownloaderCLITest {
 		}
 	}
 
+	@Test
 	public void testDownloadMaxThreads() throws InterruptedException {
 		ModpackDownloaderCLI.main(new String[]{"-manifest", RESOURCES + "download-test.json", "-maxDownloadThreads", "1"});
 		File mod;
