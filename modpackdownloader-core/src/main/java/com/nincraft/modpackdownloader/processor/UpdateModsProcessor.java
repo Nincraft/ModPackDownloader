@@ -9,6 +9,7 @@ import com.nincraft.modpackdownloader.summary.UpdateCheckSummarizer;
 import com.nincraft.modpackdownloader.util.Arguments;
 import com.nincraft.modpackdownloader.util.DownloadHelper;
 import com.nincraft.modpackdownloader.util.Reference;
+import com.nincraft.modpackdownloader.util.URLHelper;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
@@ -85,21 +86,8 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		String projectIdPattern = "(\\d)+";
 		String projectNamePattern = "(((?:[a-z][a-z]+))(-)?)+";
 		for (String projectUrl : manifestFile.getBatchAddCurse()) {
-			String projectIdName = projectUrl.substring(projectUrl.lastIndexOf('/') + 1);
-			Pattern pId = Pattern.compile(projectIdPattern);
-			Matcher m = pId.matcher(projectIdName);
-			String projectId = null;
-			if (m.find()) {
-				projectId = m.group();
-			}
-
-			String projectName = null;
-
-			pId = Pattern.compile(projectNamePattern);
-			m = pId.matcher(projectIdName);
-			if (m.find()) {
-				projectName = m.group();
-			}
+			String projectId = URLHelper.parseCurseUrl(projectIdPattern, projectUrl);
+			String projectName = URLHelper.parseCurseUrl(projectNamePattern, projectUrl);
 
 			if (projectId != null && projectName != null) {
 				curseFile = new CurseFile(projectId, projectName);
