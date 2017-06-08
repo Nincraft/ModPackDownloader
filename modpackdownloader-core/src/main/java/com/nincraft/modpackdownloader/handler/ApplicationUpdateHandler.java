@@ -35,7 +35,7 @@ public class ApplicationUpdateHandler {
 			log.info("No new updates found");
 			return;
 		} else {
-			log.info("Update found, downloading " + appName);
+			log.info("Update found, downloading {}", appName);
 		}
 		try {
 			FileUtils.copyURLToFile(new URL(downloadUrl), updatedApp);

@@ -33,11 +33,11 @@ public class ForgeHandler {
 
 		for (ModLoader modLoader : modLoaders) {
 			if (BooleanUtils.isTrue(modLoader.getDownloadInstaller())) {
-				log.info("Downloading Forge installer version {}", modLoader.getId());
+				log.debug("Downloading Forge installer version {}", modLoader.getId());
 				downloadForgeFile(minecraftVersion, modLoader, true);
 			}
 			if (BooleanUtils.isTrue(modLoader.getDownloadUniversal())) {
-				log.info("Downloading Forge universal version {}", modLoader.getId());
+				log.debug("Downloading Forge universal version {}", modLoader.getId());
 				downloadForgeFile(minecraftVersion, modLoader, false);
 			}
 		}
@@ -85,7 +85,7 @@ public class ForgeHandler {
 				String manifestForgeVersion = modLoader.getId().substring(modLoader.getId().indexOf('-') + 1);
 
 				if (VersionHelper.compareVersions(manifestForgeVersion, updatedForgeVersion) < 0) {
-					log.info("Newer version of Forge found, updating to {}", updatedForgeVersion);
+					log.debug("Newer version of Forge found, updating to {}", updatedForgeVersion);
 					modLoader.setId("forge-" + updatedForgeVersion);
 				}
 

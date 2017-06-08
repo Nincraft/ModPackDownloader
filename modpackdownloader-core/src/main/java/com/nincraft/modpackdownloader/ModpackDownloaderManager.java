@@ -89,11 +89,11 @@ public class ModpackDownloaderManager {
 
 	private void defaultArguments(Arguments arguments) {
 		if (CollectionUtils.isEmpty(arguments.getManifests())) {
-			log.info("No manifest supplied, using default {}", reference.getDefaultManifestFile());
+			log.debug("No manifest supplied, using default {}", reference.getDefaultManifestFile());
 			arguments.setManifests(Lists.newArrayList(new File(reference.getDefaultManifestFile())));
 		}
 		if (Strings.isNullOrEmpty(arguments.getModFolder())) {
-			log.info("No output folder supplied, using default \"mods\"");
+			log.debug("No output folder supplied, using default \"mods\"");
 			arguments.setModFolder("mods");
 		}
 		if (noProcessArgsSupplied(arguments)) {

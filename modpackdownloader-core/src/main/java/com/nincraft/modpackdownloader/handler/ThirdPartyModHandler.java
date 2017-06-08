@@ -20,7 +20,7 @@ public class ThirdPartyModHandler implements ModHandler {
 
 	@Override
 	public void updateMod(final Mod mod) {
-		log.info("Updating Third Party Mods is not supported.");
+		log.debug("Updating Third Party Mods is not supported.");
 	}
 
 }

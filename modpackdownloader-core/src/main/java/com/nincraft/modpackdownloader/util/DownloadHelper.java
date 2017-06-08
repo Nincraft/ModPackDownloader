@@ -47,13 +47,13 @@ public class DownloadHelper extends Observable {
 	public DownloadStatus downloadFile(final DownloadableFile downloadableFile, boolean downloadToLocalRepo) {
 		DownloadStatus status = DownloadStatus.FAILURE;
 		if (BooleanUtils.isTrue(downloadableFile.getSkipDownload())) {
-			log.info("Skipped downloading {}", downloadableFile.getName());
+			log.debug("Skipped downloading {}", downloadableFile.getName());
 			return notifyStatus(DownloadStatus.SKIPPED);
 		}
 		val decodedFileName = URLHelper.decodeSpaces(downloadableFile.getFileName());
 
 		if (FileSystemHelper.getDownloadedFile(decodedFileName, downloadableFile.getFolder()).exists() && !arguments.isForceDownload()) {
-			log.info("Found {} already downloaded, skipping", decodedFileName);
+			log.debug("Found {} already downloaded, skipping", decodedFileName);
 			return notifyStatus(DownloadStatus.SKIPPED);
 		}
 

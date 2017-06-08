@@ -111,7 +111,7 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		}
 
 		if (DownloadStatus.SKIPPED.equals(downloadStatus)) {
-			log.info("No new updates found for {}", modPack.getName());
+			log.debug("No new updates found for {}", modPack.getName());
 		}
 
 		returnStatus = checkSuccessfulDownloadStatus(downloadStatus);
@@ -124,7 +124,7 @@ public class DownloadModpackProcessor extends AbstractProcessor {
 		try {
 			ZipFile modPackZip = new ZipFile(modPack.getFileName());
 			modPackZip.extractAll(".");
-			log.info("Successfully unzipped modpack");
+			log.debug("Successfully unzipped modpack");
 		} catch (ZipException e) {
 			log.error("Could not unzip modpack", e);
 			try {

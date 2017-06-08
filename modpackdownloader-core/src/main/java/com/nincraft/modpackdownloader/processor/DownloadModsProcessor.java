@@ -38,7 +38,7 @@ public class DownloadModsProcessor extends AbstractProcessor {
 		log.trace("Downloading {} mods...", modList.size());
 		int downloadCount = 1;
 		for (val mod : modList) {
-			log.info(reference.getDownloadingModXOfY(), mod.getName(), downloadCount++,
+			log.debug(reference.getDownloadingModXOfY(), mod.getName(), downloadCount++,
 					Reference.downloadTotal);
 
 			Runnable modDownload = new Thread(() -> {
@@ -82,7 +82,7 @@ public class DownloadModsProcessor extends AbstractProcessor {
 				if (overridesDirectory.exists()) {
 					FileUtils.copyDirectory(overridesDirectory, new File("."));
 					FileUtils.deleteDirectory(overridesDirectory);
-					log.info("Successfully moved overrides: {}", manifest.getOverrides());
+					log.debug("Successfully moved overrides: {}", manifest.getOverrides());
 				}
 			} catch (IOException e) {
 				log.error("Unable to move {} folder", manifest.getOverrides(), e);

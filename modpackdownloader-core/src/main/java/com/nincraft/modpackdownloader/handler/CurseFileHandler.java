@@ -96,7 +96,7 @@ public class CurseFileHandler implements ModHandler {
 
 	public void updateCurseFile(final CurseFile curseFile) {
 		if (BooleanUtils.isTrue(curseFile.getSkipUpdate())) {
-			log.info("Skipped updating {}", curseFile.getName());
+			log.debug("Skipped updating {}", curseFile.getName());
 			return;
 		}
 		JSONObject fileListJson;
@@ -118,7 +118,7 @@ public class CurseFileHandler implements ModHandler {
 
 		val newMod = getLatestVersion(curseFile.getReleaseType() != null ? curseFile.getReleaseType() : arguments.getReleaseType(), curseFile, fileListJson, null);
 		if (curseFile.getFileID().compareTo(newMod.getFileID()) < 0) {
-			log.info("Update found for {}.  Most recent version is {}.", curseFile.getName(), newMod.getVersion());
+			log.debug("Update found for {}.  Most recent version is {}.", curseFile.getName(), newMod.getVersion());
 			updateCurseFile(curseFile, newMod);
 			updateCheckSummarizer.getModList().add(curseFile);
 		}
@@ -153,7 +153,7 @@ public class CurseFileHandler implements ModHandler {
 
 		if (!"alpha".equals(releaseType) && fileIds.isEmpty()) {
 			if (CollectionUtils.isEmpty(arguments.getBackupVersions())) {
-				log.info("No files found for Minecraft {}, disabling download of {}", mcVersion, curseFile.getName());
+				log.debug("No files found for Minecraft {}, disabling download of {}", mcVersion, curseFile.getName());
 				curseFile.setSkipDownload(true);
 			} else if (!backup) {
 				newMod = checkBackupVersions(releaseType, curseFile, fileListJson, mcVersion, newMod);
@@ -163,7 +163,7 @@ public class CurseFileHandler implements ModHandler {
 			}
 		}
 		if (BooleanUtils.isTrue(curseFile.getSkipDownload()) && !fileIds.isEmpty()) {
-			log.info("Found files for Minecraft {}, enabling download of {}", mcVersion, curseFile.getName());
+			log.debug("Found files for Minecraft {}, enabling download of {}", mcVersion, curseFile.getName());
 			newMod.setSkipDownload(null);
 		}
 
@@ -193,11 +193,11 @@ public class CurseFileHandler implements ModHandler {
 	private CurseFile checkBackupVersions(String releaseType, CurseFile curseFile, JSONObject fileListJson, String mcVersion, CurseFile newMod) {
 		CurseFile returnMod = newMod;
 		for (String backupVersion : arguments.getBackupVersions()) {
-			log.info("No files found for Minecraft {}, checking backup version {}", mcVersion, backupVersion);
+			log.debug("No files found for Minecraft {}, checking backup version {}", mcVersion, backupVersion);
 			returnMod = getLatestVersion(releaseType, curseFile, fileListJson, backupVersion);
 			if (BooleanUtils.isFalse(newMod.getSkipDownload())) {
 				curseFile.setSkipDownload(null);
-				log.info("Found update for {} in Minecraft {}", curseFile.getName(), backupVersion);
+				log.debug("Found update for {} in Minecraft {}", curseFile.getName(), backupVersion);
 				break;
 			}
 		}

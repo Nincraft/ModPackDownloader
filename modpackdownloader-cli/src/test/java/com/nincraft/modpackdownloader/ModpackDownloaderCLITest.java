@@ -43,14 +43,13 @@ public class ModpackDownloaderCLITest {
 
 	@Test
 	public void testDownloadRelease() throws InterruptedException {
-		ModpackDownloaderCLI.main(new String[]{"-manifest", RESOURCES + "download-test.json", "-releaseType", "release"});
+		ModpackDownloaderCLI.main(new String[]{"-manifest", RESOURCES + "download-test.json", "-releaseType", "release", "-forceDownload"});
 		File mod;
 		List<String> mods = new ArrayList<>(Arrays.asList("Thaumcraft-1.8.9-5.2.4.jar", "DimensionalDoors-2.2.5-test9.jar", "pants.jar", "forge-1.8.9-11.15.1.1902-1.8.9-installer.jar"));
 		List<String> checkFiles = addMods(mods);
 
 		for (String fileCheck : checkFiles) {
 			mod = new File(fileCheck);
-			log.info("Checking {}: {}", mod, mod.exists());
 			Assert.assertTrue(mod.exists());
 			mod.deleteOnExit();
 		}
@@ -65,7 +64,6 @@ public class ModpackDownloaderCLITest {
 
 		for (String fileCheck : checkFiles) {
 			mod = new File(fileCheck);
-			log.info("Checking {}: {}", mod, mod.exists());
 			Assert.assertTrue(mod.exists());
 			mod.deleteOnExit();
 		}
