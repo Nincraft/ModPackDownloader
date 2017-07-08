@@ -32,7 +32,7 @@
 			<dependency>
 				<groupId>com.beust</groupId>
 				<artifactId>jcommander</artifactId>
-				<version>1.64</version>
+				<version>1.72</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

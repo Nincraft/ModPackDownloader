@@ -145,6 +145,6 @@ public class ModpackDownloaderManager {
 	private JCommander initArguments(final String[] args) {
 		// Initialize application arguments
 		arguments = new Arguments();
-		return new JCommander(arguments, args);
+		return new JCommander(arguments, null, args);
 	}
 }
