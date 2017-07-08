@@ -9,3 +9,4 @@ logs/
 .idea/
 *.iml
 out/
+/**/dependency-reduced-pom.xml

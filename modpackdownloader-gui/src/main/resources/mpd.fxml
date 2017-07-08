@@ -14,21 +14,14 @@
 				<Label layoutX="14.0" layoutY="45.0" text="File ID (Optional)"/>
 				<Button fx:id="downloadButton" layoutX="465.0" layoutY="29.0" mnemonicParsing="false"
 						text="Download Modpack"/>
-				<TextArea layoutX="14.0" layoutY="78.0" prefHeight="271.0" prefWidth="574.0"/>
+				<TextArea fx:id="logTextArea" layoutX="14.0" layoutY="78.0" prefHeight="287.0" prefWidth="574.0"/>
 			</children>
 		</AnchorPane>
 	</center>
-	<top>
-		<Label text="Modpack Downloader" BorderPane.alignment="CENTER">
-			<BorderPane.margin>
-				<Insets bottom="5.0" top="5.0"/>
-			</BorderPane.margin>
-		</Label>
-	</top>
 	<bottom>
 		<AnchorPane prefHeight="30.0" prefWidth="200.0" BorderPane.alignment="CENTER">
 			<children>
-				<ProgressBar layoutX="367.0" layoutY="7.0" prefHeight="18.0" prefWidth="219.0" progress="0.0"/>
+				<ProgressBar fx:id="progressBar" layoutX="367.0" layoutY="7.0" prefHeight="18.0" prefWidth="219.0" progress="0.0"/>
 				<Hyperlink fx:id="help" layoutX="14.0" layoutY="5.0" text="Help"/>
 				<Hyperlink fx:id="reportIssue" layoutX="54.0" layoutY="5.0" text="Report an issue"/>
 			</children>
