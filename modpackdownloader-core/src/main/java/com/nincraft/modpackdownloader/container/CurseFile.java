@@ -18,7 +18,7 @@ import java.net.URL;
 @Generated("org.jsonschema2pojo")
 @Log4j2
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, exclude = {"fileID"})
 public class CurseFile extends Mod {
 
 	@SerializedName("fileID")

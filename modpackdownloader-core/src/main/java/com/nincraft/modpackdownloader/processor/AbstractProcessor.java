@@ -104,6 +104,11 @@ public abstract class AbstractProcessor {
 		modList.addAll(manifest.getCurseFiles());
 		modList.addAll(manifest.getThirdParty());
 
+		val modSet = new HashSet<Mod>();
+		modSet.addAll(modList);
+		modList.clear();
+		modList.addAll(modSet);
+
 		modList.forEach(Mod::init);
 
 		modList.sort(modComparator);
