@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+	<Appenders>
+		<TextAreaAppender name="JavaFXLogger">
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %c{1}:%L - %m%n"/>
+		</TextAreaAppender>
+		<RollingFile name="RollingFile" fileName="logs/modPackDownloader.log"
+					 filePattern="logs/$${date:yyyy-MM}/modPackDownloader-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout pattern="%d{MM-dd-yyyy} %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="5 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10" />
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="com.nincraft.modpackdownloader" level="DEBUG">
+			<AppenderRef ref="JavaFXLogger"/>
+		</Logger>
+		<Root level="DEBUG">
+			<AppenderRef ref="RollingFile"/>
+		</Root>
+	</Loggers>
+</Configuration>

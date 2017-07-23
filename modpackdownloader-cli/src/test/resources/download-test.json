@@ -1,0 +1,40 @@
+{
+  "minecraft": {
+    "version": "1.8.9",
+    "modLoaders": [
+      {
+        "id": "forge-11.15.1.1902",
+        "primary": true,
+        "downloadInstaller": true,
+        "release": "latest",
+        "name": "forge",
+        "folder": "mods"
+      }
+    ]
+  },
+  "files": [
+    {
+      "fileID": 2287496,
+      "projectID": 223628,
+      "name": "Thaumcraft"
+    },
+    {
+      "fileID": 2423802,
+      "projectID": 59882,
+      "name": "modular-forcefield-system",
+      "rename": "pants.jar"
+    },
+    {
+      "fileID": 2287496,
+      "projectID": 223628,
+      "name": "Thaumcraft",
+      "release": "beta"
+    }
+  ],
+  "thirdParty": [
+    {
+      "url": "https://github.com/CannibalVox/DimDoors/releases/download/2.2.5-test9/DimensionalDoors-2.2.5-test9.jar",
+      "name": "Dimensional Doors"
+    }
+  ]
+}
