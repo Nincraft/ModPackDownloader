@@ -7,10 +7,13 @@
 	<parent>
 		<groupId>com.nincraft</groupId>
 		<artifactId>modpackdownloader</artifactId>
-		<version>0.5-SNAPSHOT</version>
+		<version>0.5</version>
 	</parent>
     <artifactId>modpackdownloader-maven-plugin</artifactId>
 	<name>Modpack Downloader Maven Plugin</name>
+	<properties>
+		<build.number>SNAPSHOT</build.number>
+	</properties>
 
     <packaging>maven-plugin</packaging>
     <dependencies>
@@ -31,7 +34,29 @@
         </dependency>
     </dependencies>
     <build>
+		<finalName>ModpackDownloader-maven-plugin-${short.project.version}+${build.number}</finalName>
         <plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>regex-property</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>regex-property</goal>
+						</goals>
+						<configuration>
+							<name>short.project.version</name>
+							<value>${project.version}</value>
+							<regex>^(\d\.\d(?>\.\d)?)(-SNAPSHOT)?</regex>
+							<replacement>$1</replacement>
+							<failIfNoMatch>true</failIfNoMatch>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
