@@ -60,7 +60,7 @@ public class CurseFileHandler implements ModHandler {
 			String actualURL = conn.getURL().toString();
 			int retryCount = 0;
 
-			while (conn.getResponseCode() != 200 || !actualURL.contains(reference.getJarFileExt()) || !actualURL.contains(reference.getZipFileExt())) {
+			while (conn.getResponseCode() != 200 || !actualURL.contains(curseFile.getFileExtension())) {
 				val headerLocation = conn.getHeaderField("Location");
 				if (headerLocation != null) {
 					actualURL = headerLocation;

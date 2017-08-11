@@ -36,10 +36,12 @@ public class CurseFile extends Mod {
 	private String projectUrl;
 	private String projectName;
 	private boolean curseForge;
+	private String fileExtension;
 	private Reference reference = Reference.getInstance();
 
 	public CurseFile() {
 		curseForge = true;
+		fileExtension = reference.getJarFileExt();
 	}
 
 	public CurseFile(CurseFile curseFile) {
@@ -51,6 +53,7 @@ public class CurseFile extends Mod {
 		projectUrl = curseFile.projectUrl;
 		projectName = curseFile.projectName;
 		curseForge = curseFile.curseForge;
+		fileExtension = curseFile.fileExtension;
 	}
 
 	public CurseFile(String projectId, String projectName) {
