@@ -58,6 +58,7 @@ public class CurseFile extends Mod {
 			setProjectID(Integer.parseInt(projectId));
 		}
 		setProjectName(projectName);
+		curseForge = true;
 	}
 
 	public String getCurseforgeWidgetJson() {
