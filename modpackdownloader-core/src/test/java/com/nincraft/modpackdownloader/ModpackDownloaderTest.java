@@ -1,9 +1,9 @@
 package com.nincraft.modpackdownloader;
 
 import com.google.gson.Gson;
-import com.nincraft.modpackdownloader.cli.ModpackDownloaderCLI;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
+import com.nincraft.modpackdownloader.handler.ApplicationUpdateHandler;
 import com.nincraft.modpackdownloader.util.VersionHelper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class ModpackDownloaderCLITest {
+public class ModpackDownloaderTest {
 
 	private final String RESOURCES = "src/test/resources/";
 
@@ -43,7 +43,9 @@ public class ModpackDownloaderCLITest {
 
 	@Test
 	public void testDownloadRelease() throws InterruptedException {
-		ModpackDownloaderCLI.main(new String[]{"-manifest", RESOURCES + "download-test.json", "-releaseType", "release", "-forceDownload"});
+		ModpackDownloaderManager manager = new ModpackDownloaderManager(new String[]{"-manifest", RESOURCES + "download-test.json", "-releaseType", "release", "-forceDownload"});
+		manager.init();
+		manager.processManifests();
 		File mod;
 		List<String> mods = new ArrayList<>(Arrays.asList("Thaumcraft-1.8.9-5.2.4.jar", "DimensionalDoors-2.2.5-test9.jar", "pants.jar", "forge-1.8.9-11.15.1.1902-1.8.9-installer.jar"));
 		List<String> checkFiles = addMods(mods);
@@ -57,7 +59,9 @@ public class ModpackDownloaderCLITest {
 
 	@Test
 	public void testDownloadMaxThreads() throws InterruptedException {
-		ModpackDownloaderCLI.main(new String[]{"-manifest", RESOURCES + "download-test.json", "-maxDownloadThreads", "1"});
+		ModpackDownloaderManager manager = new ModpackDownloaderManager(new String[]{"-manifest", RESOURCES + "download-test.json", "-maxDownloadThreads", "1"});
+		manager.init();
+		manager.processManifests();
 		File mod;
 		List<String> mods = new ArrayList<>(Arrays.asList("Thaumcraft-1.8.9-5.2.4.jar", "DimensionalDoors-2.2.5-test9.jar", "pants.jar", "forge-1.8.9-11.15.1.1902-1.8.9-installer.jar"));
 		List<String> checkFiles = addMods(mods);
@@ -79,7 +83,9 @@ public class ModpackDownloaderCLITest {
 		JSONObject jsonLists = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
 		Manifest manifest = gson.fromJson(jsonLists.toString(), Manifest.class);
 		String oldForgeVersion = manifest.getForgeVersion();
-		ModpackDownloaderCLI.main(args);
+		ModpackDownloaderManager manager = new ModpackDownloaderManager(args);
+		manager.init();
+		manager.processManifests();
 		jsonLists = (JSONObject) new JSONParser().parse(new FileReader(manifestFile));
 		manifest = gson.fromJson(jsonLists.toString(), Manifest.class);
 		for (CurseFile curseFile : manifest.getCurseFiles()) {
@@ -90,16 +96,20 @@ public class ModpackDownloaderCLITest {
 	}
 
 	@Test
-	public void testCheckUpdate() throws InterruptedException, IOException, ParseException {
+	public void testCheckUpdate() throws InterruptedException {
 		String manifestName = RESOURCES + "update-test.json";
 		String[] args = {"-manifest", manifestName, "-checkMCUpdate", "1.10.2"};
-		ModpackDownloaderCLI.main(args);
+		ModpackDownloaderManager manager = new ModpackDownloaderManager(args);
+		manager.init();
+		manager.processManifests();
 	}
 
 	@Test
-	public void testAppUpdate() throws InterruptedException {
+	public void testAppUpdate() {
 		String[] args = {"-updateApp"};
-		ModpackDownloaderCLI.main(args);
+		ModpackDownloaderManager manager = new ModpackDownloaderManager(args);
+		manager.init();
+		ApplicationUpdateHandler.update();
 		FileFilter fileFilter = new WildcardFileFilter("ModpackDownloader*jar");
 		File directory = new File(".");
 		List<File> files = Arrays.asList(directory.listFiles(fileFilter));
