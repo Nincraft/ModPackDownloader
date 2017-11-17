@@ -14,6 +14,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -74,6 +75,7 @@ public class ModpackDownloaderTest {
 	}
 
 	@Test
+	@Ignore
 	public void testUpdate() throws InterruptedException, IOException, ParseException {
 		String manifestName = RESOURCES + "update-test.json";
 		File manifestFile = new File(manifestName);
