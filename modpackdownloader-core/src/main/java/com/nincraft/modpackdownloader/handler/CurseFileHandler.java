@@ -13,9 +13,14 @@ import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -99,15 +104,16 @@ public class CurseFileHandler implements ModHandler {
 			log.debug("Skipped updating {}", curseFile.getName());
 			return;
 		}
-		JSONObject fileListJson;
+		disableCertValidation();
+		JSONObject fileListJson = new JSONObject();
 		try {
 			val conn = (HttpURLConnection) new URL(curseFile.getProjectUrl()).openConnection();
 			conn.setInstanceFollowRedirects(false);
 			conn.connect();
 
-			fileListJson = (JSONObject) getCurseProjectJson(curseFile).get("files");
+			fileListJson.put("curse", getCurseProjectJson(curseFile).get("files"));
 
-			if (fileListJson == null) {
+			if (fileListJson.get("curse") == null) {
 				log.error("No file list found for {}, and will be skipped.", curseFile.getName());
 				return;
 			}
@@ -121,6 +127,31 @@ public class CurseFileHandler implements ModHandler {
 			log.debug("Update found for {}.  Most recent version is {}.", curseFile.getName(), newMod.getVersion());
 			updateCurseFile(curseFile, newMod);
 			updateCheckSummarizer.getModList().add(curseFile);
+		}
+	}
+
+	private void disableCertValidation() {
+		TrustManager[] trustAllCerts = new TrustManager[]{
+				new X509TrustManager() {
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+						return null;
+					}
+
+					public void checkClientTrusted(
+							java.security.cert.X509Certificate[] certs, String authType) {
+					}
+
+					public void checkServerTrusted(
+							java.security.cert.X509Certificate[] certs, String authType) {
+					}
+				}
+		};
+
+		try {
+			SSLContext sc = SSLContext.getInstance("SSL");
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+		} catch (Exception e) {
 		}
 	}
 
@@ -144,12 +175,12 @@ public class CurseFileHandler implements ModHandler {
 		CurseFile newMod = new CurseFile(curseFile);
 		curseFile = checkFileId(curseFile);
 
-		List<JSONObject> fileList = new ArrayList<>(fileListJson.values());
+		JSONArray fileList = (JSONArray) fileListJson.get("curse");
 		List<Long> fileIds = new ArrayList<>();
 		checkFileIds(releaseType, mcVersion, fileList, fileIds);
 		Collections.sort(fileIds);
 		Collections.reverse(fileIds);
-		setUpdatedFileId(curseFile, fileListJson, newMod, fileIds);
+		setUpdatedFileId(curseFile, fileList, newMod, fileIds);
 
 		if (!"alpha".equals(releaseType) && fileIds.isEmpty()) {
 			if (CollectionUtils.isEmpty(arguments.getBackupVersions())) {
@@ -171,11 +202,20 @@ public class CurseFileHandler implements ModHandler {
 		return newMod;
 	}
 
-	private void setUpdatedFileId(CurseFile curseFile, JSONObject fileListJson, CurseFile newMod, List<Long> fileIds) {
+	private void setUpdatedFileId(CurseFile curseFile, JSONArray fileListJson, CurseFile newMod, List<Long> fileIds) {
 		if (!fileIds.isEmpty() && fileIds.get(0).intValue() != curseFile.getFileID()) {
 			newMod.setFileID(fileIds.get(0).intValue());
-			newMod.setVersion((String) ((JSONObject) fileListJson.get(newMod.getFileID().toString())).get("name"));
+			newMod.setVersion(getJSONFileNode(fileListJson, newMod.getFileID()).get("version").toString());
 		}
+	}
+
+	private JSONObject getJSONFileNode(JSONArray fileListJson, Integer fileID) {
+		for (val jsonNode : fileListJson) {
+			if (fileID.equals(((Long) ((JSONObject) jsonNode).get("id")).intValue())) {
+				return (JSONObject) jsonNode;
+			}
+		}
+		return new JSONObject();
 	}
 
 	private void checkFileIds(String releaseType, String mcVersion, List<JSONObject> fileList, List<Long> fileIds) {
