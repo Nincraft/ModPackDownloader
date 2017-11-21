@@ -65,10 +65,9 @@ public class ModpackDownloaderManager {
 		}
 	}
 
-	private void updateMods(Arguments arguments) {
+	private void updateMods(Arguments arguments) throws InterruptedException {
 		if (shouldProcessUpdate(arguments)) {
-			log.warn("Updating of mods has been disabled due to the Curse Widget API being unavailable, " +
-					"see issue #72 on Github");
+			new UpdateModsProcessor(arguments, downloadHelper).process();
 		}
 	}
 
