@@ -18,13 +18,13 @@ import java.util.Set;
 @Log4j2
 public class MergeManifestsProcessor extends AbstractProcessor {
 	private final Set<CurseFile> curseModSet;
-	private final Manifest manifest;
+	private final Manifest newManifest;
 
 	public MergeManifestsProcessor(Arguments arguments, DownloadHelper downloadHelper) {
 		super(arguments, downloadHelper);
 
 		curseModSet = Sets.newHashSet();
-		manifest = new Manifest();
+		newManifest = new Manifest();
 	}
 
 	@Override
@@ -38,25 +38,50 @@ public class MergeManifestsProcessor extends AbstractProcessor {
 			process(entry);
 		}
 
-		manifest.getCurseFiles().addAll(curseModSet);
-		manifest.getCurseFiles().sort(modComparator);
+		newManifest.getCurseFiles().addAll(curseModSet);
+		newManifest.getCurseFiles().sort(modComparator);
 
-		manifest.setOverrides("overrides");
+		newManifest.setOverrides("overrides");
 
-		ManifestHelper.cleanupManifest(manifest);
-		FileSystemHelper.writeManifest(manifest, "target/manifest.json");
+		ManifestHelper.cleanupManifest(newManifest);
+		FileSystemHelper.writeManifest(newManifest, "target/newManifest.json");
 	}
 
 	@Override
 	protected boolean process(Entry<File, Manifest> manifestEntry) {
 		val manifest = manifestEntry.getValue();
 
-		if (this.manifest.getMinecraft() == null && manifest.getMinecraft() != null) {
-			this.manifest.setMinecraft(manifest.getMinecraft());
+		processManifestHeaders(manifest);
+
+		if (newManifest.getMinecraft() == null && manifest.getMinecraft() != null) {
+			newManifest.setMinecraft(manifest.getMinecraft());
 		}
 
 		curseModSet.addAll(manifest.getCurseFiles());
 
 		return true;
+	}
+
+	private void processManifestHeaders(Manifest manifest) {
+
+		if (newManifest.getAuthor() == null) {
+			newManifest.setAuthor(manifest.getAuthor());
+		}
+
+		if (newManifest.getManifestType() == null) {
+			newManifest.setManifestType(manifest.getManifestType());
+		}
+
+		if (newManifest.getMinecraftVersion() == null) {
+			newManifest.setManifestVersion(manifest.getManifestVersion());
+		}
+
+		if (newManifest.getName() == null) {
+			newManifest.setName(manifest.getName());
+		}
+
+		if (newManifest.getVersion() == null) {
+			newManifest.setVersion(manifest.getVersion());
+		}
 	}
 }
