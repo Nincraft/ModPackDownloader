@@ -1,13 +1,16 @@
 package com.nincraft.modpackdownloader.util;
 
 import com.google.common.base.Strings;
+import com.google.gson.GsonBuilder;
 import com.nincraft.modpackdownloader.container.DownloadableFile;
+import com.nincraft.modpackdownloader.container.Manifest;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 @Log4j2
@@ -78,6 +81,20 @@ public final class FileSystemHelper {
 			FileUtils.deleteDirectory(cache);
 		} catch (IOException e) {
 			log.error("Unable to clear cache", e);
+		}
+	}
+
+	public static void writeManifest(final Manifest manifest, final String filename) {
+		writeManifest(manifest, new File(filename));
+	}
+
+	public static void writeManifest(final Manifest manifest, final File file) {
+		val prettyGson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
+				.disableHtmlEscaping().create();
+		try (val fileWriter = new FileWriter(file)) {
+			fileWriter.write(prettyGson.toJson(manifest));
+		} catch (final IOException e) {
+			log.error(e);
 		}
 	}
 }
