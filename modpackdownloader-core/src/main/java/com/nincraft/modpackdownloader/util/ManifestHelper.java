@@ -92,5 +92,7 @@ public class ManifestHelper {
 
 	private static void cleanupCurseFile(CurseFile curseFile) {
 		curseFile.setName(null);
+		curseFile.setSkipDownload(null);
+		curseFile.setSkipUpdate(null);
 	}
 }
