@@ -1,6 +1,7 @@
 package com.nincraft.modpackdownloader.handler;
 
 import com.google.common.base.Strings;
+import com.google.common.net.UrlEscapers;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.CurseModpackFile;
 import com.nincraft.modpackdownloader.container.Mod;
@@ -55,9 +56,9 @@ public class CurseFileHandler implements ModHandler {
 	public CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
 		val url = curseFile.getCurseForgeDownloadUrl();
 		val projectName = curseFile.getName();
-		String encodedDownloadLocation = URLEncoder.encode(projectName, "UTF-8");
+		String encodedFilename = URLEncoder.encode(projectName, "UTF-8");
 
-		if (!encodedDownloadLocation.contains(reference.getJarFileExt()) || !encodedDownloadLocation.contains(reference.getZipFileExt())) {
+		if (!encodedFilename.contains(reference.getJarFileExt()) || !encodedFilename.contains(reference.getZipFileExt())) {
 			val newUrl = url + reference.getCookieTest1();
 
 			HttpURLConnection conn = (HttpURLConnection) new URL(newUrl).openConnection();
@@ -83,22 +84,22 @@ public class CurseFileHandler implements ModHandler {
 				retryCount++;
 			}
 
-			encodedDownloadLocation = getEncodedDownloadLocation(projectName, actualURL, actualURL.lastIndexOf(reference.getUrlDelimiter()) + 1);
-			curseFile.setDownloadUrl(actualURL.replace("http:", "https:"));
+			val filenameIndex = actualURL.lastIndexOf(reference.getUrlDelimiter()) + 1;
+			val filename = actualURL.substring(filenameIndex);
+			encodedFilename = getEncodedFilename(projectName, filename);
+			curseFile.setDownloadUrl(actualURL.replace("http:", "https:").replace(filename, UrlEscapers.urlPathSegmentEscaper().escape(filename)));
 		}
-		curseFile.setFileName(URLDecoder.decode(encodedDownloadLocation, "UTF-8"));
+		curseFile.setFileName(encodedFilename);
 
 		return curseFile;
 	}
 
-	private String getEncodedDownloadLocation(String projectName, String actualURL, int lastIndexUrl) {
-		String encodedDownloadLocation;
-		if (actualURL.substring(lastIndexUrl).contains(reference.getJarFileExt()) || actualURL.substring(lastIndexUrl).contains(reference.getZipFileExt())) {
-			encodedDownloadLocation = actualURL.substring(lastIndexUrl);
+	private String getEncodedFilename(String projectName, String filename) {
+		if (filename.contains(reference.getJarFileExt()) || filename.contains(reference.getZipFileExt())) {
+			return filename;
 		} else {
-			encodedDownloadLocation = projectName + reference.getJarFileExt();
+			return projectName + reference.getJarFileExt();
 		}
-		return encodedDownloadLocation;
 	}
 
 	public void updateCurseFile(final CurseFile curseFile) {
