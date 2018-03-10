@@ -1,7 +1,9 @@
 package com.nincraft.modpackdownloader.processor;
 
+import com.google.gson.GsonBuilder;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
+import com.nincraft.modpackdownloader.container.Minecraft;
 import com.nincraft.modpackdownloader.container.Mod;
 import com.nincraft.modpackdownloader.handler.ForgeHandler;
 import com.nincraft.modpackdownloader.summary.UpdateCheckSummarizer;
@@ -14,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -49,14 +52,16 @@ public class UpdateModsProcessor extends AbstractProcessor {
 
 		Reference.updateTotal = modList.size();
 
-		ForgeHandler forgeHandler = new ForgeHandler(arguments, downloadHelper);
-		Runnable forgeThread = new Thread(() ->
-				manifest.getMinecraft().setModLoaders(
-						forgeHandler.updateForge(manifest.getMinecraftVersion(), manifest.getMinecraft().getModLoaders())));
-
 		setExecutorService(Executors.newFixedThreadPool(Reference.updateTotal + 1));
 
-		getExecutorService().execute(forgeThread);
+		val minecraft = manifest.getMinecraft();
+		if (minecraft != null) {
+			ForgeHandler forgeHandler = new ForgeHandler(arguments, downloadHelper);
+			Runnable forgeThread = new Thread(() -> minecraft.setModLoaders(
+					forgeHandler.updateForge(manifest.getMinecraftVersion(), minecraft.getModLoaders())));
+
+			getExecutorService().execute(forgeThread);
+		}
 
 		log.trace("Updating {} mods...", Reference.updateTotal);
 
@@ -102,7 +107,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 
 		ManifestHelper.cleanupModLists(manifest);
 		FileSystemHelper.writeManifest(manifest, file);
-	}
+		}
 
 
 
