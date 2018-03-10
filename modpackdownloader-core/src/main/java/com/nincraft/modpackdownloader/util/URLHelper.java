@@ -16,17 +16,6 @@ import java.util.regex.Pattern;
 @UtilityClass
 @Log4j2
 public final class URLHelper {
-	private String whitespace = " ";
-	private String whitespaceEncoded = "%20";
-
-	public static String encodeSpaces(final String url) {
-		return url.replace(whitespace, whitespaceEncoded);
-	}
-
-	public static String decodeSpaces(final String url) {
-		return url.replace(whitespaceEncoded, whitespace);
-	}
-
 	public static JSONObject getJsonFromUrl(final String url) throws ParseException, IOException {
 		JSONParser parser = new JSONParser();
 		return (JSONObject) parser.parse(new BufferedReader(new InputStreamReader(new URL(url).openStream())));

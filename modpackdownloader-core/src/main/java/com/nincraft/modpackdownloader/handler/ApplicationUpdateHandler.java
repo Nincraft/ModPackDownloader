@@ -12,6 +12,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
 
 @UtilityClass
 @Log4j2
@@ -28,18 +29,25 @@ public class ApplicationUpdateHandler {
 			return;
 		}
 		val downloadUrl = (String) appJson.get("url");
-		val appName = URLHelper
-				.decodeSpaces(downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1, downloadUrl.length()));
-		val updatedApp = FileSystemHelper.getDownloadedFile(appName, ".");
+
+		val appName = downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1, downloadUrl.length());
+		String decodedAppName = null;
+		try {
+			decodedAppName = URLDecoder.decode(appName, "UTF-8");
+		} catch (IOException e) {
+			log.error("Error Decoding App Name: {}", appName, e);
+		}
+
+		val updatedApp = FileSystemHelper.getDownloadedFile(decodedAppName, ".");
 		if (updatedApp.exists()) {
 			log.info("No new updates found");
 			return;
 		} else {
-			log.info("Update found, downloading {}", appName);
+			log.info("Update found, downloading {}", decodedAppName);
 		}
 		try {
 			FileUtils.copyURLToFile(new URL(downloadUrl), updatedApp);
-			log.info("Downloaded {}", appName);
+			log.info("Downloaded {}", decodedAppName);
 		} catch (IOException e) {
 			log.error("Failed to download update", e);
 		}

@@ -25,6 +25,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +55,7 @@ public class CurseFileHandler implements ModHandler {
 	public CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException {
 		val url = curseFile.getCurseForgeDownloadUrl();
 		val projectName = curseFile.getName();
-		String encodedDownloadLocation = URLHelper.encodeSpaces(projectName);
+		String encodedDownloadLocation = URLEncoder.encode(projectName, "UTF-8");
 
 		if (!encodedDownloadLocation.contains(reference.getJarFileExt()) || !encodedDownloadLocation.contains(reference.getZipFileExt())) {
 			val newUrl = url + reference.getCookieTest1();
@@ -84,7 +86,7 @@ public class CurseFileHandler implements ModHandler {
 			encodedDownloadLocation = getEncodedDownloadLocation(projectName, actualURL, actualURL.lastIndexOf(reference.getUrlDelimiter()) + 1);
 			curseFile.setDownloadUrl(actualURL.replace("http:", "https:"));
 		}
-		curseFile.setFileName(URLHelper.decodeSpaces(encodedDownloadLocation));
+		curseFile.setFileName(URLDecoder.decode(encodedDownloadLocation, "UTF-8"));
 
 		return curseFile;
 	}
