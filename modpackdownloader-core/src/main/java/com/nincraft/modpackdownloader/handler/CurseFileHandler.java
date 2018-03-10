@@ -247,7 +247,7 @@ public class CurseFileHandler implements ModHandler {
 	}
 
 	private boolean isMcVersion(String modVersion, String argVersion) {
-		return "*".equals(argVersion) || argVersion.equals(modVersion);
+		return "*".equals(argVersion) || modVersion.equals(argVersion);
 	}
 
 	private CurseFile checkFileId(CurseFile curseFile) {
