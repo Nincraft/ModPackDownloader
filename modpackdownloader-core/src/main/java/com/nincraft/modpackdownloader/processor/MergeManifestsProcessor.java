@@ -44,7 +44,7 @@ public class MergeManifestsProcessor extends AbstractProcessor {
 		newManifest.setOverrides("overrides");
 
 		ManifestHelper.cleanupManifest(newManifest);
-		FileSystemHelper.writeManifest(newManifest, "target/newManifest.json");
+		FileSystemHelper.writeManifest(newManifest, "target/manifest.json");
 	}
 
 	@Override
