@@ -1,15 +1,11 @@
 package com.nincraft.modpackdownloader.processor;
 
-import com.google.gson.GsonBuilder;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
 import com.nincraft.modpackdownloader.container.Mod;
 import com.nincraft.modpackdownloader.handler.ForgeHandler;
 import com.nincraft.modpackdownloader.summary.UpdateCheckSummarizer;
-import com.nincraft.modpackdownloader.util.Arguments;
-import com.nincraft.modpackdownloader.util.DownloadHelper;
-import com.nincraft.modpackdownloader.util.Reference;
-import com.nincraft.modpackdownloader.util.URLHelper;
+import com.nincraft.modpackdownloader.util.*;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
@@ -18,7 +14,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -105,35 +100,11 @@ public class UpdateModsProcessor extends AbstractProcessor {
 		manifest.getCurseFiles().sort(modComparator);
 		manifest.getThirdParty().sort(modComparator);
 
-		// Clean up Empty Lists
-		cleanupLists(manifest);
-
-		// Dump Manifest to file
-		val prettyGson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
-				.disableHtmlEscaping().create();
-		try (val fileWriter = new FileWriter(file)) {
-			fileWriter.write(prettyGson.toJson(manifest));
-		} catch (final IOException e) {
-			log.error(e);
-		}
+		ManifestHelper.cleanupModLists(manifest);
+		FileSystemHelper.writeManifest(manifest, file);
 	}
 
-	private void cleanupLists(final Manifest manifest) {
 
-		// Clean up Empty Lists
-		if (manifest.getCurseFiles().isEmpty()) {
-			manifest.setCurseFiles(null);
-		}
-		if (manifest.getThirdParty().isEmpty()) {
-			manifest.setThirdParty(null);
-		}
-		if (manifest.getMinecraft().getModLoaders().isEmpty()) {
-			manifest.getMinecraft().setModLoaders(null);
-		}
-
-		// Always Clean up Batch Add
-		manifest.setBatchAddCurse(null);
-	}
 
 	@Override
 	protected void init(final Map<File, Manifest> manifestMap) {
