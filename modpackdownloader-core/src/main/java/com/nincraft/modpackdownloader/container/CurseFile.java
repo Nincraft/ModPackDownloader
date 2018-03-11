@@ -70,27 +70,31 @@ public class CurseFile extends Mod {
 
 	@Override
 	public void init() {
+		resolveProjectName();
 		setProjectUrl(buildProjectUrl());
+		setDownloadUrl(getCurseForgeDownloadUrl());
+	}
 
-		try {
-			if (Strings.isNullOrEmpty(getProjectName()) || Strings.isNullOrEmpty(getName())) {
-				val conn = (HttpURLConnection) new URL(getProjectUrl()).openConnection();
+	private void resolveProjectName() {
+		if (Strings.isNullOrEmpty(getProjectName()) || Strings.isNullOrEmpty(getName())) {
+			try {
+				val conn = (HttpURLConnection) new URL(reference.getCurseforgeBaseUrl() + getProjectID()).openConnection();
 				conn.setInstanceFollowRedirects(false);
 				conn.connect();
 
+				val newProjectName = conn.getHeaderField("Location").split("/")[2];
+
 				if (Strings.isNullOrEmpty(getProjectName())) {
-					setProjectName(conn.getHeaderField("Location").split("/")[2]);
+					setProjectName(newProjectName);
 				}
 
 				if (Strings.isNullOrEmpty(getName())) {
-					setName(getProjectName());
+					setName(newProjectName);
 				}
+			} catch (IOException e) {
+				log.error(e);
 			}
-		} catch (final IOException e) {
-			log.error(e);
 		}
-		setDownloadUrl(getDownloadUrl());
-
 	}
 
 	private String buildProjectUrl() {
@@ -98,8 +102,7 @@ public class CurseFile extends Mod {
 	}
 
 	public String getCurseForgeDownloadUrl() {
-		String baseUrl = curseForge ? reference.getCurseforgeBaseUrl() : reference.getFtbBaseUrl();
-		return String.format(baseUrl + "%s/files/%s/download", getProjectName(),
-				getFileID());
+		val baseUrl = curseForge ? reference.getCurseforgeBaseUrl() : reference.getFtbBaseUrl();
+		return String.format(baseUrl + "%s/files/%s/download", getProjectName(), getFileID());
 	}
 }
