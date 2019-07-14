@@ -14,6 +14,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -96,6 +97,7 @@ public class ModpackDownloaderCLITest {
 		ModpackDownloaderCLI.main(args);
 	}
 
+	@Ignore
 	@Test
 	public void testAppUpdate() throws InterruptedException {
 		String[] args = {"-updateApp"};
