@@ -82,7 +82,7 @@ public class CurseFile extends Mod {
 				conn.setInstanceFollowRedirects(false);
 				conn.connect();
 
-				val newProjectName = conn.getHeaderField("Location").split("/")[2];
+				val newProjectName = conn.getHeaderField("Location").split("/")[5];
 
 				if (Strings.isNullOrEmpty(getProjectName())) {
 					setProjectName(newProjectName);
@@ -102,7 +102,7 @@ public class CurseFile extends Mod {
 	}
 
 	public String getCurseForgeDownloadUrl() {
-		val baseUrl = curseForge ? reference.getCurseforgeBaseUrl() : reference.getFtbBaseUrl();
-		return String.format(baseUrl + "%s/files/%s/download", getProjectName(), getFileID());
+		val baseUrl = curseForge ? reference.getCurseForgeBaseDownloadUrl() : reference.getFtbBaseUrl();
+		return String.format(baseUrl + "%s/download/%s/file", getProjectName(), getFileID());
 	}
 }
