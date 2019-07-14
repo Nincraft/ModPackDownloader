@@ -15,7 +15,8 @@ public class Reference {
 	public static int downloadTotal = 0;
 	public static int updateCount = 0;
 	public static int updateTotal = 0;
-	private String curseforgeBaseUrl = "https://minecraft.curseforge.com/projects/";
+	private String curseforgeBaseUrl = "https://www.curseforge.com/projects/";
+	private String curseForgeBaseDownloadUrl = "https://www.curseforge.com/minecraft/mc-mods/";
 	private String ftbBaseUrl = "https://www.feed-the-beast.com/projects/";
 	private String curseforgeWidgetJsonMod = "mc-mods";
 	private String curseforgeWidgetJsonModpack = "modpacks";
