@@ -5,17 +5,13 @@
     <parent>
 		<groupId>com.nincraft</groupId>
 		<artifactId>modpackdownloader</artifactId>
-		<version>0.6-SNAPSHOT</version>
+		<version>0.6</version>
 	</parent>
 
     <artifactId>modpackdownloader-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
 
     <name>Modpack Downloader Maven Plugin</name>
-
-    <properties>
-		<build.number>SNAPSHOT</build.number>
-	</properties>
 
     <dependencies>
         <dependency>
@@ -36,7 +32,7 @@
     </dependencies>
 
     <build>
-		<finalName>ModpackDownloader-maven-plugin-${short.project.version}+${build.number}</finalName>
+		<finalName>ModpackDownloader-maven-plugin-${short.project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
