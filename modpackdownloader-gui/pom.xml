@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.nincraft</groupId>
 		<artifactId>modpackdownloader</artifactId>
-		<version>0.6-SNAPSHOT</version>
+		<version>0.6</version>
 	</parent>
 
 	<artifactId>modpackdownloader-gui</artifactId>
