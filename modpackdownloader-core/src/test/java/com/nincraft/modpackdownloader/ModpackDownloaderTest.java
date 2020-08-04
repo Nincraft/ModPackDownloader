@@ -42,7 +42,6 @@ public class ModpackDownloaderTest {
 		FileUtils.copyFile(backupUpdate, updateFile);
 	}
 
-	@Ignore
 	@Test
 	public void testDownloadRelease() throws InterruptedException {
 		ModpackDownloaderManager manager = new ModpackDownloaderManager(new String[]{"-manifest", RESOURCES + "download-test.json", "-releaseType", "release", "-forceDownload"});
@@ -59,7 +58,6 @@ public class ModpackDownloaderTest {
 		}
 	}
 
-    @Ignore
 	@Test
 	public void testDownloadMaxThreads() throws InterruptedException {
 		ModpackDownloaderManager manager = new ModpackDownloaderManager(new String[]{"-manifest", RESOURCES + "download-test.json", "-maxDownloadThreads", "1"});
@@ -76,7 +74,7 @@ public class ModpackDownloaderTest {
 		}
 	}
 
-    @Ignore
+	@Ignore
 	@Test
 	public void testUpdate() throws InterruptedException, IOException, ParseException {
 		String manifestName = RESOURCES + "update-test.json";
@@ -99,7 +97,7 @@ public class ModpackDownloaderTest {
 				manifest.getForgeVersion().substring(manifest.getForgeVersion().indexOf('-') + 1)) < 0);
 	}
 
-    @Ignore
+	@Ignore
 	@Test
 	public void testCheckUpdate() throws InterruptedException {
 		String manifestName = RESOURCES + "update-test.json";
