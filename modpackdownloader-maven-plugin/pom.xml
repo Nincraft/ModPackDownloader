@@ -13,10 +13,6 @@
 
     <name>Modpack Downloader Maven Plugin</name>
 
-    <properties>
-		<build.number>SNAPSHOT</build.number>
-	</properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -36,7 +32,7 @@
     </dependencies>
 
     <build>
-		<finalName>ModpackDownloader-maven-plugin-${short.project.version}+${build.number}</finalName>
+		<finalName>ModpackDownloader-maven-plugin-${short.project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

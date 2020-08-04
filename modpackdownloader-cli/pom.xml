@@ -12,10 +12,6 @@
 
 	<name>Modpack Downloader CLI</name>
 
-	<properties>
-		<build.number>SNAPSHOT</build.number>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.nincraft</groupId>
@@ -38,7 +34,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>ModpackDownloader-cli-${short.project.version}+${build.number}</finalName>
+		<finalName>ModpackDownloader-cli-${short.project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

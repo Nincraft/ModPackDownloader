@@ -13,7 +13,6 @@
 	<name>Modpack Downloader Core</name>
 
 	<properties>
-		<build.number>SNAPSHOT</build.number>
 		<log4j.version>2.12.0</log4j.version>
 	</properties>
 
@@ -75,7 +74,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>ModpackDownloader-core-${short.project.version}+${build.number}</finalName>
+		<finalName>ModpackDownloader-core-${short.project.version}</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>

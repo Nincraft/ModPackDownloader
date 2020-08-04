@@ -16,10 +16,6 @@
         <module>modpackdownloader-gui</module>
     </modules>
 
-    <properties>
-        <build.number>SNAPSHOT</build.number>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
