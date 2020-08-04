@@ -2,7 +2,6 @@ package com.nincraft.modpackdownloader.processor;
 
 import com.google.common.collect.Lists;
 import com.nincraft.modpackdownloader.container.Manifest;
-import com.nincraft.modpackdownloader.container.Minecraft;
 import com.nincraft.modpackdownloader.container.Mod;
 import com.nincraft.modpackdownloader.handler.ForgeHandler;
 import com.nincraft.modpackdownloader.util.Arguments;

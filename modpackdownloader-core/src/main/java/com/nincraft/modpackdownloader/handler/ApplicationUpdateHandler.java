@@ -30,7 +30,7 @@ public class ApplicationUpdateHandler {
 		}
 		val downloadUrl = (String) appJson.get("url");
 
-		val appName = downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1, downloadUrl.length());
+		val appName = downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1);
 		String decodedAppName = null;
 		try {
 			decodedAppName = URLDecoder.decode(appName, "UTF-8");
