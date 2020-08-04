@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<artifactId>modpackdownloader</artifactId>
-		<groupId>com.nincraft</groupId>
-		<version>0.5.3</version>
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>com.nincraft</groupId>
+		<artifactId>modpackdownloader</artifactId>
+		<version>0.6</version>
+	</parent>
+
 	<artifactId>modpackdownloader-gui</artifactId>
+
 	<name>Modpack Downloader GUI</name>
-	<properties>
-		<build.number>SNAPSHOT</build.number>
-	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.nincraft</groupId>
@@ -23,9 +21,20 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>14.0.2.1</version>
+        </dependency>
 	</dependencies>
+
 	<build>
-		<finalName>ModpackDownloader-gui-${short.project.version}+${build.number}</finalName>
+		<finalName>ModpackDownloader-gui-${short.project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -71,5 +80,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

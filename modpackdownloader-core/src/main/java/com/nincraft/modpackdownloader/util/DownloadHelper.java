@@ -11,6 +11,7 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Observable;
 
 @Log4j2
@@ -40,7 +41,7 @@ public class DownloadHelper extends Observable {
 	 * Downloads a {@link DownloadableFile} moves it to the correct folder. Downloads to the local cache if
 	 * downloadToLocalRepo is set to true and then copies to the download folder.
 	 *
-	 * @param downloadableFile a DownloadableFile with a download URL
+	 * @param downloadableFile    a DownloadableFile with a download URL
 	 * @param downloadToLocalRepo set to true to keep a copy of the DownloadableFile in local cache
 	 * @return status of the download, failed, skipped, or success
 	 */
@@ -50,7 +51,14 @@ public class DownloadHelper extends Observable {
 			log.debug("Skipped downloading {}", downloadableFile.getName());
 			return notifyStatus(DownloadStatus.SKIPPED);
 		}
-		val decodedFileName = URLHelper.decodeSpaces(downloadableFile.getFileName());
+		String decodedFileName;
+
+		try {
+			decodedFileName = URLDecoder.decode(downloadableFile.getFileName(), "UTF-8");
+		} catch (final IOException e) {
+			log.error("Error Decoding Filename: {}", downloadableFile.getFileName(), e);
+			return notifyStatus(DownloadStatus.FAILURE);
+		}
 
 		if (FileSystemHelper.getDownloadedFile(decodedFileName, downloadableFile.getFolder()).exists() && !arguments.isForceDownload()) {
 			log.debug("Found {} already downloaded, skipping", decodedFileName);

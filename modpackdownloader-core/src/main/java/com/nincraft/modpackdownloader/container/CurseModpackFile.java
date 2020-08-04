@@ -11,6 +11,7 @@ public class CurseModpackFile extends CurseFile {
 	public CurseModpackFile(String projectId, String projectName, int fileId) {
 		super(projectId, projectName);
 		setFileID(fileId);
+		setFileExtension(reference.getZipFileExt());
 	}
 
 	@Override

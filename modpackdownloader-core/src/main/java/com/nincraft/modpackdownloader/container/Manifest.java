@@ -5,30 +5,43 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.annotation.Generated;
 import java.util.ArrayList;
 import java.util.List;
 
-@Generated("org.jsonschema2pojo")
 @Getter
 @Setter
 public class Manifest {
 
 	@SerializedName("minecraft")
 	@Expose
-	public Minecraft minecraft;
+	private Minecraft minecraft;
+	@SerializedName("manifestType")
+	@Expose
+	private String manifestType;
+	@SerializedName("manifestVersion")
+	@Expose
+	private Integer manifestVersion;
+	@SerializedName("name")
+	@Expose
+	private String name;
+	@SerializedName("version")
+	@Expose
+	private String version;
+	@SerializedName("author")
+	@Expose
+	private String author;
 	@SerializedName("files")
 	@Expose
-	public List<CurseFile> curseFiles = new ArrayList<>();
+	private List<CurseFile> curseFiles = new ArrayList<>();
 	@SerializedName("thirdParty")
 	@Expose
-	public List<ThirdParty> thirdParty = new ArrayList<>();
+	private List<ThirdParty> thirdParty = new ArrayList<>();
 	@SerializedName("batchAddCurse")
 	@Expose
-	public List<String> batchAddCurse = new ArrayList<>();
+	private List<String> batchAddCurse = new ArrayList<>();
 	@SerializedName("overrides")
 	@Expose
-	public String overrides;
+	private String overrides;
 
 	public String getMinecraftVersion() {
 		if (minecraft != null) {
