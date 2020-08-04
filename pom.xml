@@ -12,7 +12,6 @@
 
     <modules>
         <module>modpackdownloader-core</module>
-        <module>modpackdownloader-maven-plugin</module>
         <module>modpackdownloader-cli</module>
         <module>modpackdownloader-gui</module>
     </modules>
