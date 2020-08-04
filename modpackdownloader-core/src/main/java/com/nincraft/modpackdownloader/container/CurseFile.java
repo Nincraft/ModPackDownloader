@@ -10,12 +10,10 @@ import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import javax.annotation.Generated;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-@Generated("org.jsonschema2pojo")
 @Log4j2
 @Data
 @EqualsAndHashCode(callSuper = false, exclude = {"fileID"})
