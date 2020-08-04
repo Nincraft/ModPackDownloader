@@ -74,6 +74,7 @@ public class ModpackDownloaderTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void testUpdate() throws InterruptedException, IOException, ParseException {
 		String manifestName = RESOURCES + "update-test.json";
@@ -96,6 +97,7 @@ public class ModpackDownloaderTest {
 				manifest.getForgeVersion().substring(manifest.getForgeVersion().indexOf('-') + 1)) < 0);
 	}
 
+	@Ignore
 	@Test
 	public void testCheckUpdate() throws InterruptedException {
 		String manifestName = RESOURCES + "update-test.json";

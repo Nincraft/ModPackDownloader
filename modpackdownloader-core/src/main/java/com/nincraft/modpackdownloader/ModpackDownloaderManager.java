@@ -3,7 +3,6 @@ package com.nincraft.modpackdownloader;
 import com.beust.jcommander.JCommander;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.nincraft.modpackdownloader.processor.DownloadModpackProcessor;
 import com.nincraft.modpackdownloader.processor.DownloadModsProcessor;
 import com.nincraft.modpackdownloader.processor.MergeManifestsProcessor;
 import com.nincraft.modpackdownloader.processor.UpdateModsProcessor;
@@ -50,19 +49,11 @@ public class ModpackDownloaderManager {
 	public void processManifests() throws InterruptedException {
 		log.trace("Processing Manifests...");
 		downloadHelper = new DownloadHelper(arguments);
-		downloadModpack(arguments);
 		updateMods(arguments);
 		downloadMods(arguments);
 		mergeManifests(arguments);
 
 		log.trace("Finished Processing Manifests.");
-	}
-
-	private void downloadModpack(Arguments arguments) throws InterruptedException {
-		if (StringUtils.isNotBlank(arguments.getUpdateCurseModPack())) {
-			new DownloadModpackProcessor(arguments, downloadHelper).process();
-			arguments.setDownloadMods(true);
-		}
 	}
 
 	private void updateMods(Arguments arguments) throws InterruptedException {
