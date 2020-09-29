@@ -1,5 +1,6 @@
 package com.nincraft.modpackdownloader.processor;
 
+import com.nincraft.modpackdownloader.container.CurseAddon;
 import com.nincraft.modpackdownloader.container.CurseFile;
 import com.nincraft.modpackdownloader.container.Manifest;
 import com.nincraft.modpackdownloader.container.Mod;
@@ -77,6 +78,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 	}
 
 	private void addBatch(final Manifest manifestFile, final List<Mod> modList) {
+	    CurseAddon curseAddon;
 		CurseFile curseFile;
 		String projectIdPattern = "(\\d)+";
 		String projectNamePattern = "(((?:[a-z][a-z]+))(-)?)+";
@@ -85,11 +87,18 @@ public class UpdateModsProcessor extends AbstractProcessor {
 			String projectName = URLHelper.parseCurseUrl(projectNamePattern, projectUrl);
 
 			if (projectId != null && projectName != null) {
+			    curseAddon = new CurseAddon();
+
+			    curseAddon.setAddonID(Integer.valueOf(projectId));
+
 				curseFile = new CurseFile(projectId, projectName);
 				curseFile.init();
+
 				log.debug("Adding {} from batch add", curseFile.getName());
 				modList.add(curseFile);
-				manifestFile.getCurseFiles().add(curseFile);
+
+				curseAddon.setInstalledFile(curseFile);
+				manifestFile.getCurseAddons().add(curseAddon);
 			} else {
 				log.warn("Unable to add {} from batch add", projectUrl);
 			}
@@ -99,7 +108,8 @@ public class UpdateModsProcessor extends AbstractProcessor {
 	private void updateManifest(final File file, final Manifest manifest) {
 		log.trace("Updating Manifest File...");
 		// Sort Mod Lists
-		manifest.getCurseFiles().sort(modComparator);
+
+		// manifest.getCurseAddons().sort(modComparator);
 		manifest.getThirdParty().sort(modComparator);
 
 		ManifestHelper.cleanupModLists(manifest);
@@ -139,7 +149,7 @@ public class UpdateModsProcessor extends AbstractProcessor {
 	}
 
 	private void backupManifest(final File manifestFile, final Manifest manifest) {
-		if (CollectionUtils.isNotEmpty(manifest.getCurseFiles())) {
+		if (CollectionUtils.isNotEmpty(manifest.getCurseAddons())) {
 			backupCurseManifest(manifestFile);
 		}
 	}

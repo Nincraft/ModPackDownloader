@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.logging.log4j.core.util.Integers;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -29,14 +30,15 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Log4j2
 public class CurseFileHandler implements ModHandler {
 
-    private Reference reference = Reference.getInstance();
-    private UpdateCheckSummarizer updateCheckSummarizer = UpdateCheckSummarizer.getInstance();
-    private Arguments arguments;
-    private DownloadHelper downloadHelper;
+    private final Reference reference = Reference.getInstance();
+    private final UpdateCheckSummarizer updateCheckSummarizer = UpdateCheckSummarizer.getInstance();
+    private final Arguments arguments;
+    private final DownloadHelper downloadHelper;
 
     public CurseFileHandler(Arguments arguments, DownloadHelper downloadHelper) {
         this.arguments = arguments;
@@ -45,14 +47,14 @@ public class CurseFileHandler implements ModHandler {
 
     private void downloadCurseMod(CurseFile curseFile) {
         try {
-            downloadHelper.downloadFile(getCurseForgeDownloadLocation(curseFile));
+            downloadHelper.downloadFile(curseFile);
         } catch (Exception e) {
             log.error(e);
         }
     }
 
-    public CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException, ParseException {
-        val url = curseFile.getCurseForgeDownloadUrl();
+    /*public CurseFile getCurseForgeDownloadLocation(final CurseFile curseFile) throws IOException, ParseException {
+        val url = curseFile.getDownloadUrl();
         val projectName = curseFile.getName();
         String encodedFilename = URLEncoder.encode(projectName, "UTF-8");
 
@@ -69,17 +71,17 @@ public class CurseFileHandler implements ModHandler {
         curseFile.setFileName(encodedFilename);
 
         return curseFile;
-    }
+    }*/
 
-    private String getEncodedFilename(String projectName, String filename) {
+    /*private String getEncodedFilename(String projectName, String filename) {
         if (filename.contains(reference.getJarFileExt()) || filename.contains(reference.getZipFileExt())) {
             return filename;
         } else {
             return projectName + reference.getJarFileExt();
         }
-    }
+    }*/
 
-    public void updateCurseFile(final CurseFile curseFile) {
+    /*public void updateCurseFile(final CurseFile curseFile) {
         if (BooleanUtils.isTrue(curseFile.getSkipUpdate())) {
             log.debug("Skipped updating {}", curseFile.getName());
             return;
@@ -109,9 +111,9 @@ public class CurseFileHandler implements ModHandler {
             updateCurseFile(curseFile, newMod);
             updateCheckSummarizer.getModList().add(curseFile);
         }
-    }
+    }*/
 
-    private void disableCertValidation() {
+    /*private void disableCertValidation() {
         TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
                     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
@@ -142,9 +144,9 @@ public class CurseFileHandler implements ModHandler {
         if (curseFile instanceof CurseModpackFile) {
             curseFile.setFileName(newMod.getVersion());
         }
-    }
+    }*/
 
-    private CurseFile getLatestVersion(String releaseType,
+    /*private CurseFile getLatestVersion(Integer releaseType,
             CurseFile curseFile, final JSONObject fileListJson, String mcVersion) {
         log.trace("Getting most recent available file...");
         boolean backup = true;
@@ -181,16 +183,16 @@ public class CurseFileHandler implements ModHandler {
 
         log.trace("Finished getting most recent available file.");
         return newMod;
-    }
+    }*/
 
-    private void setUpdatedFileId(CurseFile curseFile, JSONArray fileListJson, CurseFile newMod, List<Long> fileIds) {
+    /*private void setUpdatedFileId(CurseFile curseFile, JSONArray fileListJson, CurseFile newMod, List<Long> fileIds) {
         if (!fileIds.isEmpty() && fileIds.get(0).intValue() != curseFile.getFileID()) {
             newMod.setFileID(fileIds.get(0).intValue());
             newMod.setVersion(getJSONFileNode(fileListJson, newMod.getFileID()).get("version").toString());
         }
-    }
+    }*/
 
-    private JSONObject getJSONFileNode(JSONArray fileListJson, Integer fileID) {
+    /*private JSONObject getJSONFileNode(JSONArray fileListJson, Integer fileID) {
         for (val jsonNode : fileListJson) {
             if (fileID.equals(((Long) ((JSONObject) jsonNode).get("id")).intValue())) {
                 return (JSONObject) jsonNode;
@@ -199,7 +201,7 @@ public class CurseFileHandler implements ModHandler {
         return new JSONObject();
     }
 
-    private void checkFileIds(String releaseType, String mcVersion, List<JSONObject> fileList, List<Long> fileIds) {
+    private void checkFileIds(Integer releaseType, String mcVersion, List<JSONObject> fileList, List<Long> fileIds) {
         for (JSONObject file : fileList) {
             if (equalOrLessThan((String) file.get("type"), releaseType)
                     && isMcVersion((String) file.get("version"), mcVersion)) {
@@ -208,11 +210,11 @@ public class CurseFileHandler implements ModHandler {
         }
     }
 
-    private String defaultReleaseType(String releaseType) {
-        return Strings.isNullOrEmpty(releaseType) ? "release" : releaseType;
+    private Integer defaultReleaseType(Integer releaseType) {
+        return releaseType != null ? releaseType : 0;
     }
 
-    private CurseFile checkBackupVersions(String releaseType, CurseFile curseFile, JSONObject fileListJson,
+    private CurseFile checkBackupVersions(Integer releaseType, CurseFile curseFile, JSONObject fileListJson,
             String mcVersion, CurseFile newMod) {
         CurseFile returnMod = newMod;
         for (String backupVersion : arguments.getBackupVersions()) {
@@ -225,9 +227,9 @@ public class CurseFileHandler implements ModHandler {
             }
         }
         return returnMod;
-    }
+    }*/
 
-    private boolean isMcVersion(String modVersion, String argVersion) {
+    /*private boolean isMcVersion(String modVersion, String argVersion) {
         return "*".equals(argVersion) || modVersion.equals(argVersion);
     }
 
@@ -238,14 +240,13 @@ public class CurseFileHandler implements ModHandler {
         return curseFile;
     }
 
-    private boolean equalOrLessThan(final String modRelease, final String releaseType) {
-        return "alpha".equals(releaseType) || releaseType.equals(modRelease)
-                || "beta".equals(releaseType) && "release".equals(modRelease);
-    }
+    private boolean equalOrLessThan(final Integer modRelease, final Integer releaseType) {
+        return releaseType <= modRelease;
+    }*/
 
-    private JSONObject getCurseProjectJson(final CurseFile curseFile) throws ParseException, IOException {
+    /*private JSONObject getCurseProjectJson(final CurseFile curseFile) throws ParseException, IOException {
         log.trace("Getting CurseForge Widget JSON...");
-        val projectId = curseFile.getProjectID();
+        *//*val projectId = curseFile.getProjectID();*//*
         val projectName = curseFile.getProjectName();
         val modOrModPack = curseFile.getCurseforgeWidgetJson();
         String urlStr = String.format(reference.getCurseforgeWidgetJsonUrl(), modOrModPack, projectName);
@@ -257,7 +258,7 @@ public class CurseFileHandler implements ModHandler {
             log.debug(urlStr, e);
             return URLHelper.getJsonFromUrl(urlStr);
         }
-    }
+    }*/
 
     @Override
     public void downloadMod(final Mod mod) {
@@ -266,6 +267,6 @@ public class CurseFileHandler implements ModHandler {
 
     @Override
     public void updateMod(final Mod mod) {
-        updateCurseFile((CurseFile) mod);
+        // updateCurseFile((CurseFile) mod);
     }
 }

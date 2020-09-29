@@ -11,10 +11,10 @@ import java.util.List;
 public class UpdateCheckSummarizer {
 
 	@Getter
-	private static UpdateCheckSummarizer instance = new UpdateCheckSummarizer();
+	private static final UpdateCheckSummarizer instance = new UpdateCheckSummarizer();
 
 	@Getter
-	private List<Mod> modList = new ArrayList<>();
+	private final List<Mod> modList = new ArrayList<>();
 
 	public void summarize() {
 		log.info("Number of updates found: {}", modList.size());

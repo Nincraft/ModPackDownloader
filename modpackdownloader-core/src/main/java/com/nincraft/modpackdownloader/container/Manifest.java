@@ -30,9 +30,9 @@ public class Manifest {
 	@SerializedName("author")
 	@Expose
 	private String author;
-	@SerializedName("files")
+	@SerializedName("installedAddons")
 	@Expose
-	private List<CurseFile> curseFiles = new ArrayList<>();
+	private List<CurseAddon> curseAddons = new ArrayList<>();
 	@SerializedName("thirdParty")
 	@Expose
 	private List<ThirdParty> thirdParty = new ArrayList<>();

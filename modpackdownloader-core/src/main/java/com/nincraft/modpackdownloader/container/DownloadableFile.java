@@ -20,6 +20,8 @@ public abstract class DownloadableFile {
 	@Expose
 	private String folder;
 	private String fileName;
+	@SerializedName("downloadUrl")
+    @Expose
 	private String downloadUrl;
 
 	DownloadableFile() {

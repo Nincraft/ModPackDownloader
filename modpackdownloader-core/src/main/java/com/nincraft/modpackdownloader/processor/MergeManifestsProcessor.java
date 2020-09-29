@@ -38,8 +38,8 @@ public class MergeManifestsProcessor extends AbstractProcessor {
 			process(entry);
 		}
 
-		newManifest.getCurseFiles().addAll(curseModSet);
-		newManifest.getCurseFiles().sort(modComparator);
+		/*newManifest.getCurseAddons().addAll(curseModSet);
+		newManifest.getCurseAddons().sort(modComparator);*/
 
 		newManifest.setOverrides("overrides");
 
@@ -57,7 +57,7 @@ public class MergeManifestsProcessor extends AbstractProcessor {
 			newManifest.setMinecraft(manifest.getMinecraft());
 		}
 
-		curseModSet.addAll(manifest.getCurseFiles());
+		// curseModSet.addAll(manifest.getCurseAddons());
 
 		return true;
 	}

@@ -35,7 +35,7 @@ public abstract class AbstractProcessor {
 	@Getter
 	@Setter
 	private ExecutorService executorService;
-	private Gson gson = new Gson();
+	private final Gson gson = new Gson();
 	Map<File, Manifest> manifestMap = new HashMap<>();
 	Arguments arguments;
 	DownloadHelper downloadHelper;
@@ -101,7 +101,7 @@ public abstract class AbstractProcessor {
 			arguments.setMcVersion(manifest.getMinecraftVersion());
 		}
 
-		modList.addAll(manifest.getCurseFiles());
+        manifest.getCurseAddons().forEach((curseAddon) -> modList.add(curseAddon.getInstalledFile()));
 		modList.addAll(manifest.getThirdParty());
 
         val modSet = new HashSet<Mod>(modList);

@@ -1,9 +1,6 @@
 package com.nincraft.modpackdownloader.util;
 
-import com.nincraft.modpackdownloader.container.CurseFile;
-import com.nincraft.modpackdownloader.container.Manifest;
-import com.nincraft.modpackdownloader.container.Minecraft;
-import com.nincraft.modpackdownloader.container.ModLoader;
+import com.nincraft.modpackdownloader.container.*;
 import lombok.val;
 
 import java.util.List;
@@ -24,8 +21,8 @@ public class ManifestHelper {
 			}
 		}
 
-		if (manifest.getCurseFiles().isEmpty()) {
-			manifest.setCurseFiles(null);
+		if (manifest.getCurseAddons().isEmpty()) {
+			manifest.setCurseAddons(null);
 		}
 		if (manifest.getThirdParty().isEmpty()) {
 			manifest.setThirdParty(null);
@@ -47,9 +44,9 @@ public class ManifestHelper {
 			cleanupMinecraft(minecraft);
 		}
 
-		val curseFiles = manifest.getCurseFiles();
-		if (curseFiles != null) {
-			cleanupCurseFiles(curseFiles);
+		val curseAddons = manifest.getCurseAddons();
+		if (curseAddons != null) {
+			cleanupCurseAddons(curseAddons);
 		}
 
 		manifest.setThirdParty(null);
@@ -84,15 +81,20 @@ public class ManifestHelper {
 		modLoader.setRenameUniversal(null);
 	}
 
-	private static void cleanupCurseFiles(List<CurseFile> curseFiles) {
-		for (val curseFile : curseFiles) {
-			cleanupCurseFile(curseFile);
+	private static void cleanupCurseAddons(List<CurseAddon> curseAddons) {
+		for (val curseAddon : curseAddons) {
+			cleanupCurseAddon(curseAddon);
 		}
 	}
 
-	private static void cleanupCurseFile(CurseFile curseFile) {
-		curseFile.setName(null);
-		curseFile.setSkipDownload(null);
-		curseFile.setSkipUpdate(null);
-	}
+	private static void cleanupCurseAddon(CurseAddon curseAddon) {
+	    curseAddon.setAddonID(null);
+        cleanupCurseFile(curseAddon.getInstalledFile());
+    }
+
+    private static void cleanupCurseFile(CurseFile curseFile) {
+        curseFile.setName(null);
+        curseFile.setSkipDownload(null);
+        curseFile.setSkipUpdate(null);
+    }
 }
