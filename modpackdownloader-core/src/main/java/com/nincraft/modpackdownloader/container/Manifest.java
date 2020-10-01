@@ -30,6 +30,12 @@ public class Manifest {
 	@SerializedName("author")
 	@Expose
 	private String author;
+	@SerializedName("gameVersion")
+    @Expose
+    private String minecraftVersion;
+	@SerializedName("baseModLoader")
+    @Expose
+    private ModLoader modLoader;
 	@SerializedName("installedAddons")
 	@Expose
 	private List<CurseAddon> curseAddons = new ArrayList<>();
@@ -43,22 +49,18 @@ public class Manifest {
 	@Expose
 	private String overrides;
 
-	public String getMinecraftVersion() {
-		if (minecraft != null) {
-			return minecraft.getVersion();
-		}
-		return null;
-	}
-
 	public String getForgeVersion() {
-		if (isMinecraftEmpty()) {
+		/*if (isMinecraftEmpty()) {
 			return minecraft.getModLoaders().get(0).getId();
-		}
+		}*/
+        if (modLoader != null) {
+            return modLoader.getForgeVersion();
+        }
 		return null;
 	}
 
-	private boolean isMinecraftEmpty() {
+	/*private boolean isMinecraftEmpty() {
 		return minecraft != null && !minecraft.getModLoaders().isEmpty();
-	}
+	}*/
 
 }

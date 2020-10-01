@@ -19,6 +19,8 @@ public abstract class DownloadableFile {
 	@SerializedName("folder")
 	@Expose
 	private String folder;
+	@SerializedName(value = "fileName", alternate = "filename")
+    @Expose
 	private String fileName;
 	@SerializedName("downloadUrl")
     @Expose

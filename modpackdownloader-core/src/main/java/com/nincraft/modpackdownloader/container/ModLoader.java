@@ -33,6 +33,12 @@ public class ModLoader extends DownloadableFile {
 	@SerializedName("release")
 	@Expose
 	private String release;
+	@SerializedName("minecraftVersion")
+    @Expose
+    private String minecraftVersion;
+	@SerializedName("forgeVersion")
+    @Expose
+    private String forgeVersion;
 
 	public ModLoader() {
 		setName("forge");
@@ -42,7 +48,7 @@ public class ModLoader extends DownloadableFile {
 		return downloadInstaller ? getRenameInstaller() : getRenameUniversal();
 	}
 
-	public String getForgeId() {
+	/*public String getForgeId() {
 		return getId().substring(getId().indexOf("-") + 1);
-	}
+	}*/
 }

@@ -14,10 +14,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Executors;
+
+import static java.util.Collections.singletonList;
 
 @Log4j2
 public class DownloadModsProcessor extends AbstractProcessor {
@@ -31,19 +34,27 @@ public class DownloadModsProcessor extends AbstractProcessor {
 	private void downloadMods(final Manifest manifest) {
 		setExecutorService(Executors.newFixedThreadPool(arguments.getMaxDownloadThreads() > 0 ? arguments.getMaxDownloadThreads() : modList.size() + 1));
 
-		val minecraft = manifest.getMinecraft();
+		val modLoader = manifest.getModLoader();
+		if (modLoader != null) {
+		    val forgeHandler = new ForgeHandler(arguments, downloadHelper);
+
+		    Runnable forgeThread = new Thread(() -> forgeHandler.downloadForge(manifest.getMinecraftVersion(), singletonList(modLoader)));
+
+		    getExecutorService().execute(forgeThread);
+        }
+
+		/*val minecraft = manifest.getMinecraft();
 		if (minecraft != null) {
 			ForgeHandler forgeHandler = new ForgeHandler(arguments, downloadHelper);
 			Runnable forgeThread = new Thread(() -> forgeHandler.downloadForge(manifest.getMinecraftVersion(), minecraft.getModLoaders()));
 
 			getExecutorService().execute(forgeThread);
-		}
+		}*/
 
 		log.trace("Downloading {} mods...", modList.size());
 		int downloadCount = 1;
 		for (val mod : modList) {
-			log.debug(reference.getDownloadingModXOfY(), mod.getName(), downloadCount++,
-					Reference.downloadTotal);
+			log.debug(reference.getDownloadingModXOfY(), mod.getName(), downloadCount++, Reference.downloadTotal);
 
 			Runnable modDownload = new Thread(() -> {
 				modHandlerHashMap.get(mod.getClass()).downloadMod(mod);
