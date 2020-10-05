@@ -57,19 +57,20 @@ public class DownloadHelper extends Observable {
 			log.debug("Skipped downloading {}", downloadableFile.getName());
 			return notifyStatus(SKIPPED);
 		}
-		String decodedFileName = URLDecoder.decode(downloadableFile.getFileName(), UTF_8);
 
-        if (FileSystemHelper.getDownloadedFile(decodedFileName, downloadableFile.getFolder()).exists() && !arguments.isForceDownload()) {
-			log.debug("Found {} already downloaded, skipping", decodedFileName);
+        String fileName = downloadableFile.getFileName();
+
+        if (FileSystemHelper.getDownloadedFile(fileName, downloadableFile.getFolder()).exists() && !arguments.isForceDownload()) {
+			log.debug("Found {} already downloaded, skipping", fileName);
 			return notifyStatus(SKIPPED);
 		}
 
-		if (!FileSystemHelper.isInLocalRepo(downloadableFile.getName(), decodedFileName) || arguments.isForceDownload()) {
+		if (!FileSystemHelper.isInLocalRepo(downloadableFile.getName(), fileName) || arguments.isForceDownload()) {
 			val downloadedFile = FileSystemHelper.getLocalFile(downloadableFile);
 			try {
 				FileUtils.copyURLToFile(new URL(downloadableFile.getDownloadUrl().replace(" ", "%20")), downloadedFile);
 			} catch (final IOException e) {
-				log.error("Could not download {}.", downloadableFile.getFileName(), e);
+				log.error("Could not download {}.", fileName, e);
 				Reference.downloadCount++;
 				if ("forge".equals(downloadableFile.getName())) {
 					return status;
@@ -80,8 +81,8 @@ public class DownloadHelper extends Observable {
 		} else {
 			status = SUCCESS_CACHE;
 		}
-		moveFromLocalRepo(downloadableFile, decodedFileName, downloadToLocalRepo, arguments.getModFolder());
-		log.info("Successfully {} {}", status, downloadableFile.getFileName());
+		moveFromLocalRepo(downloadableFile, fileName, downloadToLocalRepo, arguments.getModFolder());
+		log.info("Successfully {} {}", status, fileName);
 		return notifyStatus(status);
 	}
 
