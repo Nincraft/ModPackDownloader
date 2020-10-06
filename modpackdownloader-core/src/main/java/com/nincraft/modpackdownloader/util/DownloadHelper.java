@@ -11,7 +11,6 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.Observable;
 
 @Log4j2
@@ -51,26 +50,19 @@ public class DownloadHelper extends Observable {
 			log.debug("Skipped downloading {}", downloadableFile.getName());
 			return notifyStatus(DownloadStatus.SKIPPED);
 		}
-		String decodedFileName;
+        String fileName = downloadableFile.getFileName();
 
-		try {
-			decodedFileName = URLDecoder.decode(downloadableFile.getFileName(), "UTF-8");
-		} catch (final IOException e) {
-			log.error("Error Decoding Filename: {}", downloadableFile.getFileName(), e);
-			return notifyStatus(DownloadStatus.FAILURE);
-		}
-
-		if (FileSystemHelper.getDownloadedFile(decodedFileName, downloadableFile.getFolder()).exists() && !arguments.isForceDownload()) {
-			log.debug("Found {} already downloaded, skipping", decodedFileName);
+		if (FileSystemHelper.getDownloadedFile(fileName, downloadableFile.getFolder()).exists() && !arguments.isForceDownload()) {
+			log.debug("Found {} already downloaded, skipping", fileName);
 			return notifyStatus(DownloadStatus.SKIPPED);
 		}
 
-		if (!FileSystemHelper.isInLocalRepo(downloadableFile.getName(), decodedFileName) || arguments.isForceDownload()) {
+		if (!FileSystemHelper.isInLocalRepo(downloadableFile.getName(), fileName) || arguments.isForceDownload()) {
 			val downloadedFile = FileSystemHelper.getLocalFile(downloadableFile);
 			try {
 				FileUtils.copyURLToFile(new URL(downloadableFile.getDownloadUrl()), downloadedFile);
 			} catch (final IOException e) {
-				log.error("Could not download {}.", downloadableFile.getFileName(), e);
+				log.error("Could not download {}.", fileName, e);
 				Reference.downloadCount++;
 				if ("forge".equals(downloadableFile.getName())) {
 					return status;
@@ -81,8 +73,8 @@ public class DownloadHelper extends Observable {
 		} else {
 			status = DownloadStatus.SUCCESS_CACHE;
 		}
-		FileSystemHelper.moveFromLocalRepo(downloadableFile, decodedFileName, downloadToLocalRepo, arguments.getModFolder());
-		log.info("Successfully {} {}", status, downloadableFile.getFileName());
+		FileSystemHelper.moveFromLocalRepo(downloadableFile, fileName, downloadToLocalRepo, arguments.getModFolder());
+		log.info("Successfully {} {}", status, fileName);
 		return notifyStatus(status);
 	}
 
