@@ -13,6 +13,7 @@ import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,8 +91,9 @@ public class UpdateModsProcessor extends AbstractProcessor {
 			    curseAddon = new CurseAddon();
 
 			    curseAddon.setAddonID(Integer.valueOf(projectId));
+			    curseAddon.setProjectName(projectName);
 
-				curseFile = new CurseFile(projectId, projectName);
+				curseFile = new CurseFile(curseAddon.getAddonID(), curseAddon.getProjectName());
 				curseFile.init();
 
 				log.debug("Adding {} from batch add", curseFile.getName());
@@ -107,10 +109,10 @@ public class UpdateModsProcessor extends AbstractProcessor {
 
 	private void updateManifest(final File file, final Manifest manifest) {
 		log.trace("Updating Manifest File...");
-		// Sort Mod Lists
 
-		// manifest.getCurseAddons().sort(modComparator);
-		manifest.getThirdParty().sort(modComparator);
+        // Sort Mod Lists
+        // manifest.getCurseAddons().sort(modComparator);
+        manifest.getThirdParty().sort(modComparator);
 
 		ManifestHelper.cleanupModLists(manifest);
 		FileSystemHelper.writeManifest(manifest, file);

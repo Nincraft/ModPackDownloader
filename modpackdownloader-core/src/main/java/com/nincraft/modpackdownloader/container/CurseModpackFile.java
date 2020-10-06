@@ -1,3 +1,4 @@
+/*
 package com.nincraft.modpackdownloader.container;
 
 import com.nincraft.modpackdownloader.util.Reference;
@@ -19,3 +20,4 @@ public class CurseModpackFile extends CurseFile {
 		return reference.getCurseforgeWidgetJsonModpack();
 	}
 }
+*/

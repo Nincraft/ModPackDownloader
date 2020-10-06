@@ -17,6 +17,10 @@ public class CurseAddon {
     @Expose
     public CurseFile installedFile;
 
+    @SerializedName("projectName")
+    @Expose
+    public String projectName;
+
     public CurseAddon() {
     }
 }

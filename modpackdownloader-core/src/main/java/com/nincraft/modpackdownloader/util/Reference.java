@@ -20,7 +20,7 @@ public class Reference {
 	private String ftbBaseUrl = "https://www.feed-the-beast.com/projects/";
 	private String curseforgeWidgetJsonMod = "mc-mods";
 	private String curseforgeWidgetJsonModpack = "modpacks";
-	private String curseforgeWidgetJsonUrl = "https://api.cfwidget.com/%s/minecraft/%s.json";
+	private String curseforgeWidgetJsonUrl = "https://api.cfwidget.com/minecraft/%s/%s.json";
 	private String cookieTest1 = "?cookieTest=1";
 	private String downloadingModXOfY = "Downloading {}. Mod {} of {}.";
 	private String updatingModXOfY = "Updating {}. Mod {} of {}.";

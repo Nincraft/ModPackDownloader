@@ -1,10 +1,7 @@
 package com.nincraft.modpackdownloader.processor;
 
 import com.google.gson.Gson;
-import com.nincraft.modpackdownloader.container.CurseFile;
-import com.nincraft.modpackdownloader.container.Manifest;
-import com.nincraft.modpackdownloader.container.Mod;
-import com.nincraft.modpackdownloader.container.ThirdParty;
+import com.nincraft.modpackdownloader.container.*;
 import com.nincraft.modpackdownloader.handler.CurseFileHandler;
 import com.nincraft.modpackdownloader.handler.ModHandler;
 import com.nincraft.modpackdownloader.handler.ThirdPartyModHandler;
@@ -101,10 +98,15 @@ public abstract class AbstractProcessor {
 			arguments.setMcVersion(manifest.getMinecraftVersion());
 		}
 
-        manifest.getCurseAddons().forEach((curseAddon) -> modList.add(curseAddon.getInstalledFile()));
+        manifest.getCurseAddons().forEach((curseAddon) -> {
+            val curseFile = curseAddon.getInstalledFile();
+            curseFile.setParentAddonId(curseAddon.getAddonID());
+            curseFile.setParentAddonName(curseAddon.getProjectName());
+            modList.add(curseFile);
+        });
 		modList.addAll(manifest.getThirdParty());
 
-        val modSet = new HashSet<Mod>(modList);
+        val modSet = new HashSet<>(modList);
 		modList.clear();
 		modList.addAll(modSet);
 

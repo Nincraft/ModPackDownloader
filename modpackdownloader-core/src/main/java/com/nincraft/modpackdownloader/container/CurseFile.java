@@ -16,21 +16,20 @@ public class CurseFile extends Mod {
     @Expose
     public String name;
 
-    @SerializedName("addonID")
+    @SerializedName("id")
     @Expose
     public Integer fileID;
 
-    @SerializedName("releaseType")
+    @SerializedName("release")
     @Expose
-    public Integer releaseType;
+    public String releaseType;
 
     @SerializedName("skipUpdate")
     @Expose
     private Boolean skipUpdate;
 
-    @SerializedName("FileNameOnDisk")
-    @Expose
-    private String fileName;
+    private Integer parentAddonId;
+    private String parentAddonName;
 
     private String projectUrl;
     private String projectName;
@@ -49,15 +48,15 @@ public class CurseFile extends Mod {
         projectUrl = curseFile.projectUrl;
         projectName = curseFile.projectName;
         fileExtension = curseFile.fileExtension;
+        parentAddonId = curseFile.parentAddonId;
+        parentAddonName = curseFile.parentAddonName;
     }
 
-    public CurseFile(String projectId, String projectName) {
-        /*if (NumberUtils.isParsable(projectId)) {
-            setProjectID(Integer.parseInt(projectId));
-        }*/
-        setProjectName(projectName);
-        /*curseForge = true;*/
+    public CurseFile(Integer addonId, String addonName) {
+        setParentAddonId(addonId);
+        setParentAddonName(addonName);
     }
+
 
     public String getCurseforgeWidgetJson() {
         return reference.getCurseforgeWidgetJsonMod();
@@ -65,7 +64,5 @@ public class CurseFile extends Mod {
 
     @Override
     public void init() {
-        String fileName = getFileName();
-        setSkipDownload(fileName != null && fileName.endsWith("disabled"));
     }
 }

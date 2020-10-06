@@ -49,22 +49,22 @@ public class ModpackDownloaderManager {
 	public void processManifests() throws InterruptedException {
 		log.trace("Processing Manifests...");
 		downloadHelper = new DownloadHelper(arguments);
-		// updateMods(arguments);
+		 updateMods(arguments);
 		downloadMods(arguments);
 		// mergeManifests(arguments);
 
 		log.trace("Finished Processing Manifests.");
 	}
 
-	/*private void updateMods(Arguments arguments) throws InterruptedException {
+	private void updateMods(Arguments arguments) throws InterruptedException {
 		if (shouldProcessUpdate(arguments)) {
 			new UpdateModsProcessor(arguments, downloadHelper).process();
 		}
-	}*/
+	}
 
-	/*private boolean shouldProcessUpdate(Arguments arguments) {
+	private boolean shouldProcessUpdate(Arguments arguments) {
 		return arguments.isUpdateMods() || !StringUtils.isBlank(arguments.getCheckMCUpdate());
-	}*/
+	}
 
 	private void downloadMods(Arguments arguments) throws InterruptedException {
 		if (arguments.isDownloadMods()) {
