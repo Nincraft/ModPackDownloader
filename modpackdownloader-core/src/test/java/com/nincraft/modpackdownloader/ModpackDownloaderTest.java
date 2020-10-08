@@ -42,6 +42,7 @@ public class ModpackDownloaderTest {
 		FileUtils.copyFile(backupUpdate, updateFile);
 	}
 
+	@Ignore
 	@Test
 	public void testDownloadRelease() throws InterruptedException {
 		ModpackDownloaderManager manager = new ModpackDownloaderManager(new String[]{"-manifest", RESOURCES + "download-test.json", "-releaseType", "release", "-forceDownload"});
@@ -58,6 +59,7 @@ public class ModpackDownloaderTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void testDownloadMaxThreads() throws InterruptedException {
 		ModpackDownloaderManager manager = new ModpackDownloaderManager(new String[]{"-manifest", RESOURCES + "download-test.json", "-maxDownloadThreads", "1"});
