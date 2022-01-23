@@ -81,7 +81,7 @@ public class DownloadHelper extends Observable {
 		} else {
 			status = SUCCESS_CACHE;
 		}
-		moveFromLocalRepo(downloadableFile, fileName, downloadToLocalRepo, arguments.getModFolder());
+		FileSystemHelper.moveFromLocalRepo(downloadableFile, fileName, downloadToLocalRepo, arguments.getModFolder());
 		log.info("Successfully {} {}", status, fileName);
 		return notifyStatus(status);
 	}
