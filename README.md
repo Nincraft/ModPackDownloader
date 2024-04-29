@@ -1,5 +1,8 @@
 # ModPack Downloader [![CI](https://github.com/Nincraft/ModPackDownloader/actions/workflows/maven.yml/badge.svg)](https://github.com/Nincraft/ModPackDownloader/actions/workflows/maven.yml)
+This project is not actively maintained. Please consider finding an alternative downloader.
+
 A simple command line downloader for Minecraft Forge Modpacks. Also works with Curse manifest JSONs.
+
 # Usage
 Execute via command line with two arguments, the manifest json and the folder where you want your mods downloaded.
 
